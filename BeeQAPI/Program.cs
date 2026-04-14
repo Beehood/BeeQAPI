@@ -1,4 +1,9 @@
+using BAL.ContractIF;
+using BAL.Services;
 using BeeQAPI.Authorization;
+using DAL.ContractIF;
+using DAL.Dbcontext;
+using DAL.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +13,12 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<DBConnection>();
+
 // Add services to the container.
+builder.Services.AddScoped<IBAL_Auth,BAL_Auth>();
+builder.Services.AddScoped<IDAL_Auth,DAL_Auth>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
