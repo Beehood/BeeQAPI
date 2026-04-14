@@ -1,6 +1,9 @@
+using BeeQAPI.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +15,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Queue Management API",
+        Version = "v1"
+    });
 
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -60,12 +67,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role
         };
     });
 
 builder.Services.AddAuthorization();
 
+// Custom policy provider for permission-based authorization
+builder.Services.AddSingleton<IAuthorizationPolicyProvider,
+    PermissionPolicyProvider>();
 
 builder.Services.AddCors(options =>
 {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using System.Net;
 using System.Security.Claims;
 
@@ -19,6 +20,7 @@ namespace BeeQAPI.Controllers
             _auth = auth;
         }
 
+        [AllowAnonymous]
         [HttpGet("GetSalt")]
         public async Task<string> GetSalt()
         {
@@ -26,6 +28,7 @@ namespace BeeQAPI.Controllers
             return salt;
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         [ProducesResponseType(typeof(APIGetResponseModel<ModelLoginResponse>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<ModelLoginResponse>> Login([FromBody] LoginRequestDto dto)

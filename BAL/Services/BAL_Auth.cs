@@ -64,8 +64,8 @@ namespace BAL.Services
                 {
                     Username = user.UserName,
                     Name = user.Name,
-                    Role = user.Role,
-                    ClientName = user.ClientName
+                    Roles = user.Roles,
+                    Permissions = user.Permissions
                 };
 
                 string token = await _tokenService.GenerateTokenAsync(tokenUser);
@@ -77,7 +77,8 @@ namespace BAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add($"Exception: {ex.Message}");
+                response.ErrorMsgs.Add("Something went wrong");
+                //response.ErrorMsgs.Add($"Exception: {ex.Message}");
             }
 
             return response;
