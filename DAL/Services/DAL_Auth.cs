@@ -31,25 +31,17 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-                param.Add("P_Action", "LOGIN");
                 param.Add("p_Email", username);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_User",
+                // 🔥 FIX: Use QueryFirst instead of QueryMultiple
+                var user = await conn.QueryFirstOrDefaultAsync<UserDetails>(
+                    "sp_User_Login",
                     param,
                     commandType: CommandType.StoredProcedure
                 );
 
-                var user = await multi.ReadFirstOrDefaultAsync<UserDetails>();
-
                 if (user != null)
                 {
-                    var roles = (await multi.ReadAsync<string>()).ToList();
-                    var permissions = (await multi.ReadAsync<string>()).ToList();
-
-                    user.Roles = roles;
-                    user.Permissions = permissions;
-
                     response.Result = user;
                     response.TotalRecords = 1;
                     response.IsSuccess = true;
@@ -86,6 +78,7 @@ namespace DAL.Services
                 var param = new DynamicParameters();
                 param.Add("P_Action", "LOGINPROFILE");
                 param.Add("p_Email", UserId);
+               
 
                 using var multi = await conn.QueryMultipleAsync(
                     "sp_User",

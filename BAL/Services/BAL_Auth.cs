@@ -30,7 +30,7 @@ namespace BAL.Services
             try
             {
                 // Guard clause for null input
-                if (dto == null || string.IsNullOrEmpty(dto.Username) || string.IsNullOrEmpty(dto.Password))
+                if (dto == null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid login data");
@@ -38,7 +38,7 @@ namespace BAL.Services
                 }
 
                 // Step 1: Get user from DB
-                var userResponse = await _dal.ValidateUser(dto.Username, transaction);
+                var userResponse = await _dal.ValidateUser(dto.Email, transaction);
                 var user = userResponse.Result;
 
                 if (!userResponse.IsSuccess || user == null)
@@ -49,15 +49,30 @@ namespace BAL.Services
                 }
 
                 // Step 2: Validate password
-                string saltedInput = salt + user.Password;
-                string inputHash = GetHashString(saltedInput);
+                //string saltedInput = salt + user.Password;
+                //string inputHash = GetHashString(saltedInput);
 
-                if (inputHash != dto.Password)
+                //if (inputHash != dto.Password)
+                //{
+                //    response.IsSuccess = false;
+                //    response.ErrorMsgs.Add("Invalid password");
+                //    return response;
+                //}
+                // Step 2: Validate password (FIXED)
+                //if (user.Password != dto.Password)
+                //{
+                //    response.IsSuccess = false;
+                //    response.ErrorMsgs.Add("Invalid password");
+                //    return response;
+                //}
+                if (user.Password.Trim().ToUpper() != dto.Password.Trim().ToUpper())
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid password");
                     return response;
                 }
+
+
 
                 // Step 3: Generate JWT token                
                 var tokenUser = new TokenUserInfo
@@ -89,18 +104,18 @@ namespace BAL.Services
             return await _dal.loginprofile(UserId, transaction: transaction);
         }
 
-        public static byte[] GetHash(string inputString)
-        {
-            HashAlgorithm algorithm = SHA512.Create();
-            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-        }
-        public static string GetHashString(string inputString)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in GetHash(inputString))
-                sb.Append(b.ToString("x2"));
-            return sb.ToString();
-        }
+        //public static byte[] GetHash(string inputString)
+        //{
+        //    HashAlgorithm algorithm = SHA512.Create();
+        //    return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+        //}
+        //public static string GetHashString(string inputString)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    foreach (byte b in GetHash(inputString))
+        //        sb.Append(b.ToString("x2"));
+        //    return sb.ToString();
+        //}
 
         public async Task<string> RandomString()
         {
