@@ -1,13 +1,9 @@
 ﻿using BAL.ContractIF;
 using DAL.ContractIF;
 using Models;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BAL.Services
 {
@@ -15,21 +11,28 @@ namespace BAL.Services
     {
         private readonly IDAL_Auth _dal;
         private readonly IJwtService _tokenService;
-        public BAL_Auth(IDAL_Auth dal, IJwtService tokenService)
+
+    public BAL_Auth(IDAL_Auth dal, IJwtService tokenService)
         {
             _dal = dal;
             _tokenService = tokenService;
         }
-        public async Task<APIGetResponseModel<ModelLoginResponse>> Login(LoginRequestDto dto, string salt, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<ModelLoginResponse>> Login(
+   LoginRequestDto dto,
+   string salt,
+   IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<ModelLoginResponse>
             {
                 Result = new ModelLoginResponse()
             };
 
-            try
+
+try
             {
-                // Guard clause for null input
+                Console.WriteLine("TEST HASH: " + GetHashString("Admin"));
+                // 🔹 Step 1: Validate input
                 if (dto == null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
                 {
                     response.IsSuccess = false;
@@ -37,44 +40,42 @@ namespace BAL.Services
                     return response;
                 }
 
-                // Step 1: Get user from DB
+                // 🔹 Step 2: Get user from DB
                 var userResponse = await _dal.ValidateUser(dto.Email, transaction);
                 var user = userResponse.Result;
 
                 if (!userResponse.IsSuccess || user == null)
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("User not found or inactive");
+                    response.ErrorMsgs.Add("Invalid email or password");
                     return response;
                 }
 
-                // Step 2: Validate password
-                //string saltedInput = salt + user.Password;
-                //string inputHash = GetHashString(saltedInput);
+                // 🔥 DEBUG (IMPORTANT — REMOVE LATER)
+                Console.WriteLine("====== LOGIN DEBUG ======");
+                Console.WriteLine("DB PASSWORD (SHA512): " + user.Password);
+                Console.WriteLine("SALT: " + salt);
+                Console.WriteLine("DTO PASSWORD (FINAL HASH): " + dto.Password);
 
-                //if (inputHash != dto.Password)
-                //{
-                //    response.IsSuccess = false;
-                //    response.ErrorMsgs.Add("Invalid password");
-                //    return response;
-                //}
-                // Step 2: Validate password (FIXED)
-                //if (user.Password != dto.Password)
-                //{
-                //    response.IsSuccess = false;
-                //    response.ErrorMsgs.Add("Invalid password");
-                //    return response;
-                //}
-                if (user.Password.Trim().ToUpper() != dto.Password.Trim().ToUpper())
+                // 🔥 Step 3: Validate password (CATERING STYLE)
+
+                // DB contains: SHA512(password)
+                string saltedInput = salt + (user.Password ?? "").Trim();
+
+                string inputHash = GetHashString(saltedInput);
+
+                Console.WriteLine("BACKEND GENERATED HASH: " + inputHash);
+                Console.WriteLine("=========================");
+
+                // 🔥 SAFE COMPARISON
+                if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid password");
                     return response;
                 }
 
-
-
-                // Step 3: Generate JWT token                
+                // 🔥 Step 4: Generate JWT (RBAC)
                 var tokenUser = new TokenUserInfo
                 {
                     Username = user.UserName,
@@ -84,7 +85,8 @@ namespace BAL.Services
                 };
 
                 string token = await _tokenService.GenerateTokenAsync(tokenUser);
-                // Step 4: Return token
+
+                // 🔹 Step 5: Success response
                 response.IsSuccess = true;
                 response.Result.AuthToken = token;
                 response.TotalRecords = 1;
@@ -93,30 +95,34 @@ namespace BAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Something went wrong");
-                //response.ErrorMsgs.Add($"Exception: {ex.Message}");
+                Console.WriteLine("LOGIN ERROR: " + ex.Message);
             }
 
             return response;
-        }
+
+
+}
+
 
         public async Task<APIGetResponseModel<UserProfileDetails>> loginprofile(string UserId, IDbTransaction? transaction = null)
         {
             return await _dal.loginprofile(UserId, transaction: transaction);
         }
 
-        //public static byte[] GetHash(string inputString)
-        //{
-        //    HashAlgorithm algorithm = SHA512.Create();
-        //    return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-        //}
-        //public static string GetHashString(string inputString)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    foreach (byte b in GetHash(inputString))
-        //        sb.Append(b.ToString("x2"));
-        //    return sb.ToString();
-        //}
+        // 🔥 SHA512 HASH FUNCTION
+        public static string GetHashString(string inputString)
+        {
+            using var sha = SHA512.Create();
+            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(inputString));
 
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in bytes)
+                sb.Append(b.ToString("x2"));
+
+            return sb.ToString();
+        }
+
+        // 🔥 RANDOM SALT (same as your existing)
         public async Task<string> RandomString()
         {
             const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -137,4 +143,6 @@ namespace BAL.Services
             return new string(result);
         }
     }
+
+
 }

@@ -41,6 +41,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<ModelLoginResponse>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<ModelLoginResponse>> Login([FromBody] LoginRequestDto dto)
         {
+            string salt = "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV";
             return await _auth.Login(dto, salt, transaction: null);
 
         }
