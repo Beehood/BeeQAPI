@@ -21,7 +21,6 @@ namespace Models
         public string Role { get; set; }
 
         public string ClientName { get; set; }
-
-        public string ClientEmail { get; set; }
+      
     }
 }
