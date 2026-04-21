@@ -26,7 +26,7 @@ namespace Models
         public string? Address { get; set; }
         public string? SubscriptionPlan { get; set; }
         public int? Status { get; set; }
-        public long? UserId { get; set; }
+        //public long? UserId { get; set; }
     }
    
     

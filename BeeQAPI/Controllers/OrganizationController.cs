@@ -9,101 +9,85 @@ namespace BeeQAPI.Controllers
 {
     [Route("api/v1/organizations")]
     [ApiController]
-    [Authorize] 
+    [Authorize]
     public class OrganizationController : ControllerBase
     {
-        private readonly IOrganizationBAL _bal;
+        private readonly IBAL_Organization _bal;
 
-        public OrganizationController(IOrganizationBAL bal)
+        public OrganizationController(IBAL_Organization bal)
         {
             _bal = bal;
         }
 
+        // 🔥 Get user from middleware
+        private TokenUserInfo GetUser()
+        {
+            return HttpContext.Items["User"] as TokenUserInfo;
+        }
+
         // ========================
-        // GET ALL (Admin + Manager)
+        // GET ALL
         // ========================
-        //[Authorize(Roles = "Admin,Manager")]
-        [AllowAnonymous]
         [HttpPost("GetAll")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<OrganizationModel>>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<APIGetResponseModel<List<OrganizationModel>>>> GetAll([FromBody] PaginationRequestDto request)
+        public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
-            var result = await _bal.GetAll(request, transaction: null);
+            var user = GetUser();
+
+            var result = await _bal.GetAll(request, user);
             return Ok(result);
         }
 
         // ========================
-        //GET BY ID(All roles)
+        // GET BY ID
         // ========================
-        //[Authorize(Roles = "Admin,Manager,User")]
-        [AllowAnonymous]
         [HttpPost("GetById")]
-        [ProducesResponseType(typeof(APIGetResponseModel<OrganizationModel>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<APIGetResponseModel<OrganizationModel>>> GetById([FromBody] long id)
+        public async Task<IActionResult> GetById([FromBody] long id)
         {
-            var result = await _bal.GetById(id, transaction: null);
+            var user = GetUser();
+
+            var result = await _bal.GetById(id, user);
             return Ok(result);
         }
 
         // ========================
-        // CREATE (Admin only)
+        // CREATE
         // ========================
-        [Authorize(Roles = "Admin")]
         [HttpPost("Create")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<APIGetResponseModel<long>>> Create([FromBody] OrganizationRequestDto request)
+        public async Task<IActionResult> Create([FromBody] OrganizationRequestDto request)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = GetUser();
 
-            if (long.TryParse(userId, out long uid))
-            {
-                request.UserId = uid;
-            }
-
-            var result = await _bal.Create(request, transaction: null);
+            var result = await _bal.Create(request, user.Username, user);
             return Ok(result);
         }
 
         // ========================
-        // UPDATE (Admin + Manager)
+        // UPDATE
         // ========================
-        [Authorize(Roles = "Admin,Manager")]
         [HttpPost("Update")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<APIGetResponseModel<long>>> Update([FromBody] OrganizationRequestDto request)
+        public async Task<IActionResult> Update([FromBody] OrganizationRequestDto request)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = GetUser();
 
-            if (long.TryParse(userId, out long uid))
-            {
-                request.UserId = uid;
-            }
-
-            var result = await _bal.Update(request, transaction: null);
+            var result = await _bal.Update(request, user.Username, user);
             return Ok(result);
         }
 
         // ========================
-        // CHANGE STATUS (Admin only)
+        // CHANGE STATUS
         // ========================
-        [Authorize(Roles = "Admin")]
         [HttpPost("ChangeStatus")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<APIGetResponseModel<long>>> ChangeStatus([FromBody] OrganizationRequestDto request)
+        public async Task<IActionResult> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = GetUser();
 
-            long uid = 0;
-            if (long.TryParse(userId, out long parsed))
-            {
-                uid = parsed;
-            }
+            long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
             var result = await _bal.ChangeStatus(
                 request.OrganizationId ?? 0,
                 request.Status ?? 0,
                 uid,
-                transaction: null
+                user
             );
 
             return Ok(result);

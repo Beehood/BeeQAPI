@@ -12,11 +12,11 @@ namespace BAL.Services
 {
 
 
-    public class OrganizationBAL : IOrganizationBAL
+    public class BAL_Organization : IBAL_Organization
     {
-        private readonly IOrganizationDAL _dal;
+        private readonly IDAL_Organization _dal;
 
-        public OrganizationBAL(IOrganizationDAL dal)
+        public BAL_Organization(IDAL_Organization dal)
         {
             _dal = dal;
         }
@@ -26,18 +26,33 @@ namespace BAL.Services
         // ========================
         public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(
             PaginationRequestDto request,
+            TokenUserInfo user,
             IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<OrganizationModel>>();
+            var response = new APIGetResponseModel<List<OrganizationModel>>()
+            {
+                Result = new List<OrganizationModel>()
+            };
+
             try
             {
+                // 🔐 Permission Check
+                if (user == null || !user.Permissions.Contains("ORG_VIEW"))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Unauthorized access (ORG_VIEW required)");
+                    return response;
+                }
+
                 response = await _dal.GetAll(request, transaction);
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Something went wrong");
+                Console.WriteLine("GET ALL ERROR: " + ex.Message);
             }
+
             return response;
         }
 
@@ -46,18 +61,32 @@ namespace BAL.Services
         // ========================
         public async Task<APIGetResponseModel<OrganizationModel>> GetById(
             long id,
+            TokenUserInfo user,
             IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<OrganizationModel>();
+            var response = new APIGetResponseModel<OrganizationModel>()
+            {
+                Result = new OrganizationModel()
+            };
+
             try
             {
+                if (user == null || !user.Permissions.Contains("ORG_VIEW"))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Unauthorized access (ORG_VIEW required)");
+                    return response;
+                }
+
                 response = await _dal.GetById(id, transaction);
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Something went wrong");
+                Console.WriteLine("GET BY ID ERROR: " + ex.Message);
             }
+
             return response;
         }
 
@@ -66,18 +95,30 @@ namespace BAL.Services
         // ========================
         public async Task<APIGetResponseModel<long>> Create(
             OrganizationRequestDto request,
+            string userId,
+            TokenUserInfo user,
             IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
+
             try
             {
-                response = await _dal.Insert(request, transaction);
+                if (user == null || !user.Permissions.Contains("ORG_CREATE"))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Unauthorized access (ORG_CREATE required)");
+                    return response;
+                }
+
+                response = await _dal.Insert(request, userId, transaction);
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Something went wrong");
+                Console.WriteLine("CREATE ERROR: " + ex.Message);
             }
+
             return response;
         }
 
@@ -86,18 +127,30 @@ namespace BAL.Services
         // ========================
         public async Task<APIGetResponseModel<long>> Update(
             OrganizationRequestDto request,
+            string userId,
+            TokenUserInfo user,
             IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
+
             try
             {
-                response = await _dal.Update(request, transaction);
+                if (user == null || !user.Permissions.Contains("ORG_UPDATE"))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Unauthorized access (ORG_UPDATE required)");
+                    return response;
+                }
+
+                response = await _dal.Update(request, userId, transaction);
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Something went wrong");
+                Console.WriteLine("UPDATE ERROR: " + ex.Message);
             }
+
             return response;
         }
 
@@ -108,21 +161,30 @@ namespace BAL.Services
             long id,
             int status,
             long userId,
+            TokenUserInfo user,
             IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
+
             try
             {
+                if (user == null || !user.Permissions.Contains("ORG_STATUS"))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Unauthorized access (ORG_STATUS required)");
+                    return response;
+                }
+
                 response = await _dal.ChangeStatus(id, status, userId, transaction);
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Something went wrong");
+                Console.WriteLine("STATUS ERROR: " + ex.Message);
             }
+
             return response;
         }
     }
 }
-
-

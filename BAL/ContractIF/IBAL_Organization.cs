@@ -8,33 +8,35 @@ using System.Threading.Tasks;
 
 namespace BAL.ContractIF
 {
-    public interface IOrganizationBAL
+    public interface IBAL_Organization
     {
         Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(
             PaginationRequestDto request,
-            IDbTransaction? transaction = null
-        );
+            TokenUserInfo user,
+            IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<OrganizationModel>> GetById(
             long id,
-            IDbTransaction? transaction = null
-        );
+            TokenUserInfo user,
+            IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<long>> Create(
             OrganizationRequestDto request,
-            IDbTransaction? transaction = null
-        );
+            string userId,
+            TokenUserInfo user,
+            IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<long>> Update(
             OrganizationRequestDto request,
-            IDbTransaction? transaction = null
-        );
+            string userId,
+            TokenUserInfo user,
+            IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<long>> ChangeStatus(
             long id,
             int status,
             long userId,
-            IDbTransaction? transaction = null
-        );
+            TokenUserInfo user,
+            IDbTransaction? transaction = null);
     }
 }

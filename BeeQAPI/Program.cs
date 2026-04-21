@@ -15,10 +15,29 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<DBConnection>();
 
-// Add services to the container.
-builder.Services.AddScoped<IBAL_Auth,BAL_Auth>();
-builder.Services.AddScoped<IDAL_Auth,DAL_Auth>();
+// ========================
+// AUTH
+// ========================
+builder.Services.AddScoped<IBAL_Auth, BAL_Auth>();
+builder.Services.AddScoped<IDAL_Auth, DAL_Auth>();
+
+// ========================
+// ORGANIZATION
+// ========================
+builder.Services.AddScoped<IBAL_Organization, BAL_Organization>();
+builder.Services.AddScoped<IDAL_Organization, DAL_Organization>();
+
+// ========================
+// BRANCH (UPDATED BASED ON YOUR FILES)
+// ========================
+builder.Services.AddScoped<IBAL_Branch, BAL_Branch>();
+builder.Services.AddScoped<IDAL_Branch, DAL_Branch>();
+
+// ========================
+// JWT
+// ========================
 builder.Services.AddScoped<IJwtService, JwtService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

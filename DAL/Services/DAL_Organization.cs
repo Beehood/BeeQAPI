@@ -12,43 +12,33 @@ using System.Threading.Tasks;
 
 namespace DAL.Services
 {
-    public class OrganizationDAL : IOrganizationDAL
+    public class DAL_Organization : IDAL_Organization
     {
         private readonly DBConnection _config;
 
-        public OrganizationDAL(DBConnection config)
+        public DAL_Organization(DBConnection config)
         {
             _config = config;
         }
 
         // ========================
-        // GET ALL
+        // GET ALL (Dynamic - Multi Result)
         // ========================
-        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(PaginationRequestDto request, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(
+            PaginationRequestDto request,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<OrganizationModel>>();
 
             try
             {
-                int pageSize = request.PageSize;
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
                 param.Add("p_Action", "LIST");
-                param.Add("p_OrganizationId", null);
-                param.Add("p_Name", null);
-                param.Add("p_Email", null);
-                param.Add("p_Phone", null);
-                param.Add("p_Address", null);
-                param.Add("p_SubscriptionPlan", null);
-                param.Add("p_Status", null);
                 param.Add("p_SearchKey", request.SearchKey);
-                param.Add("p_PageNo", request.PageNo );
-                param.Add("p_PageSize", pageSize);
-                param.Add("p_UserId", null);
-
-                await conn.OpenAsync();
+                param.Add("p_PageNo", request.PageNo);
+                param.Add("p_PageSize", request.PageSize);
 
                 using var multi = await conn.QueryMultipleAsync(
                     "sp_manage_organization",
@@ -56,26 +46,20 @@ namespace DAL.Services
                     commandType: CommandType.StoredProcedure
                 );
 
-                int totalRecords = await multi.ReadFirstAsync<int>();
-                response.TotalRecords = totalRecords;
+                // 🔹 1st Result → Total Count
+                response.TotalRecords = await multi.ReadFirstAsync<int>();
 
+                // 🔹 2nd Result → Data
                 var list = (await multi.ReadAsync<OrganizationModel>()).ToList();
 
-                if (list.Any())
-                {
-                    response.Result = list;
-                    response.IsSuccess = true;
-                }
-                else
-                {
-                    response.Result = new List<OrganizationModel>();
-                    response.IsSuccess = false;
-                }
+                response.Result = list;
+                response.IsSuccess = list.Any();
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Error while fetching organizations");
+                Console.WriteLine("DAL GET ALL ERROR: " + ex.Message);
             }
 
             return response;
@@ -84,7 +68,9 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<OrganizationModel>> GetById(long id, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<OrganizationModel>> GetById(
+            long id,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<OrganizationModel>();
 
@@ -96,8 +82,6 @@ namespace DAL.Services
                 param.Add("p_Action", "GETBYID");
                 param.Add("p_OrganizationId", id);
 
-                await conn.OpenAsync();
-
                 var data = await conn.QueryFirstOrDefaultAsync<OrganizationModel>(
                     "sp_manage_organization",
                     param,
@@ -107,20 +91,21 @@ namespace DAL.Services
                 if (data != null)
                 {
                     response.Result = data;
-                    response.IsSuccess = true;
                     response.TotalRecords = 1;
+                    response.IsSuccess = true;
                 }
                 else
                 {
                     response.Result = null;
-                    response.IsSuccess = false;
                     response.TotalRecords = 0;
+                    response.IsSuccess = false;
                 }
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Error while fetching organization");
+                Console.WriteLine("DAL GET BY ID ERROR: " + ex.Message);
             }
 
             return response;
@@ -129,7 +114,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        public async Task<APIGetResponseModel<long>> Insert(OrganizationRequestDto request, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<long>> Insert(
+            OrganizationRequestDto request,
+            string userId,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
@@ -146,9 +134,7 @@ namespace DAL.Services
                 param.Add("p_Address", request.Address);
                 param.Add("p_SubscriptionPlan", request.SubscriptionPlan);
                 param.Add("p_Status", 1);
-                param.Add("p_UserId", request.UserId);
-
-                await conn.OpenAsync();
+                param.Add("p_UserId", userId);
 
                 var id = await conn.ExecuteScalarAsync<long>(
                     "sp_manage_organization",
@@ -156,24 +142,15 @@ namespace DAL.Services
                     commandType: CommandType.StoredProcedure
                 );
 
-                if (id > 0)
-                {
-                    response.Result = id;
-                    response.IsSuccess = true;
-                    response.TotalRecords = 1;
-                }
-                else
-                {
-                    response.Result = 0;
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-                    response.ErrorMsgs.Add("Insert failed");
-                }
+                response.Result = id;
+                response.IsSuccess = id > 0;
+                response.TotalRecords = id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Error while inserting organization");
+                Console.WriteLine("DAL INSERT ERROR: " + ex.Message);
             }
 
             return response;
@@ -182,7 +159,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<long>> Update(OrganizationRequestDto request, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<long>> Update(
+            OrganizationRequestDto request,
+            string userId,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
@@ -199,9 +179,7 @@ namespace DAL.Services
                 param.Add("p_Address", request.Address);
                 param.Add("p_SubscriptionPlan", request.SubscriptionPlan);
                 param.Add("p_Status", request.Status);
-                param.Add("p_UserId", request.UserId);
-
-                await conn.OpenAsync();
+                param.Add("p_UserId", userId);
 
                 var id = await conn.ExecuteScalarAsync<long>(
                     "sp_manage_organization",
@@ -209,24 +187,15 @@ namespace DAL.Services
                     commandType: CommandType.StoredProcedure
                 );
 
-                if (id > 0)
-                {
-                    response.Result = id;
-                    response.IsSuccess = true;
-                    response.TotalRecords = 1;
-                }
-                else
-                {
-                    response.Result = 0;
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-                    response.ErrorMsgs.Add("Update failed");
-                }
+                response.Result = id;
+                response.IsSuccess = id > 0;
+                response.TotalRecords = id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Error while updating organization");
+                Console.WriteLine("DAL UPDATE ERROR: " + ex.Message);
             }
 
             return response;
@@ -235,7 +204,11 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<long>> ChangeStatus(
+            long id,
+            int status,
+            long userId,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
@@ -249,32 +222,21 @@ namespace DAL.Services
                 param.Add("p_Status", status);
                 param.Add("p_UserId", userId);
 
-                await conn.OpenAsync();
-
                 var result = await conn.ExecuteScalarAsync<long>(
                     "sp_manage_organization",
                     param,
                     commandType: CommandType.StoredProcedure
                 );
 
-                if (result > 0)
-                {
-                    response.Result = result;
-                    response.IsSuccess = true;
-                    response.TotalRecords = 1;
-                }
-                else
-                {
-                    response.Result = 0;
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-                    response.ErrorMsgs.Add("Status change failed");
-                }
+                response.Result = result;
+                response.IsSuccess = result > 0;
+                response.TotalRecords = result > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Error while changing status");
+                Console.WriteLine("DAL STATUS ERROR: " + ex.Message);
             }
 
             return response;
