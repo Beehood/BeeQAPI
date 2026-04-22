@@ -1,17 +1,36 @@
-using BAL.ContractIF;
+﻿using BAL.ContractIF;
+using BAL.ContractIF.BAL.ContractIF;
+using BAL.Implementation;
 using BAL.Services;
 using BeeQAPI.Authorization;
+using BeeQAPI.Middleware;
 using DAL.ContractIF;
+using DAL.ContractIF.DAL.ContractIF;
 using DAL.Dbcontext;
+using DAL.Implementation;
 using DAL.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySql.Data.MySqlClient;
+using System.Data;
 using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ===================== DB CONNECTION =====================
+
+// 🔹 Dapper (Service Module)
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+    return new MySqlConnection(connectionString);
+});
+
 
 builder.Services.AddScoped<DBConnection>();
 
@@ -32,6 +51,11 @@ builder.Services.AddScoped<IDAL_Organization, DAL_Organization>();
 // ========================
 builder.Services.AddScoped<IBAL_Branch, BAL_Branch>();
 builder.Services.AddScoped<IDAL_Branch, DAL_Branch>();
+
+
+// 🔹 Service Module
+builder.Services.AddScoped<IBAL_Service, BAL_Service>();
+builder.Services.AddScoped<IDAL_Service, DAL_Service>();
 
 // ========================
 // JWT
@@ -127,6 +151,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("corspolicy");
+app.UseMiddleware<GlobalExceptionMiddleware>();  //For Global Exception Handling 
+
 
 app.UseAuthentication();
 app.UseAuthorization();
