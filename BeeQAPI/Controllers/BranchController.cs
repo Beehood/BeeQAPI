@@ -8,9 +8,9 @@ using System.Security.Claims;
 namespace BeeQAPI.Controllers
 {
 
-    [Route("api/v1/branch")]
+    [Route("Branch")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class BranchController : ControllerBase
     {
         private readonly IBAL_Branch _bal;
@@ -21,20 +21,33 @@ namespace BeeQAPI.Controllers
         }
 
         // 🔥 Get user from middleware
+        //private TokenUserInfo GetUser()
+        //{
+        //    return HttpContext.Items["User"] as TokenUserInfo;
+        //}
+        //for temporaly testing without auth//
         private TokenUserInfo GetUser()
         {
-            return HttpContext.Items["User"] as TokenUserInfo;
+            return new TokenUserInfo
+            {
+                Username = "1",
+                Permissions = new List<string>
+        {
+            "BRANCH_VIEW",
+            "BRANCH_CREATE",
+            "BRANCH_UPDATE",
+            "BRANCH_STATUS"
         }
-
+            };
+        }
         // ========================
         // GET ALL
         // ========================
-        [HttpPost("GetAll")]
+        [HttpPost("BranchList")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<BranchModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
-
             var result = await _bal.GetAll(request, user);
             return Ok(result);
         }
@@ -42,7 +55,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET BY ID
         // ========================
-        [HttpPost("GetById")]
+        [HttpPost("BranchById")]
         [ProducesResponseType(typeof(APIGetResponseModel<BranchModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
@@ -55,7 +68,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // CREATE
         // ========================
-        [HttpPost("Create")]
+        [HttpPost("NewBranch")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Create([FromBody] BranchRequestDto request)
         {
@@ -68,7 +81,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // UPDATE
         // ========================
-        [HttpPost("Update")]
+        [HttpPost("EditBranch")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Update([FromBody] BranchRequestDto request)
         {
@@ -81,7 +94,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // CHANGE STATUS
         // ========================
-        [HttpPost("ChangeStatus")]
+        [HttpPost("BranchStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ChangeStatus([FromBody] BranchRequestDto request)
         {
@@ -90,7 +103,7 @@ namespace BeeQAPI.Controllers
             long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
             var result = await _bal.ChangeStatus(
-                request.BranchId ?? 0,
+                request.BranchId,
                 request.Status ?? 0,
                 uid,
                 user

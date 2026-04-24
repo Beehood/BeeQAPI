@@ -1,20 +1,18 @@
 ﻿using BAL.ContractIF;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using System.Net;
-using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("organizations")]
+    [Route("Counter")]
     [ApiController]
     //[Authorize]
-    public class OrganizationController : ControllerBase
+    public class CounterController : ControllerBase
     {
-        private readonly IBAL_Organization _bal;
+        private readonly IBAL_Counter _bal;
 
-        public OrganizationController(IBAL_Organization bal)
+        public CounterController(IBAL_Counter bal)
         {
             _bal = bal;
         }
@@ -24,6 +22,7 @@ namespace BeeQAPI.Controllers
         //{
         //    return HttpContext.Items["User"] as TokenUserInfo;
         //}
+
         //for temporaly testing without auth//
         private TokenUserInfo GetUser()
         {
@@ -31,20 +30,20 @@ namespace BeeQAPI.Controllers
             {
                 Username = "1",
                 Permissions = new List<string>
-        {
-            "ORG_VIEW",
-            "ORG_CREATE",
-            "ORG_UPDATE",
-            "ORG_STATUS"
-        }
+                {
+                    "COUNTER_VIEW",
+                    "COUNTER_CREATE",
+                    "COUNTER_UPDATE",
+                    "COUNTER_STATUS"
+                }
             };
-        
         }
 
         // ========================
         // GET ALL
         // ========================
-        [HttpPost("OrganizationList")]
+        [HttpPost("CounterList")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<CounterModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
@@ -56,7 +55,8 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET BY ID
         // ========================
-        [HttpPost("OrganizationById")]
+        [HttpPost("CounterById")]
+        [ProducesResponseType(typeof(APIGetResponseModel<CounterModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
             var user = GetUser();
@@ -68,8 +68,9 @@ namespace BeeQAPI.Controllers
         // ========================
         // CREATE
         // ========================
-        [HttpPost("NewOrganization")]
-        public async Task<IActionResult> Create([FromBody] OrganizationRequestDto request)
+        [HttpPost("NewCounter")]
+        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Create([FromBody] CounterRequestDto request)
         {
             var user = GetUser();
 
@@ -80,8 +81,9 @@ namespace BeeQAPI.Controllers
         // ========================
         // UPDATE
         // ========================
-        [HttpPost("EditOrganization")]
-        public async Task<IActionResult> Update([FromBody] OrganizationRequestDto request)
+        [HttpPost("EditCounter")]
+        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Update([FromBody] CounterRequestDto request)
         {
             var user = GetUser();
 
@@ -92,15 +94,16 @@ namespace BeeQAPI.Controllers
         // ========================
         // CHANGE STATUS
         // ========================
-        [HttpPost("OrganizationStatus")]
-        public async Task<IActionResult> ChangeStatus([FromBody] OrganizationRequestDto request)
+        [HttpPost("CounterStatus")]
+        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ChangeStatus([FromBody] CounterRequestDto request)
         {
             var user = GetUser();
 
             long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
             var result = await _bal.ChangeStatus(
-                request.OrganizationId ,
+                request.CounterId,
                 request.Status,
                 uid,
                 user
