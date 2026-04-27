@@ -3,7 +3,6 @@ using BAL.ContractIF.BAL.ContractIF;
 using BAL.Implementation;
 using BAL.Services;
 using BeeQAPI.Authorization;
-using BeeQAPI.Middleware;
 using DAL.ContractIF;
 using DAL.ContractIF.DAL.ContractIF;
 using DAL.Dbcontext;
@@ -17,8 +16,10 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using System.Security.Claims;
 using System.Text;
+using BeeQAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // ===================== DB CONNECTION =====================
 
@@ -31,8 +32,38 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     return new MySqlConnection(connectionString);
 });
 
-
+// 🔹 Existing DBConnection (Auth Module)
 builder.Services.AddScoped<DBConnection>();
+
+
+
+// ===================== SERVICES =====================
+
+// 🔹 Auth Module
+builder.Services.AddScoped<IBAL_Auth, BAL_Auth>();
+builder.Services.AddScoped<IDAL_Auth, DAL_Auth>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+// 🔹 Service Module
+builder.Services.AddScoped<IBAL_Service, BAL_Service>();
+builder.Services.AddScoped<IDAL_Service, DAL_Service>();
+
+
+// 🔥 REGISTER SERVICES
+builder.Services.AddScoped<IBAL_Menu, BAL_Menu>();
+builder.Services.AddScoped<IDAL_Menu, DAL_Menu>();
+
+// 🔹 Organization Module
+
+builder.Services.AddScoped<IBAL_Organization, BAL_Organization>();
+builder.Services.AddScoped<IDAL_Organization, DAL_Organization>();
+
+builder.Services.AddScoped<IBAL_BranchService, BAL_BranchService>();
+builder.Services.AddScoped<IDAL_BranchService, DAL_BranchService>();
+
+
+
+
 
 // ========================
 // AUTH
@@ -52,11 +83,6 @@ builder.Services.AddScoped<IDAL_Organization, DAL_Organization>();
 builder.Services.AddScoped<IBAL_Branch, BAL_Branch>();
 builder.Services.AddScoped<IDAL_Branch, DAL_Branch>();
 
-
-// 🔹 Service Module
-builder.Services.AddScoped<IBAL_Service, BAL_Service>();
-builder.Services.AddScoped<IDAL_Service, DAL_Service>();
-
 // ========================
 // JWT
 // ========================
@@ -64,7 +90,9 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+// ===================== SWAGGER =====================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -76,14 +104,11 @@ builder.Services.AddSwaggerGen(opt =>
 
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"JWT Authorization header using the Bearer scheme. 
-                        Enter 'Bearer' [space] and then your token in the text input below.
-                        Example: Bearer eyJhbGciOiJIUzI1...",
+        Description = "Enter 'Bearer {token}'",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT"
+        Scheme = "Bearer"
     });
 
     opt.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -95,29 +120,30 @@ builder.Services.AddSwaggerGen(opt =>
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                },
-                Scheme = "Bearer",
-                Name = "Bearer",
-                In = ParameterLocation.Header
+                }
             },
             Array.Empty<string>()
         }
     });
 });
 
+
+// ===================== JWT AUTH =====================
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false; // Optional: good for development
+        options.RequireHttpsMetadata = false;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+
             ValidIssuer = jwtSettings["Issuer"],
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -127,23 +153,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
+// ===================== AUTHORIZATION =====================
 builder.Services.AddAuthorization();
 
-// Custom policy provider for permission-based authorization
-builder.Services.AddSingleton<IAuthorizationPolicyProvider,
-    PermissionPolicyProvider>();
 
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>(); //Custom RBAC Policy Provider
+
+
+// ===================== CORS =====================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("corspolicy", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
+
+// ===================== BUILD APP =====================
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// ===================== MIDDLEWARE =====================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -152,7 +186,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("corspolicy");
 app.UseMiddleware<GlobalExceptionMiddleware>();  //For Global Exception Handling 
-
 
 app.UseAuthentication();
 app.UseAuthorization();

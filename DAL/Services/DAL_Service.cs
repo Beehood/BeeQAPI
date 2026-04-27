@@ -60,7 +60,7 @@ namespace DAL.Implementation
                 var param = ServiceParamHelper.GetBaseParams();
 
                 param.Add("p_Action", "GETBYID");
-                param.Add("p_service_id",obj.Id);
+                param.Add("p_service_id", obj.Id);
 
                 var data = await _db.QueryFirstOrDefaultAsync<ServiceModel>(
                     "sp_services",

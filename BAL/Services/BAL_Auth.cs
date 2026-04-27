@@ -12,16 +12,13 @@ namespace BAL.Services
         private readonly IDAL_Auth _dal;
         private readonly IJwtService _tokenService;
 
-    public BAL_Auth(IDAL_Auth dal, IJwtService tokenService)
+        public BAL_Auth(IDAL_Auth dal, IJwtService tokenService)
         {
             _dal = dal;
             _tokenService = tokenService;
         }
 
-        public async Task<APIGetResponseModel<ModelLoginResponse>> Login(
-   LoginRequestDto dto,
-   string salt,
-   IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<ModelLoginResponse>> Login(LoginRequestDto dto,string salt,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<ModelLoginResponse>
             {
@@ -29,9 +26,9 @@ namespace BAL.Services
             };
 
 
-try
+            try
             {
-                Console.WriteLine("TEST HASH: " + GetHashString("Admin"));
+
                 // 🔹 Step 1: Validate input
                 if (dto == null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
                 {
@@ -51,21 +48,23 @@ try
                     return response;
                 }
 
-                // 🔥 DEBUG (IMPORTANT — REMOVE LATER)
-                Console.WriteLine("====== LOGIN DEBUG ======");
-                Console.WriteLine("DB PASSWORD (SHA512): " + user.Password);
-                Console.WriteLine("SALT: " + salt);
-                Console.WriteLine("DTO PASSWORD (FINAL HASH): " + dto.Password);
-
-                // 🔥 Step 3: Validate password (CATERING STYLE)
-
                 // DB contains: SHA512(password)
                 string saltedInput = salt + (user.Password ?? "").Trim();
 
                 string inputHash = GetHashString(saltedInput);
+                Console.WriteLine("----- DEBUG LOGIN -----");
+                Console.WriteLine("Salt: " + salt);
+                Console.WriteLine("DB Password: " + user.Password);
+                Console.WriteLine("DTO Password (Frontend): " + dto.Password);
 
-                Console.WriteLine("BACKEND GENERATED HASH: " + inputHash);
-                Console.WriteLine("=========================");
+                string saltedInputDebug = salt + (user.Password ?? "").Trim();
+                string backendHash = GetHashString(saltedInputDebug);
+
+                Console.WriteLine("Backend Hash: " + backendHash);
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("EMAIL RECEIVED: " + dto.Email);
+                Console.WriteLine("USER FOUND: " + (user != null));
+                Console.WriteLine("IsSuccess: " + userResponse.IsSuccess);
 
                 // 🔥 SAFE COMPARISON
                 if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
@@ -78,6 +77,7 @@ try
                 // 🔥 Step 4: Generate JWT (RBAC)
                 var tokenUser = new TokenUserInfo
                 {
+                    UserId = user.UserId,
                     Username = user.UserName,
                     Name = user.Name,
                     Roles = user.Roles,
@@ -101,7 +101,7 @@ try
             return response;
 
 
-}
+        }
 
 
         public async Task<APIGetResponseModel<UserProfileDetails>> loginprofile(string UserId, IDbTransaction? transaction = null)

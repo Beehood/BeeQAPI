@@ -32,7 +32,7 @@ namespace BeeQAPI.Middleware
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.OK; // 👈 keep same pattern
+            context.Response.StatusCode = (int)HttpStatusCode.OK; 
 
             var response = new APIGetResponseModel<object>
             {

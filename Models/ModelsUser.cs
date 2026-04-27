@@ -29,6 +29,7 @@ namespace Models
 
     public class TokenUserInfo
     {
+        public long UserId { get; set; }
         public string? Username { get; set; }   // email login identity
         public string? Name { get; set; }
 
