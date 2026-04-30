@@ -10,12 +10,11 @@ using System.Threading.Tasks;
 
 namespace BAL.Services
 {
-
-    public class BAL_Branch : IBAL_Branch
+    public class BAL_Counter : IBAL_Counter
     {
-        private readonly IDAL_Branch _dal;
+        private readonly IDAL_Counter _dal;
 
-        public BAL_Branch(IDAL_Branch dal)
+        public BAL_Counter(IDAL_Counter dal)
         {
             _dal = dal;
         }
@@ -24,30 +23,30 @@ namespace BAL.Services
         // GET ALL
         // ========================
         /// <summary>
-        /// Retrieves a paginated list of branches based on the provided pagination request.
+        /// Retrieves a paginated list of counters based on the provided pagination request.
         /// </summary>
         /// <param name="request">Pagination details (PageNumber, PageSize)</param>
         /// <param name="user">Authenticated user with permissions</param>
         /// <param name="transaction">Optional database transaction</param>
-        /// <returns>List of BranchModel wrapped in API response</returns>
-        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,TokenUserInfo user,IDbTransaction? transaction = null)
+        /// <returns>List of CounterModel wrapped in API response</returns>
+        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<BranchModel>>()
+            var response = new APIGetResponseModel<List<CounterModel>>()
             {
-                Result = new List<BranchModel>()
+                Result = new List<CounterModel>()
             };
 
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_VIEW"))
+                if (user == null || !user.Permissions.Contains("COUNTER_VIEW"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_VIEW)");
+                    response.ErrorMsgs.Add("Unauthorized (COUNTER_VIEW)");
                     return response;
                 }
 
-                // ✅ VALIDATION (Transaction style)
+                // ✅ VALIDATION
                 if (request != null && request.PageNo > 0 && request.PageSize > 0)
                 {
                     response = await _dal.GetAll(request, transaction);
@@ -80,21 +79,22 @@ namespace BAL.Services
         // GET BY ID
         // ========================
         /// <summary>
-        /// Branch API - Get Branch By Id
+        /// Counter API - Get Counter By Id
         /// Author: Swapnlisa
-        /// Description:- We use this API to fetch branch details using BranchId.
-        /// Json Request Format Ex- {"BranchId":"1"}
-        public async Task<APIGetResponseModel<BranchModel>> GetById(long id,TokenUserInfo user,IDbTransaction? transaction = null)
+        /// Description:- We use this API to fetch counter details using CounterId.
+        /// Json Request Format Ex- {"CounterId":"1"}
+        /// </summary>
+        public async Task<APIGetResponseModel<CounterModel>> GetById(long id, TokenUserInfo user, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<BranchModel>();
+            var response = new APIGetResponseModel<CounterModel>();
 
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_VIEW"))
+                if (user == null || !user.Permissions.Contains("COUNTER_VIEW"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_VIEW)");
+                    response.ErrorMsgs.Add("Unauthorized (COUNTER_VIEW)");
                     return response;
                 }
 
@@ -109,7 +109,7 @@ namespace BAL.Services
                     response.Result = null;
 
                     if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchId");
+                        response.ErrorMsgs.Add("Invalid CounterId");
                 }
             }
             catch (Exception ex)
@@ -125,32 +125,28 @@ namespace BAL.Services
         // CREATE
         // ========================
         /// <summary>
-        /// Branch API - Create Branch
+        /// Counter API - Create Counter
         /// Author: Swapnlisa
-        /// Description:- We use this API to create a new branch.
-        /// Json Request Format Ex- {"OrganizationId":"1","BranchName":"Main Branch","Address":"BBSR","City":"Bhubaneswar"}
-        /// <param name="request">BranchRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns newly created BranchId</returns>
-        public async Task<APIGetResponseModel<long>> Create(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        /// Description:- We use this API to create a new counter.
+        /// Json Request Format Ex- {"BranchId":"1","CounterName":"Counter 1","CounterCode":"C001"}
+        /// </summary>
+        public async Task<APIGetResponseModel<long>> Create(CounterRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_CREATE"))
+                if (user == null || !user.Permissions.Contains("COUNTER_CREATE"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_CREATE)");
+                    response.ErrorMsgs.Add("Unauthorized (COUNTER_CREATE)");
                     return response;
                 }
 
-                // ✅ VALIDATION (Transaction style)
-                if (request.OrganizationId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.BranchName) &&
+                // ✅ VALIDATION
+                if (request.BranchId > 0 &&
+                    !string.IsNullOrWhiteSpace(request.CounterName) &&
                     userId != null)
                 {
                     response = await _dal.Insert(request, userId, transaction);
@@ -161,11 +157,11 @@ namespace BAL.Services
                     response.Result = 0;
                     response.TotalRecords = 0;
 
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Select Organization");
+                    if (request.BranchId <= 0)
+                        response.ErrorMsgs.Add("Select Branch");
 
-                    if (string.IsNullOrWhiteSpace(request.BranchName))
-                        response.ErrorMsgs.Add("Enter Branch Name");
+                    if (string.IsNullOrWhiteSpace(request.CounterName))
+                        response.ErrorMsgs.Add("Enter Counter Name");
 
                     if (userId == null)
                         response.ErrorMsgs.Add("User not authorized");
@@ -179,32 +175,34 @@ namespace BAL.Services
 
             return response;
         }
+
         // ========================
         // UPDATE
         // ========================
         /// <summary>
-        /// Branch API - Update Branch
+        /// Counter API - Update Counter
         /// Author: Swapnlisa
-        /// Description:- We use this API to update existing branch details.
-        /// Json Request Format Ex- {"BranchId":"1","OrganizationId":"1","BranchName":"
-        public async Task<APIGetResponseModel<long>> Update(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        /// Description:- We use this API to update existing counter details.
+        /// Json Request Format Ex- {"CounterId":"1","BranchId":"1","CounterName":"Updated Counter"}
+        /// </summary>
+        public async Task<APIGetResponseModel<long>> Update(CounterRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_UPDATE"))
+                if (user == null || !user.Permissions.Contains("COUNTER_UPDATE"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_UPDATE)");
+                    response.ErrorMsgs.Add("Unauthorized (COUNTER_UPDATE)");
                     return response;
                 }
 
                 // ✅ VALIDATION
-                if (request.BranchId > 0 &&
-                    request.OrganizationId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.BranchName) &&
+                if (request.CounterId > 0 &&
+                    request.BranchId > 0 &&
+                    !string.IsNullOrWhiteSpace(request.CounterName) &&
                     userId != null)
                 {
                     response = await _dal.Update(request, userId, transaction);
@@ -215,14 +213,14 @@ namespace BAL.Services
                     response.Result = 0;
                     response.TotalRecords = 0;
 
+                    if (request.CounterId <= 0)
+                        response.ErrorMsgs.Add("Invalid CounterId");
+
                     if (request.BranchId <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchId");
+                        response.ErrorMsgs.Add("Select Branch");
 
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Select Organization");
-
-                    if (string.IsNullOrWhiteSpace(request.BranchName))
-                        response.ErrorMsgs.Add("Enter Branch Name");
+                    if (string.IsNullOrWhiteSpace(request.CounterName))
+                        response.ErrorMsgs.Add("Enter Counter Name");
 
                     if (userId == null)
                         response.ErrorMsgs.Add("User not authorized");
@@ -241,26 +239,21 @@ namespace BAL.Services
         // CHANGE STATUS
         // ========================
         /// <summary>
-        /// Branch API - Change Branch Status
+        /// Counter API - Change Counter Status
         /// Author: Swapnlisa
-        /// Description:- We use this API to activate or deactivate a branch
-        /// <param name="id">BranchId</param>
-        /// <param name="status">0 = Inactive, 1 = Active</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        /// Description:- We use this API to activate or deactivate a counter
+        /// </summary>
+        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_STATUS"))
+                if (user == null || !user.Permissions.Contains("COUNTER_STATUS"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_STATUS)");
+                    response.ErrorMsgs.Add("Unauthorized (COUNTER_STATUS)");
                     return response;
                 }
 
@@ -276,7 +269,7 @@ namespace BAL.Services
                     response.TotalRecords = 0;
 
                     if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchId");
+                        response.ErrorMsgs.Add("Invalid CounterId");
 
                     if (status != 0 && status != 1)
                         response.ErrorMsgs.Add("Invalid Status");

@@ -7,9 +7,9 @@ using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("api/v1/organizations")]
+    [Route("organizations")]
     [ApiController]
-    [Authorize]
+   
     public class OrganizationController : ControllerBase
     {
         private readonly IBAL_Organization _bal;
@@ -20,15 +20,45 @@ namespace BeeQAPI.Controllers
         }
 
         // 🔥 Get user from middleware
+        //private TokenUserInfo GetUser()
+        //{
+        //    return HttpContext.Items["User"] as TokenUserInfo;
+        //}
+
         private TokenUserInfo GetUser()
         {
-            return HttpContext.Items["User"] as TokenUserInfo;
+            return new TokenUserInfo
+            {
+                Username = "1",
+                Permissions = new List<string>
+        {                                                      //for temporaly testing without auth
+            "ORG_VIEW",
+            "ORG_CREATE",
+            "ORG_UPDATE",
+            "ORG_STATUS"
         }
+            };
+
+        }
+        //private TokenUserInfo GetUser()
+        //{
+        //    var user = new TokenUserInfo();
+
+        //    user.Username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        //    user.Permissions = User.Claims
+        //        .Where(c => c.Type == "permission")
+        //        .Select(c => c.Value)
+        //        .ToList();
+
+        //    return user;
+        //}
 
         // ========================
         // GET ALL
         // ========================
-        [HttpPost("GetAll")]
+        //[Authorize(Policy = "ORG_VIEW")]
+        [HttpPost("OrganizationList")]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
@@ -40,7 +70,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET BY ID
         // ========================
-        [HttpPost("GetById")]
+        [HttpPost("OrganizationById")]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
             var user = GetUser();
@@ -52,7 +82,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // CREATE
         // ========================
-        [HttpPost("Create")]
+        [HttpPost("NewOrganization")]
         public async Task<IActionResult> Create([FromBody] OrganizationRequestDto request)
         {
             var user = GetUser();
@@ -64,7 +94,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // UPDATE
         // ========================
-        [HttpPost("Update")]
+        [HttpPost("EditOrganization")]
         public async Task<IActionResult> Update([FromBody] OrganizationRequestDto request)
         {
             var user = GetUser();
@@ -76,7 +106,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // CHANGE STATUS
         // ========================
-        [HttpPost("ChangeStatus")]
+        [HttpPost("OrganizationStatus")]
         public async Task<IActionResult> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
             var user = GetUser();
@@ -84,8 +114,8 @@ namespace BeeQAPI.Controllers
             long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
             var result = await _bal.ChangeStatus(
-                request.OrganizationId ?? 0,
-                request.Status ?? 0,
+                request.OrganizationId ,
+                request.Status,
                 uid,
                 user
             );

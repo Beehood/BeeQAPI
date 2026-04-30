@@ -83,6 +83,21 @@ builder.Services.AddScoped<IDAL_Organization, DAL_Organization>();
 builder.Services.AddScoped<IBAL_Branch, BAL_Branch>();
 builder.Services.AddScoped<IDAL_Branch, DAL_Branch>();
 
+
+
+builder.Services.AddScoped<IBAL_User, BAL_User>();
+builder.Services.AddScoped<IDAL_User, DAL_User>();
+
+
+// COUNTER 
+// ========================
+builder.Services.AddScoped<IDAL_Counter, DAL_Counter>();
+builder.Services.AddScoped<IBAL_Counter, BAL_Counter>();
+
+// 🔹 Service Module
+builder.Services.AddScoped<IBAL_Service, BAL_Service>();
+builder.Services.AddScoped<IDAL_Service, DAL_Service>();
+
 // ========================
 // JWT
 // ========================

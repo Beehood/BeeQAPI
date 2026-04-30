@@ -1,21 +1,18 @@
 ﻿using BAL.ContractIF;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using System.Net;
-using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-
-    [Route("Branch")]
+    [Route("Counter")]
     [ApiController]
     //[Authorize]
-    public class BranchController : ControllerBase
+    public class CounterController : ControllerBase
     {
-        private readonly IBAL_Branch _bal;
+        private readonly IBAL_Counter _bal;
 
-        public BranchController(IBAL_Branch bal)
+        public CounterController(IBAL_Counter bal)
         {
             _bal = bal;
         }
@@ -25,6 +22,7 @@ namespace BeeQAPI.Controllers
         //{
         //    return HttpContext.Items["User"] as TokenUserInfo;
         //}
+
         //for temporaly testing without auth//
         private TokenUserInfo GetUser()
         {
@@ -32,22 +30,24 @@ namespace BeeQAPI.Controllers
             {
                 Username = "1",
                 Permissions = new List<string>
-        {
-            "BRANCH_VIEW",
-            "BRANCH_CREATE",
-            "BRANCH_UPDATE",
-            "BRANCH_STATUS"
-        }
+                {
+                    "COUNTER_VIEW",
+                    "COUNTER_CREATE",
+                    "COUNTER_UPDATE",
+                    "COUNTER_STATUS"
+                }
             };
         }
+
         // ========================
         // GET ALL
         // ========================
-        [HttpPost("BranchList")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<BranchModel>>), (int)HttpStatusCode.OK)]
+        [HttpPost("CounterList")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<CounterModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
+
             var result = await _bal.GetAll(request, user);
             return Ok(result);
         }
@@ -55,8 +55,8 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET BY ID
         // ========================
-        [HttpPost("BranchById")]
-        [ProducesResponseType(typeof(APIGetResponseModel<BranchModel>), (int)HttpStatusCode.OK)]
+        [HttpPost("CounterById")]
+        [ProducesResponseType(typeof(APIGetResponseModel<CounterModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
             var user = GetUser();
@@ -68,9 +68,9 @@ namespace BeeQAPI.Controllers
         // ========================
         // CREATE
         // ========================
-        [HttpPost("NewBranch")]
+        [HttpPost("NewCounter")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Create([FromBody] BranchRequestDto request)
+        public async Task<IActionResult> Create([FromBody] CounterRequestDto request)
         {
             var user = GetUser();
 
@@ -81,9 +81,9 @@ namespace BeeQAPI.Controllers
         // ========================
         // UPDATE
         // ========================
-        [HttpPost("EditBranch")]
+        [HttpPost("EditCounter")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update([FromBody] BranchRequestDto request)
+        public async Task<IActionResult> Update([FromBody] CounterRequestDto request)
         {
             var user = GetUser();
 
@@ -94,17 +94,17 @@ namespace BeeQAPI.Controllers
         // ========================
         // CHANGE STATUS
         // ========================
-        [HttpPost("BranchStatus")]
+        [HttpPost("CounterStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ChangeStatus([FromBody] BranchRequestDto request)
+        public async Task<IActionResult> ChangeStatus([FromBody] CounterRequestDto request)
         {
             var user = GetUser();
 
             long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
             var result = await _bal.ChangeStatus(
-                request.BranchId,
-                request.Status ?? 0,
+                request.CounterId,
+                request.Status,
                 uid,
                 user
             );

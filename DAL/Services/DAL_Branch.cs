@@ -23,10 +23,15 @@ namespace DAL.Services
 
         // ========================
         // GET ALL (Dynamic - Multi Result)
+        /// <summary>
+        /// Branch DAL - Get All Branches
+        /// Author: Swapnlisa
+        /// Description:- Fetches paginated branch list using stored procedure (multi-result).
+        /// <param name="request">PaginationRequestDto</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Returns list of BranchModel with total count</returns>
         // ========================
-        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(
-            PaginationRequestDto request,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<BranchModel>>();
 
@@ -35,16 +40,27 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "LIST");
+
+                // Required because stored procedure expects all parameters
+                param.Add("p_BranchId", null);
+                param.Add("p_OrganizationId", null);
+                param.Add("p_BranchName", null);
+                param.Add("p_Address", null);
+                param.Add("p_City", null);
+                param.Add("p_State", null);
+                param.Add("p_Country", null);
+                param.Add("p_Timezone", null);
+                param.Add("p_Status", null);
+
+                // Actual pagination values
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
                 param.Add("p_PageSize", request.PageSize);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                param.Add("p_UserId", null);
+                using var multi = await conn.QueryMultipleAsync("sp_manage_branch",param,commandType: CommandType.StoredProcedure);
 
                 // 🔹 1st Result → Total Count
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
@@ -68,9 +84,14 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<BranchModel>> GetById(
-            long id,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Branch DAL - Get Branch By Id
+        /// Author: Swapnlisa
+        /// Description:- Fetches single branch using BranchId.
+        /// <param name="id">BranchId</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Returns BranchModel</returns>
+        public async Task<APIGetResponseModel<BranchModel>> GetById(long id,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<BranchModel>();
 
@@ -79,14 +100,25 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-                param.Add("p_Action", "GETBYID");
-                param.Add("p_BranchId", id);
 
-                var data = await conn.QueryFirstOrDefaultAsync<BranchModel>(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                param.Add("p_Action", "GETBYID");
+
+                param.Add("p_BranchId", id);
+                param.Add("p_OrganizationId", null);
+                param.Add("p_BranchName", null);
+                param.Add("p_Address", null);
+                param.Add("p_City", null);
+                param.Add("p_State", null);
+                param.Add("p_Country", null);
+                param.Add("p_Timezone", null);
+                param.Add("p_Status", null);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
+
+                param.Add("p_UserId", null);
+                var data = await conn.QueryFirstOrDefaultAsync<BranchModel>("sp_manage_branch",param,commandType: CommandType.StoredProcedure);
 
                 if (data != null)
                 {
@@ -114,10 +146,15 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        public async Task<APIGetResponseModel<long>> Insert(
-            BranchRequestDto request,
-            string userId,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Branch DAL - Insert Branch
+        /// Author: Swapnlisa
+        /// Description:- Inserts new branch record using stored procedure.
+        /// <param name="request">BranchRequestDto</param>
+        /// <param name="userId">Logged in UserId</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Returns newly created BranchId</returns>
+        public async Task<APIGetResponseModel<long>> Insert(BranchRequestDto request,string userId,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
@@ -126,7 +163,10 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "INSERT");
+
+                param.Add("p_BranchId", null);
                 param.Add("p_OrganizationId", request.OrganizationId);
                 param.Add("p_BranchName", request.BranchName);
                 param.Add("p_Address", request.Address);
@@ -135,13 +175,14 @@ namespace DAL.Services
                 param.Add("p_Country", request.Country);
                 param.Add("p_Timezone", request.Timezone);
                 param.Add("p_Status", 1);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
+
                 param.Add("p_UserId", userId);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_branch",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = id;
                 response.IsSuccess = id > 0;
@@ -160,10 +201,15 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<long>> Update(
-            BranchRequestDto request,
-            string userId,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Branch DAL - Update Branch
+        /// Author: Swapnlisa
+        /// Description:- Updates existing branch details.
+        /// <param name="request">BranchRequestDto</param>
+        /// <param name="userId">Logged in UserId</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Returns updated BranchId</returns>
+        public async Task<APIGetResponseModel<long>> Update(BranchRequestDto request,string userId,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
@@ -172,7 +218,9 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "UPDATE");
+
                 param.Add("p_BranchId", request.BranchId);
                 param.Add("p_OrganizationId", request.OrganizationId);
                 param.Add("p_BranchName", request.BranchName);
@@ -182,14 +230,14 @@ namespace DAL.Services
                 param.Add("p_Country", request.Country);
                 param.Add("p_Timezone", request.Timezone);
                 param.Add("p_Status", request.Status);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
+
                 param.Add("p_UserId", userId);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
-
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_branch",param,commandType: CommandType.StoredProcedure);
                 response.Result = id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
@@ -207,11 +255,16 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<long>> ChangeStatus(
-            long id,
-            int status,
-            long userId,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Branch DAL - Change Status
+        /// Author: Swapnlisa
+        /// Description:- Updates branch status (Active/Inactive).
+        /// <param name="id">BranchId</param>
+        /// <param name="status">0 = Inactive, 1 = Active</param>
+        /// <param name="userId">Logged in UserId</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Returns status update result</returns>
+        public async Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<long>();
 
@@ -220,16 +273,26 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "STATUS");
+
                 param.Add("p_BranchId", id);
+                param.Add("p_OrganizationId", null);
+                param.Add("p_BranchName", null);
+                param.Add("p_Address", null);
+                param.Add("p_City", null);
+                param.Add("p_State", null);
+                param.Add("p_Country", null);
+                param.Add("p_Timezone", null);
                 param.Add("p_Status", status);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
+
                 param.Add("p_UserId", userId);
 
-                var result = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var result = await conn.ExecuteScalarAsync<long>("sp_manage_branch",param,commandType: CommandType.StoredProcedure );
 
                 response.Result = result;
                 response.IsSuccess = result > 0;
