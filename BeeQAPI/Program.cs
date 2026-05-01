@@ -85,8 +85,8 @@ builder.Services.AddScoped<IDAL_Branch, DAL_Branch>();
 
 
 
-builder.Services.AddScoped<IBAL_User, BAL_User>();
-builder.Services.AddScoped<IDAL_User, DAL_User>();
+//builder.Services.AddScoped<IBAL_User, BAL_User>();
+//builder.Services.AddScoped<IDAL_User, DAL_User>();
 
 
 // COUNTER 

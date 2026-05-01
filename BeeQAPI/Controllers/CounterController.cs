@@ -47,7 +47,6 @@ namespace BeeQAPI.Controllers
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
-
             var result = await _bal.GetAll(request, user);
             return Ok(result);
         }
@@ -60,7 +59,6 @@ namespace BeeQAPI.Controllers
         public async Task<IActionResult> GetById([FromBody] long id)
         {
             var user = GetUser();
-
             var result = await _bal.GetById(id, user);
             return Ok(result);
         }

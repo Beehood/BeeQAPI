@@ -77,7 +77,7 @@ namespace DAL.Services
 
                 var param = new DynamicParameters();
                 param.Add("P_Action", "LOGINPROFILE");
-                param.Add("p_Email", UserId);
+                param.Add("p_UserId", UserId);
                
 
                 using var multi = await conn.QueryMultipleAsync(
@@ -91,8 +91,9 @@ namespace DAL.Services
 
                 if (profile != null)
                 {
-                    profile.Roles =
-                        (await multi.ReadAsync<string>()).ToList();
+                    profile.Roles = (await multi.ReadAsync<string>()).ToList();
+                    profile.Permissions = (await multi.ReadAsync<string>()).ToList();
+
 
                     response.Result = profile;
                     response.TotalRecords = 1;

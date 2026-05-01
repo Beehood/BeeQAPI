@@ -66,6 +66,7 @@ namespace BAL.Services
                 Console.WriteLine("USER FOUND: " + (user != null));
                 Console.WriteLine("IsSuccess: " + userResponse.IsSuccess);
 
+
                 // 🔥 SAFE COMPARISON
                 if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
                 {
@@ -73,6 +74,10 @@ namespace BAL.Services
                     response.ErrorMsgs.Add("Invalid password");
                     return response;
                 }
+                var profileResponse = await _dal.loginprofile(user.UserId.ToString());
+                var profile = profileResponse.Result;
+
+                Console.WriteLine("PERMISSIONS FROM DB: " + string.Join(",", profile.Permissions)); //Debug
 
                 // 🔥 Step 4: Generate JWT (RBAC)
                 var tokenUser = new TokenUserInfo
@@ -80,8 +85,12 @@ namespace BAL.Services
                     UserId = user.UserId,
                     Username = user.UserName,
                     Name = user.Name,
-                    Roles = user.Roles,
-                    Permissions = user.Permissions
+                    Roles = profile?.Roles ?? new List<string>(),
+
+                    // 🔥 MAIN FIX
+                    Permissions = profile?.Permissions ?? new List<string>()
+
+
                 };
 
                 string token = await _tokenService.GenerateTokenAsync(tokenUser);
