@@ -24,6 +24,7 @@ namespace BAL.Implementation
             {
                 res.IsSuccess = false;
                 res.ErrorMsgs.Add("Invalid request data");
+                Console.WriteLine("Testing");
                 return res;
             }
 
