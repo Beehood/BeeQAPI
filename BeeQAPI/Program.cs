@@ -97,6 +97,25 @@ builder.Services.AddScoped<IBAL_Counter, BAL_Counter>();
 // 🔹 Service Module
 builder.Services.AddScoped<IBAL_Service, BAL_Service>();
 builder.Services.AddScoped<IDAL_Service, DAL_Service>();
+// ========================
+// USER
+// ========================
+builder.Services.AddScoped<IBAL_User, BAL_User>();
+builder.Services.AddScoped<IDAL_User, DAL_User>();
+
+//=========================
+// ROLE
+//=========================
+builder.Services.AddScoped<IBAL_Role, BAL_Role>();
+builder.Services.AddScoped<IDAL_Role, DAL_Role>();
+
+// =========================
+//  PERMISSION
+// =========================
+builder.Services.AddScoped<IBAL_Permission, BAL_Permission>();
+builder.Services.AddScoped<IDAL_Permission, DAL_Permission>();
+
+
 
 // ========================
 // JWT

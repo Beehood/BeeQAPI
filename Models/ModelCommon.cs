@@ -24,5 +24,10 @@ namespace Models
         public int PageSize { get; set; }
       
     }
+    public class DropdownModel
+    {
+        public long Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
 
 }
