@@ -33,10 +33,10 @@ namespace BeeQAPI.Controllers
                 Username = "1",
                 Permissions = new List<string>
         {
-            "BRANCH_VIEW",
-            "BRANCH_CREATE",
-            "BRANCH_UPDATE",
-            "BRANCH_STATUS"
+            "VIEW_BRANCH",
+            "CREATE_BRANCH",
+            "UPDATE_BRANCH",
+            "DELETE_BRANCH"
         }
             };
         }

@@ -32,10 +32,10 @@ namespace BeeQAPI.Controllers
                 Username = "1",
                 Permissions = new List<string>
         {                                                      //for temporaly testing without auth
-            "ORG_VIEW",
-            "ORG_CREATE",
-            "ORG_UPDATE",
-            "ORG_STATUS"
+            "VIEW_ORG",
+            "CREATE_ORG",
+            "UPDATE_ORG",
+            "DELETE_ORG"
         }
             };
 

@@ -40,10 +40,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_VIEW"))
+                if (user == null || !user.Permissions.Contains("VIEW_BRANCH"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_VIEW)");
+                    response.ErrorMsgs.Add("Unauthorized (VIEW_BRANCH)");
                     return response;
                 }
 
@@ -91,10 +91,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_VIEW"))
+                if (user == null || !user.Permissions.Contains("VIEW_BRANCH"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_VIEW)");
+                    response.ErrorMsgs.Add("Unauthorized (VIEW_BRANCH)");
                     return response;
                 }
 
@@ -141,10 +141,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_CREATE"))
+                if (user == null || !user.Permissions.Contains("CREATE_BRANCH"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_CREATE)");
+                    response.ErrorMsgs.Add("Unauthorized (CREATE_BRANCH)");
                     return response;
                 }
 
@@ -194,10 +194,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_UPDATE"))
+                if (user == null || !user.Permissions.Contains("UPDATE_BRANCH"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_UPDATE)");
+                    response.ErrorMsgs.Add("Unauthorized (UPDATE_BRANCH)");
                     return response;
                 }
 
@@ -257,10 +257,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_STATUS"))
+                if (user == null || !user.Permissions.Contains("DELETE_BRANCH"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (BRANCH_STATUS)");
+                    response.ErrorMsgs.Add("Unauthorized (DELETE_BRANCH)");
                     return response;
                 }
 
@@ -311,10 +311,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCH_VIEW"))
+                if (user == null || !user.Permissions.Contains("VIEW_BRANCH"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCH_VIEW required)");
+                    response.ErrorMsgs.Add("Unauthorized access (VIEW_BRANCH required)");
                     return response;
                 }
 

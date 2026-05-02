@@ -44,10 +44,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ORG_VIEW"))
+                if (user == null || !user.Permissions.Contains("VIEW_ORG"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (ORG_VIEW required)");
+                    response.ErrorMsgs.Add("Unauthorized access (VIEW_ORG required)");
                     return response;
                 }
 
@@ -102,10 +102,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ORG_VIEW"))
+                if (user == null || !user.Permissions.Contains("VIEW_ORG"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (ORG_VIEW required)");
+                    response.ErrorMsgs.Add("Unauthorized access (VIEW_ORG required)");
                     return response;
                 }
 
@@ -151,10 +151,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ORG_CREATE"))
+                if (user == null || !user.Permissions.Contains("CREATE_ORG"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (ORG_CREATE required)");
+                    response.ErrorMsgs.Add("Unauthorized access (CREATE_ORG required)");
                     return response;
                 }
 
@@ -205,10 +205,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ORG_UPDATE"))
+                if (user == null || !user.Permissions.Contains("UPDATE_ORG"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (ORG_UPDATE required)");
+                    response.ErrorMsgs.Add("Unauthorized access (UPDATE_ORG required)");
                     return response;
                 }
 
@@ -264,10 +264,10 @@ namespace BAL.Services
             try
             {
                 // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ORG_STATUS"))
+                if (user == null || !user.Permissions.Contains("DELETE_ORG"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (ORG_STATUS required)");
+                    response.ErrorMsgs.Add("Unauthorized access (DELETE_ORG required)");
                     return response;
                 }
 
