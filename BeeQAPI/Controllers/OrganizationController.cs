@@ -59,7 +59,7 @@ namespace BeeQAPI.Controllers
         // ========================
        
         [HttpPost("OrganizationList")]
-        //[Authorize(Policy = "ORG_VIEW")]
+        //[Authorize(Policy = "VIEW_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<OrganizationModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
@@ -73,7 +73,7 @@ namespace BeeQAPI.Controllers
         // GET BY ID
         // ========================
         [HttpPost("OrganizationById")]
-        //[Authorize(Policy = "ORG_VIEW")]
+        //[Authorize(Policy = "VIEW_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<OrganizationModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
@@ -87,7 +87,7 @@ namespace BeeQAPI.Controllers
         // CREATE
         // ========================
         [HttpPost("NewOrganization")]
-        //[Authorize(Policy = "ORG_CREATE")]
+        //[Authorize(Policy = "CREATE_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Create([FromBody] OrganizationRequestDto request)
         {
@@ -101,7 +101,7 @@ namespace BeeQAPI.Controllers
         // UPDATE
         // ========================
         [HttpPost("EditOrganization")]
-        //[Authorize(Policy = "ORG_UPDATE")]
+        //[Authorize(Policy = "UPDATE_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Update([FromBody] OrganizationRequestDto request)
         {
@@ -115,7 +115,7 @@ namespace BeeQAPI.Controllers
         // CHANGE STATUS
         // ========================
         [HttpPost("OrganizationStatus")]
-        //[Authorize(Policy = "ORG_STATUS")]
+        //[Authorize(Policy = "DELETE_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
