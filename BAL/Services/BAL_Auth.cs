@@ -29,7 +29,7 @@ namespace BAL.Services
             try
             {
 
-                // 🔹 Step 1: Validate input
+                // Step 1: Validate input
                 if (dto == null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
                 {
                     response.IsSuccess = false;
@@ -37,7 +37,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                // 🔹 Step 2: Get user from DB
+                //  Step 2: Get user from DB
                 var userResponse = await _dal.ValidateUser(dto.Email, transaction);
                 var user = userResponse.Result;
 
@@ -48,49 +48,53 @@ namespace BAL.Services
                     return response;
                 }
 
-                // DB contains: SHA512(password)
-                string saltedInput = salt + (user.Password ?? "").Trim();
-
+                //Step 3: DB contains: SHA512(password) 
+                string saltedInput = salt + user.Password;
                 string inputHash = GetHashString(saltedInput);
-                Console.WriteLine("----- DEBUG LOGIN -----");
-                Console.WriteLine("Salt: " + salt);
-                Console.WriteLine("DB Password: " + user.Password);
-                Console.WriteLine("DTO Password (Frontend): " + dto.Password);
 
-                string saltedInputDebug = salt + (user.Password ?? "").Trim();
-                string backendHash = GetHashString(saltedInputDebug);
-
-                Console.WriteLine("Backend Hash: " + backendHash);
-                Console.WriteLine("-----------------------");
-                Console.WriteLine("EMAIL RECEIVED: " + dto.Email);
-                Console.WriteLine("USER FOUND: " + (user != null));
-                Console.WriteLine("IsSuccess: " + userResponse.IsSuccess);
-
-
-                // 🔥 SAFE COMPARISON
-                if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
+                if (inputHash != dto.Password)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid password");
                     return response;
                 }
-                var profileResponse = await _dal.loginprofile(user.UserId.ToString());
-                var profile = profileResponse.Result;
 
-                Console.WriteLine("PERMISSIONS FROM DB: " + string.Join(",", profile.Permissions)); //Debug
+                //Console.WriteLine("----- DEBUG LOGIN -----");
+                //Console.WriteLine("Salt: " + salt);
+                //Console.WriteLine("DB Password: " + user.Password);
+                //Console.WriteLine("DTO Password (Frontend): " + dto.Password);
 
-                // 🔥 Step 4: Generate JWT (RBAC)
+                //string saltedInputDebug = salt + (user.Password ?? "").Trim();
+                //string backendHash = GetHashString(saltedInputDebug);
+
+                //Console.WriteLine("Backend Hash: " + backendHash);
+                //Console.WriteLine("-----------------------");
+                //Console.WriteLine("EMAIL RECEIVED: " + dto.Email);
+                //Console.WriteLine("USER FOUND: " + (user != null));
+                //Console.WriteLine("IsSuccess: " + userResponse.IsSuccess);
+
+
+                // 🔥 SAFE COMPARISON
+                //if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
+                //{
+                //    response.IsSuccess = false;
+                //    response.ErrorMsgs.Add("Invalid password");
+                //    return response;
+                //}
+
+
+                //var profileResponse = await _dal.loginprofile(user.UserId.ToString());
+                //var profile = profileResponse.Result;
+
+                //Console.WriteLine("PERMISSIONS FROM DB: " + string.Join(",", profile.Permissions)); //Debug
+
+                // Step 4: Generate JWT (RBAC)
                 var tokenUser = new TokenUserInfo
                 {
-                    UserId = user.UserId,
                     Username = user.UserName,
                     Name = user.Name,
-                    Roles = profile?.Roles ?? new List<string>(),
-
-                    // 🔥 MAIN FIX
-                    Permissions = profile?.Permissions ?? new List<string>()
-
-
+                    Roles = user.Roles ?? new List<string>(),
+                    Permissions = user.Permissions ?? new List<string>()
                 };
 
                 string token = await _tokenService.GenerateTokenAsync(tokenUser);
@@ -118,20 +122,19 @@ namespace BAL.Services
             return await _dal.loginprofile(UserId, transaction: transaction);
         }
 
-        // 🔥 SHA512 HASH FUNCTION
+        public static byte[] GetHash(string inputString)
+        {
+            HashAlgorithm algorithm = SHA512.Create();
+            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+        }
         public static string GetHashString(string inputString)
         {
-            using var sha = SHA512.Create();
-            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-
             StringBuilder sb = new StringBuilder();
-            foreach (byte b in bytes)
+            foreach (byte b in GetHash(inputString))
                 sb.Append(b.ToString("x2"));
-
             return sb.ToString();
         }
 
-        // 🔥 RANDOM SALT (same as your existing)
         public async Task<string> RandomString()
         {
             const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

@@ -31,7 +31,7 @@ namespace DAL.Services
         /// <param name="request">PaginationRequestDto</param>
         /// <param name="transaction">Optional DB transaction</param>
         /// <returns>Returns list of OrganizationModel with total count</returns>
-        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(PaginationRequestDto request,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(PaginationRequestDto request,string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<OrganizationModel>>();
 
@@ -49,13 +49,13 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
                 param.Add("p_Address", null);
                 param.Add("p_SubscriptionPlan", null);
-                param.Add("p_Status", null);
+                //param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                param.Add("p_PageSize", request.PageSize);
+                //param.Add("p_PageSize", request.PageSize);
 
-                param.Add("p_UserId", null);
+                param.Add("p_UserEmail", null);
                 using var multi = await conn.QueryMultipleAsync("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
 
                 // 🔹 1st Result → Total Count
@@ -88,7 +88,7 @@ namespace DAL.Services
         /// <param name="id">OrganizationId</param>
         /// <param name="transaction">Optional DB transaction</param>
         /// <returns>Returns OrganizationModel</returns>
-        public async Task<APIGetResponseModel<OrganizationModel>> GetById(long id,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<OrganizationModel>> GetById(long id,string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<OrganizationModel>();
 
@@ -106,13 +106,13 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
                 param.Add("p_Address", null);
                 param.Add("p_SubscriptionPlan", null);
-                param.Add("p_Status", null);
+                //param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                //param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", null);
+                param.Add("p_UserEmail", null);
                 var data = await conn.QueryFirstOrDefaultAsync<OrganizationModel>("sp_manage_organization",param,commandType: CommandType.StoredProcedure  );
 
                 if (data != null)
@@ -149,9 +149,9 @@ namespace DAL.Services
         /// <param name="userId">Logged in UserId</param>
         /// <param name="transaction">Optional DB transaction</param>
         /// <returns>Returns newly created OrganizationId</returns>
-        public async Task<APIGetResponseModel<long>> Insert(OrganizationRequestDto request,string userId,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert(OrganizationRequestDto request,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -167,17 +167,17 @@ namespace DAL.Services
                 param.Add("p_Phone", request.Phone);
                 param.Add("p_Address", request.Address);
                 param.Add("p_SubscriptionPlan", request.SubscriptionPlan);
-                param.Add("p_Status", 1);
+                //param.Add("p_Status", 1);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                //param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
                 var id = await conn.ExecuteScalarAsync<long>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
 
-                response.Result = id;
+                response.Result =(int) id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
             }
@@ -202,9 +202,9 @@ namespace DAL.Services
         /// <param name="userId">Logged in UserId</param>
         /// <param name="transaction">Optional DB transaction</param>
         /// <returns>Returns updated OrganizationId</returns>
-        public async Task<APIGetResponseModel<long>> Update(OrganizationRequestDto request,string userId,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(OrganizationRequestDto request,string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -220,17 +220,17 @@ namespace DAL.Services
                 param.Add("p_Phone", request.Phone);
                 param.Add("p_Address", request.Address);
                 param.Add("p_SubscriptionPlan", request.SubscriptionPlan);
-                param.Add("p_Status", request.Status);
+                //param.Add("p_Status", request.Status);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                //param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
                 var id = await conn.ExecuteScalarAsync<long>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
 
-                response.Result = id;
+                response.Result = (int)id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
             }
@@ -256,9 +256,9 @@ namespace DAL.Services
         /// <param name="userId">Logged in UserId</param>
         /// <param name="transaction">Optional DB transaction</param>
         /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id, string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -274,15 +274,15 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
                 param.Add("p_Address", null);
                 param.Add("p_SubscriptionPlan", null);
-                param.Add("p_Status", status);
+                //param.Add("p_Status", status);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                //param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<long>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = result;
                 response.IsSuccess = result > 0;

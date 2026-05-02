@@ -9,6 +9,6 @@ namespace DAL.ContractIF
 {
     public interface IDAL_Menu
     {
-        Task<List<MenuModel>> GetSidebar(long userId);
+        Task<List<MenuModel>> GetSidebar(string email);
     }
 }

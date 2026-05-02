@@ -21,9 +21,7 @@ namespace BAL.Services
             _dal = dal;
         }
 
-        // ========================
-        // GET ALL
-        // ========================
+
         /// <summary>
         /// Organization API - Get All Organizations
         /// Author: Swapnlisa
@@ -34,54 +32,32 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns paginated organization list</returns>
-        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(PaginationRequestDto request,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(
+            PaginationRequestDto request,
+            List<string> roles,
+            string? email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<OrganizationModel>>()
-            {
-                Result = new List<OrganizationModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("VIEW_ORG"))
+                // 🔥 Only Super Admin can access Organizations
+                if (!roles.Contains("Super Admin"))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (VIEW_ORG required)");
-                    return response;
+                    return new APIGetResponseModel<List<OrganizationModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied. Only Super Admin allowed." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0 && request.PageSize > 0)
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    if (request?.PageSize <= 0)
-                        response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetAll", ex);
             }
-
-            return response;
         }
-        // ========================
-        // GET BY ID
-        // ========================
+
         /// <summary>
         /// Organization API - Get Organization By Id
         /// Author: Swapnlisa
@@ -92,47 +68,31 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns organization details</returns>
-        public async Task<APIGetResponseModel<OrganizationModel>> GetById(long id,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<OrganizationModel>> GetById(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<OrganizationModel>()
-            {
-                Result = new OrganizationModel()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("VIEW_ORG"))
+                if (!roles.Contains("Super Admin"))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (VIEW_ORG required)");
-                    return response;
+                    return new APIGetResponseModel<OrganizationModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Result = null;
-                    response.ErrorMsgs.Add("Invalid OrganizationId");
-                }
+                return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetById", ex);
             }
-
-            return response;
         }
 
-        // ========================
-        // CREATE
-        // ========================
         /// <summary>
         /// Organization API - Create Organization
         /// Author: Swapnlisa
@@ -144,39 +104,59 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns created OrganizationId</returns>
-        public async Task<APIGetResponseModel<long>> Create(OrganizationRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(
+           OrganizationRequestDto request,
+           List<string> roles,
+           string email,
+           IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("CREATE_ORG"))
+                //  ROLE CHECK
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (CREATE_ORG required)");
+                    response.ErrorMsgs.Add("Only Super Admin can create organization.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (!string.IsNullOrWhiteSpace(request.Name) && userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                //  VALIDATION
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (string.IsNullOrWhiteSpace(request.Name))
-                        response.ErrorMsgs.Add("Enter Organization Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    response.ErrorMsgs.Add("Organization Name is required");
+
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    response.ErrorMsgs.Add("Email is required");
+
+                if (string.IsNullOrWhiteSpace(request.Phone))
+                    response.ErrorMsgs.Add("Phone is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                // CALL DAL
+                response = await _dal.Insert(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -184,9 +164,7 @@ namespace BAL.Services
             return response;
         }
 
-        // ========================
-        // UPDATE
-        // ========================
+
         /// <summary>
         /// Organization API - Update Organization
         /// Author: Swapnlisa
@@ -198,44 +176,57 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns updated OrganizationId</returns>
-        public async Task<APIGetResponseModel<long>> Update(OrganizationRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            OrganizationRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("UPDATE_ORG"))
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (UPDATE_ORG required)");
+                    response.ErrorMsgs.Add("Only Super Admin can update organization.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.OrganizationId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.Name) &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null || request.OrganizationId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Invalid OrganizationId");
-
-                    if (string.IsNullOrWhiteSpace(request.Name))
-                        response.ErrorMsgs.Add("Enter Organization Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid organization data.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    response.ErrorMsgs.Add("Organization Name is required");
+
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    response.ErrorMsgs.Add("Email is required");
+
+                if (string.IsNullOrWhiteSpace(request.Phone))
+                    response.ErrorMsgs.Add("Phone is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+
+                response = await _dal.Update(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -243,9 +234,6 @@ namespace BAL.Services
             return response;
         }
 
-        // ========================
-        // CHANGE STATUS
-        // ========================
         /// <summary>
         /// Organization API - Change Organization Status
         /// Author: Swapnlisa
@@ -257,49 +245,48 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("DELETE_ORG"))
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (DELETE_ORG required)");
+                    response.ErrorMsgs.Add("Only Super Admin can change status.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid OrganizationId");
-
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
-
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid organization ID.");
+                    return response;
                 }
+
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
 
             return response;
         }
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>()
             {
@@ -308,13 +295,13 @@ namespace BAL.Services
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ORGANIZATION_VIEW"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (ORGANIZATION_VIEW required)");
-                    return response;
-                }
+                //// 🔐 RBAC
+                //if (user == null || !user.Permissions.Contains("ORGANIZATION_VIEW"))
+                //{
+                //    response.IsSuccess = false;
+                //    response.ErrorMsgs.Add("Unauthorized access (ORGANIZATION_VIEW required)");
+                //    return response;
+                //}
 
                 response = await _dal.GetDropdown(transaction);
             }
@@ -326,5 +313,6 @@ namespace BAL.Services
 
             return response;
         }
+
     }
 }

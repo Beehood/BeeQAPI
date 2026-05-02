@@ -12,13 +12,13 @@ public class DAL_Menu : IDAL_Menu
         _db = db;
     }
 
-    public async Task<List<MenuModel>> GetSidebar(long userId)
+    public async Task<List<MenuModel>> GetSidebar(string email)
     {
         try
         {
             var result = await _db.QueryAsync<MenuModel>(
                 "sp_get_sidebar",
-                new { p_user_id = userId },
+                new { p_email = email },
                 commandType: CommandType.StoredProcedure
             );
 

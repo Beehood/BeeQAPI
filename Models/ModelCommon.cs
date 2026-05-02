@@ -19,10 +19,9 @@ namespace Models
     }
     public class PaginationRequestDto
     {
+        public int ID { get; set; }
         public string? SearchKey { get; set; }
-        public int PageNo { get; set; }
-        public int PageSize { get; set; }
-      
+        public int? PageNo { get; set; }  
     }
     public class DropdownModel
     {

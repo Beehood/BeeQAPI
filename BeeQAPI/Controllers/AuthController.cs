@@ -20,20 +20,20 @@ namespace BeeQAPI.Controllers
             _auth = auth;
         }
 
-        //[AllowAnonymous]
-        //[HttpGet("GetSalt")]
-        //public async Task<string> GetSalt()
-        //{
-        //    salt = await _auth.RandomString();
-        //    return salt;
-        //}
-
         [AllowAnonymous]
         [HttpGet("GetSalt")]
         public async Task<string> GetSalt()
         {
-            return "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV"; // ✅ static salt
+            salt = await _auth.RandomString();
+            return salt;
         }
+
+        //[AllowAnonymous]
+        //[HttpGet("GetSalt")]
+        //public async Task<string> GetSalt()
+        //{
+        //    return "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV"; // ✅ static salt
+        //}
 
 
         [AllowAnonymous]
@@ -41,7 +41,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<ModelLoginResponse>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<ModelLoginResponse>> Login([FromBody] LoginRequestDto dto)
         {
-            string salt = "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV";
+            //string salt = "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV";
             return await _auth.Login(dto, salt, transaction: null);
 
         }

@@ -1,10 +1,11 @@
 ﻿using BAL.ContractIF;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [Authorize] // JWT required
 [ApiController]
-[Route("api/[controller]")]
+[Route("BeeQAPI")]
 public class MenuController : ControllerBase
 {
     private readonly IBAL_Menu _bal;
@@ -19,24 +20,22 @@ public class MenuController : ControllerBase
     {
         try
         {
-            var userIdClaim = User.FindFirst("user_id")
-                  ?? User.FindFirst("sub")
-                  ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (userIdClaim == null || string.IsNullOrEmpty(userIdClaim.Value))
+            if (userClaim == null || string.IsNullOrEmpty(userClaim.Value))
                 return Unauthorized("Invalid token");
 
-            if (!long.TryParse(userIdClaim.Value, out long userId))
-                return BadRequest("Invalid UserId");
-            Console.WriteLine("UserId: " + userId); // 🔥 DEBUG
+            string email = userClaim.Value;
 
-            var result = await _bal.GetSidebar(userId);
+            Console.WriteLine("Email: " + email); // DEBUG
+
+            var result = await _bal.GetSidebar(email); // ✅ pass email
 
             return Ok(result);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, "Internal server error");
+            return StatusCode(500, ex.ToString());
         }
     }
 }

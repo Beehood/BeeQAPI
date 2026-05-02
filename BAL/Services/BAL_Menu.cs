@@ -11,11 +11,11 @@ public class BAL_Menu : IBAL_Menu
         _dal = dal;
     }
 
-    public async Task<List<MenuModel>> GetSidebar(long userId)
+    public async Task<List<MenuModel>> GetSidebar(string email)
     {
         try
         {
-            var data = await _dal.GetSidebar(userId);
+            var data = await _dal.GetSidebar(email);
 
             return data ?? new List<MenuModel>();
         }

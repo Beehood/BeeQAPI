@@ -7,9 +7,9 @@ using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("organizations")]
+    [Authorize(Roles = "Super Admin")]
+    [Route("BeeQAPI")]
     [ApiController]
-    //[Authorize]
     public class OrganizationController : ControllerBase
     {
         private readonly IBAL_Organization _bal;
@@ -25,21 +25,21 @@ namespace BeeQAPI.Controllers
         //    return HttpContext.Items["User"] as TokenUserInfo;
         //}
 
-        private TokenUserInfo GetUser()
-        {
-            return new TokenUserInfo
-            {
-                Username = "1",
-                Permissions = new List<string>
-        {                                                      //for temporaly testing without auth
-            "VIEW_ORG",
-            "CREATE_ORG",
-            "UPDATE_ORG",
-            "DELETE_ORG"
-        }
-            };
+        //private TokenUserInfo GetUser()
+        //{
+        //    return new TokenUserInfo
+        //    {
+        //        Username = "1",
+        //        Permissions = new List<string>
+        //{                                                      //for temporaly testing without auth
+        //    "VIEW_ORG",
+        //    "CREATE_ORG",
+        //    "UPDATE_ORG",
+        //    "DELETE_ORG"
+        //}
+        //    };
 
-        }
+        //}
         //private TokenUserInfo GetUser()
         //{
         //    var user = new TokenUserInfo();
@@ -57,81 +57,90 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET ALL
         // ========================
-       
+
+        [Authorize(Policy = "VIEW_ORG")]
         [HttpPost("OrganizationList")]
-        //[Authorize(Policy = "VIEW_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<OrganizationModel>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
+        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll([FromBody] PaginationRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var result = await _bal.GetAll(request, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetAll(request, roles, email, transaction: null);
         }
 
-        // ========================
-        // GET BY ID
-        // ========================
+
+        [Authorize(Policy = "VIEW_ORG")]
         [HttpPost("OrganizationById")]
-        //[Authorize(Policy = "VIEW_ORG")]
         [ProducesResponseType(typeof(APIGetResponseModel<OrganizationModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetById([FromBody] long id)
+        public async Task<APIGetResponseModel<OrganizationModel>> GetById([FromBody] long id)
         {
-            var user = GetUser();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var result = await _bal.GetById(id, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetById(id, roles, email, transaction: null);
         }
 
-        // ========================
-        // CREATE
-        // ========================
+
+        [Authorize(Policy = "CREATE_ORG")]
         [HttpPost("NewOrganization")]
-        //[Authorize(Policy = "CREATE_ORG")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Create([FromBody] OrganizationRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Create([FromBody] OrganizationRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var result = await _bal.Create(request, user.Username, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.Create(request, roles, email, transaction: null);
         }
 
-        // ========================
-        // UPDATE
-        // ========================
+
+        [Authorize(Policy = "UPDATE_ORG")]
         [HttpPost("EditOrganization")]
-        //[Authorize(Policy = "UPDATE_ORG")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update([FromBody] OrganizationRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Update([FromBody] OrganizationRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var result = await _bal.Update(request, user.Username, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.Update(request, roles, email, transaction: null);
         }
 
-        // ========================
-        // CHANGE STATUS
-        // ========================
+
+        [Authorize(Policy = "DELETE_ORG")]
         [HttpPost("OrganizationStatus")]
-        //[Authorize(Policy = "DELETE_ORG")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ChangeStatus([FromBody] OrganizationRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var result = await _bal.ChangeStatus(request.OrganizationId ,request.Status,uid,user);
-
-            return Ok(result);
+            return await _bal.ChangeStatus(request.OrganizationId, roles, email, transaction: null);
         }
         //// ===================
         //// DROPDOWN
         //// ===================
         //[HttpGet("OrganizationDropdown")]
-        ////[Authorize(Policy = "ORG_VIEW")]
+        //[Authorize(Policy = "ORG_VIEW")]
         //[ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
         //public async Task<IActionResult> GetDropdown()
         //{

@@ -13,8 +13,8 @@ namespace Models
         public string? ProfilPic { get; set; }
         public string? Branch { get; set; }
         public string? Token { get; set; }
-        public List<string> Roles { get; set; } = new();
-        public List<string> Permissions { get; set; } = new();
+        //public List<string> Roles { get; set; } = new();
+        //public List<string> Permissions { get; set; } = new();
     }
 
     public class ModelLoginResponse
@@ -30,7 +30,6 @@ namespace Models
 
     public class TokenUserInfo
     {
-        public long UserId { get; set; }
         public string? Username { get; set; }   // email login identity
         public string? Name { get; set; }
 
@@ -45,11 +44,10 @@ namespace Models
     {
         public string? UserName { get; set; }
         public string? Name { get; set; }
-        //public string? Role { get; set; }
         public string? Password { get; set; }
 
         // Internal use (NOT in JWT)
-        public long UserId { get; set; }
+        //public long UserId { get; set; }
         public long OrganizationId { get; set; }
         public long BranchId { get; set; }
         public List<string> Roles { get; set; } = new();

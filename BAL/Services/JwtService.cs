@@ -23,7 +23,7 @@ namespace BAL.Services
 
             var claims = new List<Claim>
             {
-               new Claim("user_id", user.UserId.ToString()),
+               new Claim(ClaimTypes.NameIdentifier, user.Username),
                 new Claim(ClaimTypes.Name, user.Name ?? "")
             };
 

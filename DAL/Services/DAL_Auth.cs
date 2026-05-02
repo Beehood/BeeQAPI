@@ -31,27 +31,39 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-                param.Add("p_Email", username);
+                param.Add("p_Action", "LOGIN");
+                param.Add("p_UserId", username);
 
-                // 🔥 FIX: Use QueryFirst instead of QueryMultiple
-                var user = await conn.QueryFirstOrDefaultAsync<UserDetails>(
-                    "sp_User_Login",
+                using var multi = await conn.QueryMultipleAsync(
+                    "sp_User",
                     param,
                     commandType: CommandType.StoredProcedure
                 );
 
-                if (user != null)
-                {
-                    response.Result = user;
-                    response.TotalRecords = 1;
-                    response.IsSuccess = true;
-                }
-                else
+                //USER details
+                var user = await multi.ReadFirstOrDefaultAsync<UserDetails>();
+
+                if (user == null)
                 {
                     response.IsSuccess = false;
                     response.TotalRecords = 0;
                     response.Result = null;
+                    return response;
                 }
+
+                //ROLES
+                var roles = (await multi.ReadAsync<string>()).ToList();
+
+                //PERMISSIONS
+                var permissions = (await multi.ReadAsync<string>()).ToList();
+
+                // Assign to model
+                user.Roles = roles;
+                user.Permissions = permissions;
+
+                response.Result = user;
+                response.TotalRecords = 1;
+                response.IsSuccess = true;
             }
             catch (Exception ex)
             {
@@ -67,7 +79,7 @@ namespace DAL.Services
         // =========================
         // LOGIN PROFILE
         // =========================
-        public async Task<APIGetResponseModel<UserProfileDetails>> loginprofile(string UserId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<UserProfileDetails>> loginprofile(string username, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<UserProfileDetails>();
 
@@ -76,24 +88,22 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-                param.Add("P_Action", "LOGINPROFILE");
-                param.Add("p_UserId", UserId);
-               
+                param.Add("p_Action", "LOGINPROFILE");
+                param.Add("p_UserId", username);
 
-                using var multi = await conn.QueryMultipleAsync(
+                // ✅ Only ONE result set now
+                var profile = await conn.QueryFirstOrDefaultAsync<UserProfileDetails>(
                     "sp_User",
                     param,
                     commandType: CommandType.StoredProcedure
                 );
 
-                var profile =
-                    await multi.ReadFirstOrDefaultAsync<UserProfileDetails>();
-
                 if (profile != null)
                 {
-                    profile.Roles = (await multi.ReadAsync<string>()).ToList();
-                    profile.Permissions = (await multi.ReadAsync<string>()).ToList();
-
+                    // Optional safety fallback (in case DB returns null)
+                    profile.ProfilPic = string.IsNullOrEmpty(profile.ProfilPic)
+                        ? "default.png"
+                        : profile.ProfilPic;
 
                     response.Result = profile;
                     response.TotalRecords = 1;
