@@ -17,5 +17,6 @@ namespace DAL.ContractIF
         Task<APIGetResponseModel<long>> Update(OrganizationRequestDto request,string userId,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null);
     }
 }

@@ -44,6 +44,7 @@ namespace BeeQAPI.Controllers
         // GET ALL
         // ========================
         [HttpPost("BranchList")]
+        //[Authorize(Policy = "BRANCH_VIEW")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<BranchModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
@@ -56,6 +57,7 @@ namespace BeeQAPI.Controllers
         // GET BY ID
         // ========================
         [HttpPost("BranchById")]
+        //[Authorize(Policy = "BRANCH_VIEW")]
         [ProducesResponseType(typeof(APIGetResponseModel<BranchModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
@@ -69,6 +71,7 @@ namespace BeeQAPI.Controllers
         // CREATE
         // ========================
         [HttpPost("NewBranch")]
+        //[Authorize(Policy = "BRANCH_CREATE")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Create([FromBody] BranchRequestDto request)
         {
@@ -82,6 +85,7 @@ namespace BeeQAPI.Controllers
         // UPDATE
         // ========================
         [HttpPost("EditBranch")]
+        //[Authorize(Policy = "BRANCH_UPDATE")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Update([FromBody] BranchRequestDto request)
         {
@@ -95,6 +99,7 @@ namespace BeeQAPI.Controllers
         // CHANGE STATUS
         // ========================
         [HttpPost("BranchStatus")]
+        //[Authorize(Policy = "BRANCH_STATUS")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ChangeStatus([FromBody] BranchRequestDto request)
         {
@@ -109,6 +114,17 @@ namespace BeeQAPI.Controllers
                 user
             );
 
+            return Ok(result);
+        }
+        // ========================
+        // DROPDOWN
+        // ========================
+        [HttpGet("BranchDropdown")]
+        //[Authorize(Policy = "BRANCH_VIEW")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
+        public async Task<IActionResult> GetDropdown()
+        {
+            var result = await _bal.GetDropdown(null); // no user needed
             return Ok(result);
         }
     }

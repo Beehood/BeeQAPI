@@ -293,5 +293,40 @@ namespace BAL.Services
 
             return response;
         }
+        // ========================
+        // DROPDOWN
+        // ========================
+        /// <summary>
+        /// Branch BAL - Get Branch Dropdown
+        /// Author: Swapnlisa
+        /// Description:- Fetches active branch dropdown list.
+        /// </summary>
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>()
+            {
+                Result = new List<DropdownModel>()
+            };
+
+            try
+            {
+                // 🔐 RBAC
+                if (user == null || !user.Permissions.Contains("BRANCH_VIEW"))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Unauthorized access (BRANCH_VIEW required)");
+                    return response;
+                }
+
+                response = await _dal.GetDropdown(transaction);
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
+            }
+
+            return response;
+        }
     }
 }

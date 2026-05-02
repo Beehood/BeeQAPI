@@ -9,7 +9,7 @@ namespace BeeQAPI.Controllers
 {
     [Route("organizations")]
     [ApiController]
-   
+    //[Authorize]
     public class OrganizationController : ControllerBase
     {
         private readonly IBAL_Organization _bal;
@@ -57,8 +57,10 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET ALL
         // ========================
-        //[Authorize(Policy = "ORG_VIEW")]
+       
         [HttpPost("OrganizationList")]
+        //[Authorize(Policy = "ORG_VIEW")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<OrganizationModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
@@ -71,6 +73,8 @@ namespace BeeQAPI.Controllers
         // GET BY ID
         // ========================
         [HttpPost("OrganizationById")]
+        //[Authorize(Policy = "ORG_VIEW")]
+        [ProducesResponseType(typeof(APIGetResponseModel<OrganizationModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
             var user = GetUser();
@@ -83,6 +87,8 @@ namespace BeeQAPI.Controllers
         // CREATE
         // ========================
         [HttpPost("NewOrganization")]
+        //[Authorize(Policy = "ORG_CREATE")]
+        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Create([FromBody] OrganizationRequestDto request)
         {
             var user = GetUser();
@@ -95,6 +101,8 @@ namespace BeeQAPI.Controllers
         // UPDATE
         // ========================
         [HttpPost("EditOrganization")]
+        //[Authorize(Policy = "ORG_UPDATE")]
+        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Update([FromBody] OrganizationRequestDto request)
         {
             var user = GetUser();
@@ -107,20 +115,30 @@ namespace BeeQAPI.Controllers
         // CHANGE STATUS
         // ========================
         [HttpPost("OrganizationStatus")]
+        //[Authorize(Policy = "ORG_STATUS")]
+        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
             var user = GetUser();
 
             long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
-            var result = await _bal.ChangeStatus(
-                request.OrganizationId ,
-                request.Status,
-                uid,
-                user
-            );
+            var result = await _bal.ChangeStatus(request.OrganizationId ,request.Status,uid,user);
 
             return Ok(result);
         }
+        //// ===================
+        //// DROPDOWN
+        //// ===================
+        //[HttpGet("OrganizationDropdown")]
+        ////[Authorize(Policy = "ORG_VIEW")]
+        //[ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
+        //public async Task<IActionResult> GetDropdown()
+        //{
+        //    var user = HttpContext.Items["User"] as TokenUserInfo;
+
+        //    var result = await _bal.GetDropdown(user);
+        //    return Ok(result);
+        //}
     }
 }

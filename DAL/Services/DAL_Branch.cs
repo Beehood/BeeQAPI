@@ -307,5 +307,37 @@ namespace DAL.Services
 
             return response;
         }
+        // ========================
+        // DROPDOWN
+        // ========================
+        /// <summary>
+        /// Branch DAL - Get Branch Dropdown
+        /// Author: Swapnlisa
+        /// Description:- Fetches active branch dropdown list.
+        /// </summary>
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>();
+
+            try
+            {
+                using var conn = new MySqlConnection(_config.DefaultConnection);
+
+                var data = (await conn.QueryAsync<DropdownModel>(@"SELECT branch_id AS Id, branch_name AS Name FROM branches WHERE status = 1"))
+                    .ToList();
+
+                response.Result = data;
+                response.TotalRecords = data.Count;
+                response.IsSuccess = data.Any();
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add("Error while fetching dropdown");
+                Console.WriteLine("DAL DROPDOWN ERROR: " + ex.Message);
+            }
+
+            return response;
+        }
     }
 }

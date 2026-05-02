@@ -297,5 +297,37 @@ namespace DAL.Services
 
             return response;
         }
+        // ========================
+        // DROPDOWN
+        // ========================
+        /// <summary>
+        /// Organization DAL - Get Organization Dropdown
+        /// Author: Swapnlisa
+        /// Description:- Fetches active organization dropdown list.
+        /// </summary>
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>();
+
+            try
+            {
+                using var conn = new MySqlConnection(_config.DefaultConnection);
+
+                var data = (await conn.QueryAsync<DropdownModel>(@"SELECT organization_id AS Id, name AS Name FROM organizations WHERE status = 1"))
+                    .ToList();
+
+                response.Result = data;
+                response.TotalRecords = data.Count;
+                response.IsSuccess = data.Any();
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add("Error while fetching dropdown");
+                Console.WriteLine("DAL DROPDOWN ERROR: " + ex.Message);
+            }
+
+            return response;
+        }
     }
 }

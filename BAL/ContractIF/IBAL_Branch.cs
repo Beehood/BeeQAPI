@@ -18,5 +18,6 @@ namespace BAL.ContractIF
         Task<APIGetResponseModel<long>> Update(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null);
     }
 }
