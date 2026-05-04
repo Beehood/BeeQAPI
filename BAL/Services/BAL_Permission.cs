@@ -44,7 +44,7 @@ namespace BAL.Services
                 }
 
                 // ✅ VALIDATION
-                if (request != null && request.PageNo > 0 && request.PageSize > 0)
+                if (request != null && request.PageNo > 0 )
                 {
                     response = await _dal.GetAll(request, transaction);
                 }
@@ -59,8 +59,8 @@ namespace BAL.Services
                     if (request?.PageNo <= 0)
                         response.ErrorMsgs.Add("Invalid PageNumber");
 
-                    if (request?.PageSize <= 0)
-                        response.ErrorMsgs.Add("Invalid PageSize");
+                    //if (request?.PageSize <= 0)
+                    //    response.ErrorMsgs.Add("Invalid PageSize");
                 }
             }
             catch (Exception ex)

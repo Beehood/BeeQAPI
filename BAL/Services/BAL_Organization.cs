@@ -32,11 +32,7 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns paginated organization list</returns>
-        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(
-            PaginationRequestDto request,
-            List<string> roles,
-            string? email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -68,11 +64,7 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns organization details</returns>
-        public async Task<APIGetResponseModel<OrganizationModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<OrganizationModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -104,11 +96,7 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns created OrganizationId</returns>
-        public async Task<APIGetResponseModel<int>> Create(
-           OrganizationRequestDto request,
-           List<string> roles,
-           string email,
-           IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(OrganizationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -176,11 +164,7 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns updated OrganizationId</returns>
-        public async Task<APIGetResponseModel<int>> Update(
-            OrganizationRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(OrganizationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -245,11 +229,7 @@ namespace BAL.Services
         /// <param name="user">TokenUserInfo</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;

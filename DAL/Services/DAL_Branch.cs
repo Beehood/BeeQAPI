@@ -57,7 +57,7 @@ namespace DAL.Services
                 // Actual pagination values
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                param.Add("p_PageSize", request.PageSize);
+                //param.Add("p_PageSize", request.PageSize);
 
                 param.Add("p_UserId", null);
                 using var multi = await conn.QueryMultipleAsync("sp_manage_branch",param,commandType: CommandType.StoredProcedure);

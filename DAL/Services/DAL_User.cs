@@ -51,7 +51,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                param.Add("p_PageSize", request.PageSize);
+                //param.Add("p_PageSize", request.PageSize);
 
                 param.Add("p_UserId_Login", null);
 

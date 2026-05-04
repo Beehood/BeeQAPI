@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Authorize(Roles = "Super Admin")]
+    //[Authorize(Roles = "Super Admin")]
     [Route("BeeQAPI")]
     [ApiController]
     public class OrganizationController : ControllerBase
