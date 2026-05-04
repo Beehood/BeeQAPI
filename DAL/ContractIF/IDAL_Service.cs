@@ -15,11 +15,17 @@ namespace DAL.ContractIF
     {
         public interface IDAL_Service
         {
-            Task<APIGetResponseModel<List<ServiceModel>>> ServiceList(ServiceSearchKeys obj, IDbTransaction? transaction);
-            Task<APIGetResponseModel<ServiceModel>> ServiceById(ServiceSearchKeys obj, IDbTransaction? transaction);
-            Task<APIGetResponseModel<int>> ServiceCreate(ServiceModel data, string userId, IDbTransaction? transaction);
-            Task<APIGetResponseModel<int>> ServiceUpdate(ServiceModel data, string userId, IDbTransaction? transaction);
-            Task<APIGetResponseModel<int>> ServiceStatus(ServiceSearchKeys obj, string userId, IDbTransaction? transaction);
+            Task<APIGetResponseModel<List<ServiceModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<ServiceModel>> GetById(long id, string email, IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<int>> Insert(ServiceRequestDto request, string email, IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<int>> Update(ServiceRequestDto request, string email, IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<int>> ChangeStatus(long id, string email, IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null);
         }
     }
-}
+    }

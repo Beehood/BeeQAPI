@@ -1,144 +1,236 @@
 ﻿using BAL.ContractIF;
 using BAL.ContractIF.BAL.ContractIF;
 using DAL.ContractIF.DAL.ContractIF;
+using Dapper;
 using Models;
+using MySql.Data.MySqlClient;
 using System.Data;
 
 namespace BAL.Implementation
 {
+    /// <summary>
+    /// BAL Layer for Service Management
+    /// Author: Swapnalisa
+    /// Description:
+    /// Handles business logic, validation, and role-based access control
+    /// before calling DAL for database operations.
+    /// </summary>
     public class BAL_Service : IBAL_Service
     {
-        private readonly IDAL_Service _service;
+        private readonly IDAL_Service _dal;
 
-        public BAL_Service(IDAL_Service service)
+        public BAL_Service(IDAL_Service dal)
         {
-            _service = service;
+            _dal = dal;
         }
 
-        // 🔥 LIST
-        public async Task<APIGetResponseModel<List<ServiceModel>>> ServiceList(ServiceSearchKeys obj, IDbTransaction? transaction)
+        // ========================
+        // GET ALL
+        // ========================
+        /// <summary>
+        /// Fetch all services (paginated)
+        /// Access: Super Admin, Org Admin, Branch Admin
+        /// </summary>
+        public async Task<APIGetResponseModel<List<ServiceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var res = new APIGetResponseModel<List<ServiceModel>>();
-
-            if (obj == null)
+            try
             {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Invalid request data");
-                Console.WriteLine("Testing");
-                return res;
+                // All roles allowed (filtered in SP)
+                return await _dal.GetAll(request, email, transaction);
             }
-
-            return await _service.ServiceList(obj, transaction);
+            catch (Exception ex)
+            {
+                throw new Exception("BAL: Error in GetAll", ex);
+            }
         }
 
-        // 🔥 GET BY ID
-        public async Task<APIGetResponseModel<ServiceModel>> ServiceById(ServiceSearchKeys obj, IDbTransaction? transaction)
+        // ========================
+        // GET BY ID
+        // ========================
+        /// <summary>
+        /// Fetch service by ID
+        /// Access: All roles
+        /// </summary>
+        public async Task<APIGetResponseModel<ServiceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var res = new APIGetResponseModel<ServiceModel>();
-
-            if (obj == null || obj.Id <= 0)
+            try
             {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Invalid Service Id");
-                return res;
+                return await _dal.GetById(id, email, transaction);
             }
-
-            return await _service.ServiceById(obj, transaction);
+            catch (Exception ex)
+            {
+                throw new Exception("BAL: Error in GetById", ex);
+            }
         }
 
-        // 🔥 CREATE
-        public async Task<APIGetResponseModel<int>> ServiceCreate(ServiceModel data, string userId, IDbTransaction? transaction)
+        // ========================
+        // CREATE
+        // ========================
+        /// <summary>
+        /// Create new service
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin ✅ (Allowed)
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> Create(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var res = new APIGetResponseModel<int>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
-            if (data == null)
+            try
             {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Invalid data");
-                return res;
+                // VALIDATION
+                if (request == null)
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
+                }
+
+                if (string.IsNullOrWhiteSpace(request.ServiceName))
+                    response.ErrorMsgs.Add("Service Name is required");
+
+                if (request.OrganizationId <= 0)
+                    response.ErrorMsgs.Add("Organization is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                // CALL DAL
+                response = await _dal.Insert(request, email, localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
+            }
+            catch (Exception ex)
+            {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
             }
 
-            if (string.IsNullOrWhiteSpace(data.ServiceName))
-            {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Service Name is required");
-                return res;
-            }
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Unauthorized user");
-                return res;
-            }
-
-            return await _service.ServiceCreate(data, userId, transaction);
+            return response;
         }
 
-        // 🔥 UPDATE
-        public async Task<APIGetResponseModel<int>> ServiceUpdate(ServiceModel data, string userId, IDbTransaction? transaction)
+        // ========================
+        // UPDATE
+        // ========================
+        /// <summary>
+        /// Update service
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin ✅ (Allowed)
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> Update(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var res = new APIGetResponseModel<int>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
-            if (data == null || data.Service_id <= 0)
+            try
             {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Invalid service data");
-                return res;
+                if (request == null || request.ServiceId <= 0)
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Invalid service data.");
+                    return response;
+                }
+
+                if (string.IsNullOrWhiteSpace(request.ServiceName))
+                    response.ErrorMsgs.Add("Service Name is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                response = await _dal.Update(request, email, localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
+            }
+            catch (Exception ex)
+            {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
             }
 
-            if (string.IsNullOrWhiteSpace(data.ServiceName))
-            {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Service Name is required");
-                return res;
-            }
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Unauthorized user");
-                return res;
-            }
-
-            return await _service.ServiceUpdate(data, userId, transaction);
+            return response;
         }
 
-        // 🔥 STATUS
-        public async Task<APIGetResponseModel<int>> ServiceStatus(ServiceSearchKeys obj, string userId, IDbTransaction? transaction)
+        // ========================
+        // CHANGE STATUS
+        // ========================
+        /// <summary>
+        /// Activate / Deactivate service
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin ✅ (Allowed)
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var res = new APIGetResponseModel<int>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
-            if (obj == null || obj.Id <= 0)
+            try
             {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Invalid Service Id");
-                return res;
+                if (id <= 0)
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Invalid service ID.");
+                    return response;
+                }
+
+                response = await _dal.ChangeStatus(id, email, localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
+            }
+            catch (Exception ex)
+            {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
             }
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                res.IsSuccess = false;
-                res.ErrorMsgs.Add("Unauthorized user");
-                return res;
-            }
-
-            return await _service.ServiceStatus(obj, userId, transaction);
+            return response;
         }
 
-        // 🔥 DROPDOWN (SaaS READY)
-        //public async Task<APIGetResponseModel<List<ModelDropdown>>> ServiceDropdown(int orgId, IDbTransaction? transaction)
-        //{
-        //    var res = new APIGetResponseModel<List<ModelDropdown>>();
+        // ========================
+        // DROPDOWN
+        // ========================
+        /// <summary>
+        /// Fetch service dropdown
+        /// Access: All roles
+        /// </summary>
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
-        //    if (orgId <= 0)
-        //    {
-        //        res.IsSuccess = false;
-        //        res.ErrorMsgs.Add("Invalid Organization");
-        //        return res;
-        //    }
+            try
+            {
+                response = await _dal.GetDropdown(email, transaction);
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
+            }
 
-        //    return await _service.ServiceDropdown(orgId, transaction);
-        //}
+            return response;
+        }
     }
 }

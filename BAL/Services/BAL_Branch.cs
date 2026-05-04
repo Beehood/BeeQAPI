@@ -23,11 +23,13 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(
-            PaginationRequestDto request,
-            List<string> roles,
-            string? email,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// BAL Layer for Branch Management
+        /// Author: Swapnalisa
+        /// Description:
+        /// Handles business logic, validation, and role-based access control
+        /// before calling DAL for database operations.
+        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -43,11 +45,10 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<BranchModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Fetch branch details by BranchId
+        /// Access: All roles (controlled in SP)
+        public async Task<APIGetResponseModel<BranchModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -62,18 +63,20 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(
-            BranchRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Create new branch
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        ///Branch Admin (restricted)
+        public async Task<APIGetResponseModel<int>> Create(BranchRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // ❌ Branch Admin cannot create
+                //  Branch Admin cannot create
                 if (roles.Contains("Branch Admin"))
                 {
                     response.IsSuccess = false;
@@ -122,18 +125,20 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            BranchRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Update existing branch
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin (restricted)
+        public async Task<APIGetResponseModel<int>> Update(BranchRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // ❌ Branch Admin cannot update
+                //  Branch Admin cannot update
                 if (roles.Contains("Branch Admin"))
                 {
                     response.IsSuccess = false;
@@ -177,18 +182,20 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS (DELETE)
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Activate/Deactivate (Soft Delete) Branch
+        /// Access:
+        /// Super Admin only
+        /// Org Admin
+        ///Branch Admin
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // ❌ Only Super Admin can delete
+                // Only Super Admin can delete
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -223,9 +230,7 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 

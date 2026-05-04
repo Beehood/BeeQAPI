@@ -2,86 +2,106 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using System.Net;
 using System.Security.Claims;
 
+[Route("BeeQAPI")]
 [ApiController]
 public class ServiceController : ControllerBase
 {
-    private readonly IBAL_Service _Service;
-    private readonly ILogger<ServiceController> _logger;
+    private readonly IBAL_Service _bal;
 
-    public ServiceController(ILogger<ServiceController> logger, IBAL_Service service)
+    public ServiceController(IBAL_Service bal)
     {
-        _logger = logger;
-        _Service = service;
+        _bal = bal;
     }
 
-    // 🔥 LIST
+    // ========================
+    // GET ALL
+    // ========================
+    [Authorize(Policy = "SERVICE_VIEW")]
     [HttpPost("ServiceList")]
-    [Authorize(Policy = "Service.View")]
-    [ProducesResponseType(typeof(APIGetResponseModel<List<ServiceModel>>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<APIGetResponseModel<List<ServiceModel>>>> ServiceList([FromBody] ServiceSearchKeys obj)
+    [ProducesResponseType(typeof(APIGetResponseModel<List<ServiceModel>>), (int)HttpStatusCode.OK)]
+    public async Task<APIGetResponseModel<List<ServiceModel>>> GetAll([FromBody] PaginationRequestDto request)
     {
-        var result = await _Service.ServiceList(obj, transaction: null);
-        return Ok(result);
+        var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+        var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        return await _bal.GetAll(request, roles, email, transaction: null);
     }
 
-    // 🔥 GET BY ID
+    // ========================
+    // GET BY ID
+    // ========================
+    [Authorize(Policy = "SERVICE_VIEW")]
     [HttpPost("ServiceById")]
-    [Authorize(Policy = "Service.View")]
-    [ProducesResponseType(typeof(APIGetResponseModel<ServiceModel>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<APIGetResponseModel<ServiceModel>>> ServiceById([FromBody] ServiceSearchKeys obj)
+    [ProducesResponseType(typeof(APIGetResponseModel<ServiceModel>), (int)HttpStatusCode.OK)]
+    public async Task<APIGetResponseModel<ServiceModel>> GetById([FromBody] long id)
     {
-        var result = await _Service.ServiceById(obj, transaction: null);
-        return Ok(result);
+        var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+        var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        return await _bal.GetById(id, roles, email, transaction: null);
     }
 
-    // 🔥 CREATE
+    // ========================
+    // CREATE
+    // ========================
+    [Authorize(Policy = "SERVICE_CREATE")]
     [HttpPost("NewService")]
-    [Authorize(Policy = "Service.Create")]
-    [ProducesResponseType(typeof(APIGetResponseModel<int>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<APIGetResponseModel<int>>> ServiceCreate([FromBody] ServiceModel data)
+    [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+    public async Task<APIGetResponseModel<int>> Create([FromBody] ServiceRequestDto request)
     {
-        string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-        var result = await _Service.ServiceCreate(data, userId, transaction: null);
-        return Ok(result);
+        var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        return await _bal.Create(request, roles, email, transaction: null);
     }
 
-    // 🔥 UPDATE
-    [HttpPost("ServiceUpdate")]
-    [Authorize(Policy = "Service.Update")]
-    [ProducesResponseType(typeof(APIGetResponseModel<int>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<APIGetResponseModel<int>>> ServiceUpdate([FromBody] ServiceModel data)
+    // ========================
+    // UPDATE
+    // ========================
+    [Authorize(Policy = "SERVICE_UPDATE")]
+    [HttpPost("EditService")]
+    [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+    public async Task<APIGetResponseModel<int>> Update([FromBody] ServiceRequestDto request)
     {
-        string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-        var result = await _Service.ServiceUpdate(data, userId, transaction: null);
-        return Ok(result);
+        var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        return await _bal.Update(request, roles, email, transaction: null);
     }
 
-    // 🔥 STATUS
+    // ========================
+    // STATUS
+    // ========================
+    [Authorize(Policy = "SERVICE_STATUS")]
     [HttpPost("ServiceStatus")]
-    [Authorize(Policy = "Service.Status")]
-    [ProducesResponseType(typeof(APIGetResponseModel<int>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<APIGetResponseModel<int>>> ServiceStatus([FromBody] ServiceSearchKeys obj)
+    [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+    public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
     {
-        string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-        var result = await _Service.ServiceStatus(obj, userId, transaction: null);
-        return Ok(result);
+        var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        return await _bal.ChangeStatus(id, roles, email, transaction: null);
     }
 
-    // 🔥 SERVICE DROPDOWN (SaaS Ready)
-    //[HttpPost("ServiceDropdown")]
-    //[Authorize]
-    //[ProducesResponseType(typeof(APIGetResponseModel<List<ModelDropdown>>), StatusCodes.Status200OK)]
-    //public async Task<ActionResult<APIGetResponseModel<List<ModelDropdown>>>> ServiceDropdown()
-    //{
-    //    var org = User.FindFirst("OrganizationId")?.Value;
-    //    int orgId = string.IsNullOrEmpty(org) ? 0 : int.Parse(org);
+    // ========================
+    // DROPDOWN
+    // ========================
+    [Authorize(Policy = "SERVICE_VIEW")]
+    [HttpGet("ServiceDropdown")]
+    [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+    public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+    {
+        var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-    //    var result = await _Service.ServiceDropdown(orgId, transaction: null);
-    //    return Ok(result);
-    //}
+        return await _bal.GetDropdown(email, transaction: null);
+    }
 }
+

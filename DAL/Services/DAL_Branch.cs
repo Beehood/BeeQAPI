@@ -46,11 +46,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", request.PageNo);
                 param.Add("p_UserEmail", email);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                using var multi = await conn.QueryMultipleAsync("sp_manage_branch",param,commandType: CommandType.StoredProcedure);
 
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
                 var list = (await multi.ReadAsync<BranchModel>()).ToList();
@@ -119,10 +115,7 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        public async Task<APIGetResponseModel<int>> Insert(
-            BranchRequestDto request,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert(BranchRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -163,10 +156,7 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            BranchRequestDto request,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(BranchRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -229,11 +219,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<int>(
-                    "sp_manage_branch",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_branch",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = result;
                 response.IsSuccess = result > 0;

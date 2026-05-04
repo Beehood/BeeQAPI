@@ -17,7 +17,7 @@ namespace Models
         public string? State { get; set; }
         public string? Country { get; set; }
         public string? Timezone { get; set; }
-        public int Status { get; set; }
+        public bool Status { get; set; }
         public DateTime CreatedAt { get; set; }
     }
     public class BranchRequestDto
@@ -30,7 +30,7 @@ namespace Models
         public string? State { get; set; }
         public string? Country { get; set; }
         public string? Timezone { get; set; }
-        public int? Status { get; set; }
+        public bool? Status { get; set; }
         public long? UserId { get; set; }
     }
 }
