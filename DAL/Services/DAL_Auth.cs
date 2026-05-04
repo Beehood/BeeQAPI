@@ -34,11 +34,7 @@ namespace DAL.Services
                 param.Add("p_Action", "LOGIN");
                 param.Add("p_UserId", username);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_User",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                using var multi = await conn.QueryMultipleAsync("sp_User",param,commandType: CommandType.StoredProcedure);
 
                 //USER details
                 var user = await multi.ReadFirstOrDefaultAsync<UserDetails>();
@@ -92,11 +88,7 @@ namespace DAL.Services
                 param.Add("p_UserId", username);
 
                 // ✅ Only ONE result set now
-                var profile = await conn.QueryFirstOrDefaultAsync<UserProfileDetails>(
-                    "sp_User",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var profile = await conn.QueryFirstOrDefaultAsync<UserProfileDetails>("sp_User",param,commandType: CommandType.StoredProcedure);
 
                 if (profile != null)
                 {
