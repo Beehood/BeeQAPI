@@ -3,16 +3,22 @@ using System.Data;
 
 namespace BAL.ContractIF
 {
-  
+
     namespace BAL.ContractIF
     {
         public interface IBAL_Service
         {
-            Task<APIGetResponseModel<List<ServiceModel>>> ServiceList(ServiceSearchKeys obj, IDbTransaction? transaction);
-            Task<APIGetResponseModel<ServiceModel>> ServiceById(ServiceSearchKeys obj, IDbTransaction? transaction);
-            Task<APIGetResponseModel<int>> ServiceCreate(ServiceModel data, string userId, IDbTransaction? transaction);
-            Task<APIGetResponseModel<int>> ServiceUpdate(ServiceModel data, string userId, IDbTransaction? transaction);
-            Task<APIGetResponseModel<int>> ServiceStatus(ServiceSearchKeys obj, string userId, IDbTransaction? transaction);
+            Task<APIGetResponseModel<List<ServiceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<ServiceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<int>> Create(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<int>> Update(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null);
+
+            Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
         }
     }
 }
