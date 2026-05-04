@@ -10,14 +10,14 @@ namespace BAL.ContractIF
 {
     public interface IBAL_Branch
     {
-        Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,TokenUserInfo user,IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<BranchModel>> GetById(long id,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<BranchModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Create(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Create(BranchRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Update(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Update(BranchRequestDto request,List<string> roles, string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,TokenUserInfo user,IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null);
     }
 }

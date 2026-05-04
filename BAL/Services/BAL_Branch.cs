@@ -23,213 +23,150 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        /// <summary>
-        /// Retrieves a paginated list of branches based on the provided pagination request.
-        /// </summary>
-        /// <param name="request">Pagination details (PageNumber, PageSize)</param>
-        /// <param name="user">Authenticated user with permissions</param>
-        /// <param name="transaction">Optional database transaction</param>
-        /// <returns>List of BranchModel wrapped in API response</returns>
-        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(
+            PaginationRequestDto request,
+            List<string> roles,
+            string? email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<BranchModel>>()
-            {
-                Result = new List<BranchModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("VIEW_BRANCH"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (VIEW_BRANCH)");
-                    return response;
-                }
-
-                // ✅ VALIDATION (Transaction style)
-                if (request != null && request.PageNo > 0)
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    //if (request?.PageSize <= 0)
-                    //    response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                // All roles can view (filtered in SP)
+                return await _dal.GetAll(request, email!, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetAll", ex);
             }
-
-            return response;
         }
 
         // ========================
         // GET BY ID
         // ========================
-        /// <summary>
-        /// Branch API - Get Branch By Id
-        /// Author: Swapnlisa
-        /// Description:- We use this API to fetch branch details using BranchId.
-        /// Json Request Format Ex- {"BranchId":"1"}
-        public async Task<APIGetResponseModel<BranchModel>> GetById(long id,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<BranchModel>> GetById(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<BranchModel>();
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("VIEW_BRANCH"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (VIEW_BRANCH)");
-                    return response;
-                }
-
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Result = null;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchId");
-                }
+                return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetById", ex);
             }
-
-            return response;
         }
 
         // ========================
         // CREATE
         // ========================
-        /// <summary>
-        /// Branch API - Create Branch
-        /// Author: Swapnlisa
-        /// Description:- We use this API to create a new branch.
-        /// Json Request Format Ex- {"OrganizationId":"1","BranchName":"Main Branch","Address":"BBSR","City":"Bhubaneswar"}
-        /// <param name="request">BranchRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns newly created BranchId</returns>
-        public async Task<APIGetResponseModel<long>> Create(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(
+            BranchRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("CREATE_BRANCH"))
+                // ❌ Branch Admin cannot create
+                if (roles.Contains("Branch Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (CREATE_BRANCH)");
+                    response.ErrorMsgs.Add("Branch Admin cannot create branch.");
                     return response;
                 }
 
-                // ✅ VALIDATION (Transaction style)
-                if (request.OrganizationId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.BranchName) &&
-                    userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                // VALIDATION
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-                    response.TotalRecords = 0;
-
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Select Organization");
-
-                    if (string.IsNullOrWhiteSpace(request.BranchName))
-                        response.ErrorMsgs.Add("Enter Branch Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.BranchName))
+                    response.ErrorMsgs.Add("Branch Name is required");
+
+                if (request.OrganizationId <= 0)
+                    response.ErrorMsgs.Add("Organization is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                // CALL DAL
+                response = await _dal.Insert(request, email, transaction:localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // UPDATE
         // ========================
-        /// <summary>
-        /// Branch API - Update Branch
-        /// Author: Swapnlisa
-        /// Description:- We use this API to update existing branch details.
-        /// Json Request Format Ex- {"BranchId":"1","OrganizationId":"1","BranchName":"
-        public async Task<APIGetResponseModel<long>> Update(BranchRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            BranchRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("UPDATE_BRANCH"))
+                // ❌ Branch Admin cannot update
+                if (roles.Contains("Branch Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (UPDATE_BRANCH)");
+                    response.ErrorMsgs.Add("Branch Admin cannot update branch.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.BranchId > 0 &&
-                    request.OrganizationId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.BranchName) &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null || request.BranchId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-                    response.TotalRecords = 0;
-
-                    if (request.BranchId <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchId");
-
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Select Organization");
-
-                    if (string.IsNullOrWhiteSpace(request.BranchName))
-                        response.ErrorMsgs.Add("Enter Branch Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid branch data.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.BranchName))
+                    response.ErrorMsgs.Add("Branch Name is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                response = await _dal.Update(request, email, localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -238,87 +175,63 @@ namespace BAL.Services
         }
 
         // ========================
-        // CHANGE STATUS
+        // CHANGE STATUS (DELETE)
         // ========================
-        /// <summary>
-        /// Branch API - Change Branch Status
-        /// Author: Swapnlisa
-        /// Description:- We use this API to activate or deactivate a branch
-        /// <param name="id">BranchId</param>
-        /// <param name="status">0 = Inactive, 1 = Active</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,TokenUserInfo user,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("DELETE_BRANCH"))
+                // ❌ Only Super Admin can delete
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (DELETE_BRANCH)");
+                    response.ErrorMsgs.Add("Only Super Admin can delete branch.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-                    response.TotalRecords = 0;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchId");
-
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
-
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid branch ID.");
+                    return response;
                 }
+
+                response = await _dal.ChangeStatus(id, email, localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // DROPDOWN
         // ========================
-        /// <summary>
-        /// Branch BAL - Get Branch Dropdown
-        /// Author: Swapnlisa
-        /// Description:- Fetches active branch dropdown list.
-        /// </summary>
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
-            {
-                Result = new List<DropdownModel>()
-            };
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("VIEW_BRANCH"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (VIEW_BRANCH required)");
-                    return response;
-                }
-
-                response = await _dal.GetDropdown(transaction);
+                response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)
             {
