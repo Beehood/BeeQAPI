@@ -8,11 +8,7 @@ using System.Threading.Tasks;
 
 namespace DAL.ContractIF
 {
-    using Models;
-    using System.Data;
 
-    namespace DAL.ContractIF
-    {
         public interface IDAL_Service
         {
             Task<APIGetResponseModel<List<ServiceModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null);
@@ -28,4 +24,4 @@ namespace DAL.ContractIF
             Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null);
         }
     }
-    }
+    

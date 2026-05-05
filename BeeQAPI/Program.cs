@@ -1,13 +1,11 @@
 ﻿
 using BAL.ContractIF;
-using BAL.ContractIF.BAL.ContractIF;
 using BAL.Implementation;
 using BAL.Services;
 using BeeQAPI.Authorization;
 using BeeQAPI.Middleware;
 using DAL.ContractIF;
 using DAL.ContractIF;
-using DAL.ContractIF.DAL.ContractIF;
 using DAL.Dbcontext;
 using DAL.Implementation;
 using DAL.Services;

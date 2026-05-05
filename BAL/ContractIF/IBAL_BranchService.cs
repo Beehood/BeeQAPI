@@ -1,7 +1,7 @@
 ﻿using Models;
 using System.Data;
 
-namespace BAL.ContractIF.BAL.ContractIF
+namespace BAL.ContractIF
 {
     public interface IBAL_BranchService
     {

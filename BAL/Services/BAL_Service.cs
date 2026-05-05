@@ -1,6 +1,5 @@
 ﻿using BAL.ContractIF;
-using BAL.ContractIF.BAL.ContractIF;
-using DAL.ContractIF.DAL.ContractIF;
+using DAL.ContractIF;
 using Dapper;
 using Models;
 using MySql.Data.MySqlClient;

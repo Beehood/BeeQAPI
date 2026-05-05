@@ -1,7 +1,7 @@
 ﻿using Models;
 using System.Data;
 
-namespace DAL.ContractIF.DAL.ContractIF
+namespace DAL.ContractIF
 {
     public interface IDAL_BranchService
     {

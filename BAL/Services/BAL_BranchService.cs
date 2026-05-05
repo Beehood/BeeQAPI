@@ -1,5 +1,5 @@
-﻿using BAL.ContractIF.BAL.ContractIF;
-using DAL.ContractIF.DAL.ContractIF;
+﻿using BAL.ContractIF;
+using DAL.ContractIF;
 using Models;
 using System.Data;
 

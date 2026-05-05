@@ -1,4 +1,4 @@
-﻿using DAL.ContractIF.DAL.ContractIF;
+﻿using DAL.ContractIF;
 using DAL.Dbcontext;
 using Dapper;
 using Models;
