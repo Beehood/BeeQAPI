@@ -4,8 +4,7 @@ using System.Data;
 namespace BAL.ContractIF
 {
 
-    namespace BAL.ContractIF
-    {
+   
         public interface IBAL_Service
         {
             Task<APIGetResponseModel<List<ServiceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null);
@@ -20,5 +19,5 @@ namespace BAL.ContractIF
 
             Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
         }
-    }
+    
 }
