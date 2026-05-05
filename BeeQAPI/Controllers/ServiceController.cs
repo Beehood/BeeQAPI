@@ -19,7 +19,7 @@ public class ServiceController : ControllerBase
     // ========================
     // GET ALL
     // ========================
-    [Authorize(Policy = "SERVICE_VIEW")]
+    [Authorize(Policy = "VIEW_SERVICE")]
     [HttpPost("ServiceList")]
     [ProducesResponseType(typeof(APIGetResponseModel<List<ServiceModel>>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<List<ServiceModel>>> GetAll([FromBody] PaginationRequestDto request)
@@ -34,7 +34,7 @@ public class ServiceController : ControllerBase
     // ========================
     // GET BY ID
     // ========================
-    [Authorize(Policy = "SERVICE_VIEW")]
+    [Authorize(Policy = "VIEW_SERVICE")]
     [HttpPost("ServiceById")]
     [ProducesResponseType(typeof(APIGetResponseModel<ServiceModel>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<ServiceModel>> GetById([FromBody] long id)
@@ -49,7 +49,7 @@ public class ServiceController : ControllerBase
     // ========================
     // CREATE
     // ========================
-    [Authorize(Policy = "SERVICE_CREATE")]
+    [Authorize(Policy = "CREATE_SERVICE")]
     [HttpPost("NewService")]
     [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<int>> Create([FromBody] ServiceRequestDto request)
@@ -64,7 +64,7 @@ public class ServiceController : ControllerBase
     // ========================
     // UPDATE
     // ========================
-    [Authorize(Policy = "SERVICE_UPDATE")]
+    [Authorize(Policy = "UPDATE_SERVICE")]
     [HttpPost("EditService")]
     [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<int>> Update([FromBody] ServiceRequestDto request)
@@ -79,7 +79,7 @@ public class ServiceController : ControllerBase
     // ========================
     // STATUS
     // ========================
-    [Authorize(Policy = "SERVICE_STATUS")]
+    [Authorize(Policy = "STATUS_SERVICE")]
     [HttpPost("ServiceStatus")]
     [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
@@ -94,7 +94,7 @@ public class ServiceController : ControllerBase
     // ========================
     // DROPDOWN
     // ========================
-    [Authorize(Policy = "SERVICE_VIEW")]
+    [Authorize(Policy = "VIEW_SERVICE")]
     [HttpGet("ServiceDropdown")]
     [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
