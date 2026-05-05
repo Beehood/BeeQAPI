@@ -168,25 +168,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
 // Custom policy provider for permission-based authorization
-//builder.Services.AddSingleton<IAuthorizationPolicyProvider,
-//    PermissionPolicyProvider>();
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("VIEW_SERVICE",
-        p => p.RequireClaim("permission", "VIEW_SERVICE"));
-
-    options.AddPolicy("CREATE_SERVICE",
-        p => p.RequireClaim("permission", "CREATE_SERVICE"));
-
-    options.AddPolicy("UPDATE_SERVICE",
-        p => p.RequireClaim("permission", "UPDATE_SERVICE"));
-
-    options.AddPolicy("DELETE_SERVICE",
-        p => p.RequireClaim("permission", "DELETE_SERVICE"));
-});
+builder.Services.AddSingleton<IAuthorizationPolicyProvider,
+    PermissionPolicyProvider>();
 
 builder.Services.AddCors(options =>
 {
