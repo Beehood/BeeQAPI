@@ -57,10 +57,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> Create([FromBody] BranchRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

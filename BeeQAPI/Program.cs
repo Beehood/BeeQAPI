@@ -100,6 +100,11 @@ builder.Services.AddScoped<IDAL_Permission, DAL_Permission>();
 // JWT
 // ========================
 builder.Services.AddScoped<IJwtService, JwtService>();
+//========================
+// MENU
+//=========================
+builder.Services.AddScoped<IBAL_Menu, BAL_Menu>();
+ builder.Services.AddScoped<IDAL_Menu, DAL_Menu>();
 
 
 builder.Services.AddControllers();
