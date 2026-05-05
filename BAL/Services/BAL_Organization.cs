@@ -36,7 +36,7 @@ namespace BAL.Services
         {
             try
             {
-                // 🔥 Only Super Admin can access Organizations
+                //  Only Super Admin can access Organizations
                 if (!roles.Contains("Super Admin"))
                 {
                     return new APIGetResponseModel<List<OrganizationModel>>

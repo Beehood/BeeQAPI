@@ -1,4 +1,5 @@
 ﻿using BAL.ContractIF;
+using BAL.ContractIF;
 using DAL.ContractIF;
 using Dapper;
 using Models;
@@ -7,13 +8,6 @@ using System.Data;
 
 namespace BAL.Implementation
 {
-    /// <summary>
-    /// BAL Layer for Service Management
-    /// Author: Swapnalisa
-    /// Description:
-    /// Handles business logic, validation, and role-based access control
-    /// before calling DAL for database operations.
-    /// </summary>
     public class BAL_Service : IBAL_Service
     {
         private readonly IDAL_Service _dal;
@@ -34,12 +28,23 @@ namespace BAL.Implementation
         {
             try
             {
-                // All roles allowed (filtered in SP)
+                //  Role validation (same pattern as Organization)
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
+                {
+                    return new APIGetResponseModel<List<ServiceModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
+                }
+
                 return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetAll", ex);
+                throw new Exception("BAL: Error in GetAll (Service)", ex);
             }
         }
 
@@ -48,20 +53,30 @@ namespace BAL.Implementation
         // ========================
         /// <summary>
         /// Fetch service by ID
-        /// Access: All roles
-        /// </summary>
+        /// Access: Super Admin, Org Admin, Branch Admin
         public async Task<APIGetResponseModel<ServiceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
+                // Role validation added
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
+                {
+                    return new APIGetResponseModel<ServiceModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
+                }
+
                 return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetById", ex);
+                throw new Exception("BAL: Error in GetById (Service)", ex);
             }
         }
-
         // ========================
         // CREATE
         // ========================
@@ -71,7 +86,6 @@ namespace BAL.Implementation
         /// Super Admin
         /// Org Admin
         /// Branch Admin ✅ (Allowed)
-        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -79,6 +93,15 @@ namespace BAL.Implementation
 
             try
             {
+                // 🔥 ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Access denied.");
+                    return response;
+                }
                 // VALIDATION
                 if (request == null)
                 {
@@ -126,7 +149,7 @@ namespace BAL.Implementation
         /// Super Admin
         /// Org Admin
         /// Branch Admin ✅ (Allowed)
-        /// </summary>
+    
         public async Task<APIGetResponseModel<int>> Update(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -134,6 +157,17 @@ namespace BAL.Implementation
 
             try
             {
+                //  ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Access denied.");
+                    return response;
+                }
+
+                //  VALIDATION
                 if (request == null || request.ServiceId <= 0)
                 {
                     response.IsSuccess = false;
@@ -150,7 +184,7 @@ namespace BAL.Implementation
                     return response;
                 }
 
-                response = await _dal.Update(request, email, localtran);
+                response = await _dal.Update(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
@@ -176,7 +210,7 @@ namespace BAL.Implementation
         /// Super Admin
         /// Org Admin
         /// Branch Admin ✅ (Allowed)
-        /// </summary>
+ 
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -184,6 +218,16 @@ namespace BAL.Implementation
 
             try
             {
+                //  ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Access denied.");
+                    return response;
+                }
+
                 if (id <= 0)
                 {
                     response.IsSuccess = false;
@@ -191,7 +235,7 @@ namespace BAL.Implementation
                     return response;
                 }
 
-                response = await _dal.ChangeStatus(id, email, localtran);
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
@@ -214,13 +258,21 @@ namespace BAL.Implementation
         /// <summary>
         /// Fetch service dropdown
         /// Access: All roles
-        /// </summary>
+       
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
+                // ROLE CHECK (optional - keep if needed)
+                // if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin") || roles.Contains("Branch Admin")))
+                // {
+                //     response.IsSuccess = false;
+                //     response.ErrorMsgs.Add("Access denied.");
+                //     return response;
+                // }
+
                 response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)

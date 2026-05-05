@@ -24,42 +24,61 @@ namespace BAL.Services
         // GET ALL
         // ========================
         /// <summary>
-        /// BAL Layer for Branch Management
+        /// Branch API - Get All Branches
         /// Author: Swapnalisa
-        /// Description:
-        /// Handles business logic, validation, and role-based access control
-        /// before calling DAL for database operations.
+        /// Description:- Fetch branch list with pagination.
         public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
-                // All roles can view (filtered in SP)
-                return await _dal.GetAll(request, email!, transaction);
+                //  Only Super Admin + Org Admin allowed
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
+                {
+                    return new APIGetResponseModel<List<BranchModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied. Only Admins allowed." }
+                    };
+                }
+
+                return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetAll", ex);
+                throw new Exception("BAL: Error in GetAll (Branch)", ex);
             }
         }
+
 
         // ========================
         // GET BY ID
         // ========================
         /// <summary>
-        /// Fetch branch details by BranchId
-        /// Access: All roles (controlled in SP)
+        /// Branch API - Get Branch By Id
+        /// Author: Swapnalisa
+        /// Description:- Fetch branch details by ID.
+       
         public async Task<APIGetResponseModel<BranchModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
+                //  Only Super Admin + Org Admin allowed
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
+                {
+                    return new APIGetResponseModel<BranchModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
+                }
+
                 return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetById", ex);
+                throw new Exception("BAL: Error in GetById (Branch)", ex);
             }
         }
-
         // ========================
         // CREATE
         // ========================
@@ -76,15 +95,15 @@ namespace BAL.Services
 
             try
             {
-                //  Branch Admin cannot create
-                if (roles.Contains("Branch Admin"))
+                //  ROLE CHECK (same style as Org)
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Branch Admin cannot create branch.");
+                    response.ErrorMsgs.Add("Only Super Admin and Org Admin can create branch.");
                     return response;
                 }
 
-                // VALIDATION
+                //  VALIDATION
                 if (request == null)
                 {
                     response.IsSuccess = false;
@@ -104,8 +123,8 @@ namespace BAL.Services
                     return response;
                 }
 
-                // CALL DAL
-                response = await _dal.Insert(request, email, transaction:localtran);
+                //  CALL DAL
+                response = await _dal.Insert(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
@@ -121,6 +140,8 @@ namespace BAL.Services
 
             return response;
         }
+
+
 
         // ========================
         // UPDATE
@@ -138,14 +159,15 @@ namespace BAL.Services
 
             try
             {
-                //  Branch Admin cannot update
-                if (roles.Contains("Branch Admin"))
+                //  ROLE CHECK
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Branch Admin cannot update branch.");
+                    response.ErrorMsgs.Add("Only Super Admin and Org Admin can update branch.");
                     return response;
                 }
 
+                //  VALIDATION
                 if (request == null || request.BranchId <= 0)
                 {
                     response.IsSuccess = false;
@@ -162,7 +184,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                response = await _dal.Update(request, email, localtran);
+                response = await _dal.Update(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
@@ -195,7 +217,7 @@ namespace BAL.Services
 
             try
             {
-                // Only Super Admin can delete
+                // ROLE CHECK (same as Org)
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -210,7 +232,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                response = await _dal.ChangeStatus(id, email, localtran);
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
