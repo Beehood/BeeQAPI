@@ -12,7 +12,7 @@ namespace Models
         public long OrganizationId { get; set; }
         public string ServiceName { get; set; } = string.Empty;
         public string? ServiceCode { get; set; }
-        public string? EstimatedTime { get; set; }
+        public int? EstimatedTime { get; set; }
         public string? Description { get; set; }
         public bool Status { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -24,7 +24,7 @@ namespace Models
         public long OrganizationId { get; set; }
         public string ServiceName { get; set; } = string.Empty;
         public string? ServiceCode { get; set; }
-        public string? EstimatedTime { get; set; }
+        public int? EstimatedTime { get; set; }
         public string? Description { get; set; }
         public bool? Status { get; set; }
         public string? SearchKey { get; set; }

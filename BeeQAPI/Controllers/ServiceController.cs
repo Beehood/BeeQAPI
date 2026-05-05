@@ -79,7 +79,7 @@ public class ServiceController : ControllerBase
     // ========================
     // STATUS
     // ========================
-    [Authorize(Policy = "STATUS_SERVICE")]
+    [Authorize(Policy = "DELETE_SERVICE")]
     [HttpPost("ServiceStatus")]
     [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
     public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
