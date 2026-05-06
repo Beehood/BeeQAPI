@@ -305,7 +305,7 @@ namespace DAL.Services
         /// Author: Swapnlisa
         /// Description:- Fetches active organization dropdown list.
         /// </summary>
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
@@ -313,8 +313,28 @@ namespace DAL.Services
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
-                var data = (await conn.QueryAsync<DropdownModel>(@"SELECT organization_id AS Id, name AS Name FROM organizations WHERE status = 1"))
-                    .ToList();
+                var param = new DynamicParameters();
+                param.Add("p_Action", "DROPDOWN");
+                param.Add("p_OrganizationId", null);
+                param.Add("p_OrganizationName", null);
+                param.Add("p_Email", null);
+                param.Add("p_Phone", null);
+                param.Add("p_Address", null);
+                param.Add("p_City", null);
+                param.Add("p_State", null);
+                param.Add("p_Country", null);
+                param.Add("p_Pincode", null);
+                param.Add("p_Logo", null);
+                param.Add("p_Status", null);
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
+                param.Add("p_UserEmail", email);
+
+                var data = (await conn.QueryAsync<DropdownModel>(
+                    "sp_manage_organization",
+                    param,
+                    commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
@@ -323,8 +343,8 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching dropdown");
-                Console.WriteLine("DAL DROPDOWN ERROR: " + ex.Message);
+                response.ErrorMsgs.Add("Error while fetching organization dropdown");
+                Console.WriteLine("DAL ORGANIZATION DROPDOWN ERROR: " + ex.Message);
             }
 
             return response;

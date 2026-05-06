@@ -266,24 +266,13 @@ namespace BAL.Services
 
             return response;
         }
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
-            {
-                Result = new List<DropdownModel>()
-            };
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                //// RBAC
-                //if (user == null || !user.Permissions.Contains("ORGANIZATION_VIEW"))
-                //{
-                //    response.IsSuccess = false;
-                //    response.ErrorMsgs.Add("Unauthorized access (ORGANIZATION_VIEW required)");
-                //    return response;
-                //}
-
-                response = await _dal.GetDropdown(transaction);
+                response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)
             {

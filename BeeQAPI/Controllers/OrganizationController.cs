@@ -121,18 +121,17 @@ namespace BeeQAPI.Controllers
 
             return await _bal.ChangeStatus(request.OrganizationId, roles, email, transaction: null);
         }
-        //// ===================
-        //// DROPDOWN
-        //// ===================
-        //[HttpGet("OrganizationDropdown")]
-        //[Authorize(Policy = "ORG_VIEW")]
-        //[ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
-        //public async Task<IActionResult> GetDropdown()
-        //{
-        //    var user = HttpContext.Items["User"] as TokenUserInfo;
+        // ========================
+        // DROPDOWN
+        // ========================
+        [Authorize(Policy = "VIEW_ORGANIZATION")]
+        [HttpGet("OrganizationDropdown")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+        {
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        //    var result = await _bal.GetDropdown(user);
-        //    return Ok(result);
-        //}
+            return await _bal.GetDropdown(email, transaction: null);
+        }
     }
 }

@@ -20,6 +20,6 @@ namespace DAL.ContractIF
 
         Task<APIGetResponseModel<int>> ChangeStatus(long id, string userId, IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null);
     }
 }
