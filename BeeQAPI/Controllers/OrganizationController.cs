@@ -124,7 +124,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // DROPDOWN
         // ========================
-        [Authorize(Policy = "VIEW_ORGANIZATION")]
+        [Authorize(Policy = "VIEW_ORG")]
         [HttpGet("OrganizationDropdown")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
