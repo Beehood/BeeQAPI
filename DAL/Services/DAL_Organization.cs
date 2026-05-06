@@ -314,21 +314,25 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "DROPDOWN");
+
                 param.Add("p_OrganizationId", null);
-                param.Add("p_OrganizationName", null);
+
+                param.Add("p_Name", null);
+
                 param.Add("p_Email", null);
+
                 param.Add("p_Phone", null);
+
                 param.Add("p_Address", null);
-                param.Add("p_City", null);
-                param.Add("p_State", null);
-                param.Add("p_Country", null);
-                param.Add("p_Pincode", null);
-                param.Add("p_Logo", null);
-                param.Add("p_Status", null);
+
+                param.Add("p_SubscriptionPlan", null);
+
                 param.Add("p_SearchKey", null);
+
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+
                 param.Add("p_UserEmail", email);
 
                 var data = (await conn.QueryAsync<DropdownModel>(
