@@ -23,46 +23,26 @@ namespace BAL.Services
 
             var claims = new List<Claim>
             {
-               new Claim(ClaimTypes.NameIdentifier, user.Username),
-                new Claim(ClaimTypes.Name, user.Name ?? "")
+               new Claim(ClaimTypes.NameIdentifier, user.Username),new Claim(ClaimTypes.Name, user.Name ?? "")
             };
 
             // Add Roles
             if (user.Roles != null && user.Roles.Any())
             {
-                claims.AddRange(
-                    user.Roles.Select(role =>
-                        new Claim(ClaimTypes.Role, role))
-                );
+                claims.AddRange(user.Roles.Select(role =>new Claim(ClaimTypes.Role, role)));
             }
 
             // Add Permissions
             if (user.Permissions != null && user.Permissions.Any())
             {
-                claims.AddRange(
-                    user.Permissions.Select(permission =>
-                        new Claim("permission", permission))
-                );
+                claims.AddRange(user.Permissions.Select(permission =>new Claim("permission", permission)));
             }
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
-            );
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
 
-            var creds = new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256
-            );
+            var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
-                    Convert.ToDouble(jwtSettings["ExpiryInMinutes"])
-                ),
-                signingCredentials: creds
-            );
+            var token = new JwtSecurityToken(issuer: jwtSettings["Issuer"],audience: jwtSettings["Audience"],claims: claims,expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"])),signingCredentials: creds);
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 

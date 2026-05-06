@@ -19,7 +19,7 @@ namespace BeeQAPI.Controllers
             _bal = bal;
         }
 
-        // 🔥 Get user from middleware
+        //  Get user from middleware
         //private TokenUserInfo GetUser()
         //{
         //    return HttpContext.Items["User"] as TokenUserInfo;
@@ -63,10 +63,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<List<OrganizationModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll([FromBody] PaginationRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -79,10 +76,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<OrganizationModel>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<OrganizationModel>> GetById([FromBody] long id)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -95,10 +89,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> Create([FromBody] OrganizationRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -111,10 +102,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> Update([FromBody] OrganizationRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -127,10 +115,7 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

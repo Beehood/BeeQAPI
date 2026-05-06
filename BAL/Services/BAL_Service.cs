@@ -93,7 +93,7 @@ namespace BAL.Implementation
 
             try
             {
-                // 🔥 ROLE CHECK
+                //  ROLE CHECK
                 if (!(roles.Contains("Super Admin") ||
                       roles.Contains("Org Admin") ||
                       roles.Contains("Branch Admin")))
@@ -148,7 +148,7 @@ namespace BAL.Implementation
         /// Access:
         /// Super Admin
         /// Org Admin
-        /// Branch Admin ✅ (Allowed)
+        /// Branch Admin (Allowed)
     
         public async Task<APIGetResponseModel<int>> Update(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
@@ -209,7 +209,7 @@ namespace BAL.Implementation
         /// Access:
         /// Super Admin
         /// Org Admin
-        /// Branch Admin ✅ (Allowed)
+        /// Branch Admin (Allowed)
  
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {

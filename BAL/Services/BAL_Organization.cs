@@ -275,7 +275,7 @@ namespace BAL.Services
 
             try
             {
-                //// 🔐 RBAC
+                //// RBAC
                 //if (user == null || !user.Permissions.Contains("ORGANIZATION_VIEW"))
                 //{
                 //    response.IsSuccess = false;

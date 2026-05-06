@@ -9,6 +9,7 @@ namespace BAL.Implementation
     {
         private readonly IDAL_BranchService _dal;
 
+
         public BAL_BranchService(IDAL_BranchService dal)
         {
             _dal = dal;
@@ -19,170 +20,119 @@ namespace BAL.Implementation
         // ========================
         /// <summary>
         /// Branch Service API - Get All Branch Services
-        /// Author: Swapnlisa
-        /// Description:- We use this API to fetch branch service list with pagination.
-        /// Json Request Format Ex- {"PageNo":"1","PageSize":"10"}
-        /// <param name="request">PaginationRequestDto</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns paginated branch service list</returns>
-        public async Task<APIGetResponseModel<List<BranchServiceModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
+        /// Author: Swapnalisa
+        /// Description: Fetch branch service list with pagination.
+        /// Access: Super Admin, Org Admin, Branch Admin
+        public async Task<APIGetResponseModel<List<BranchServiceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<BranchServiceModel>>()
-            {
-                Result = new List<BranchServiceModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCHSERVICE_VIEW"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCHSERVICE_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<List<BranchServiceModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
-
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0 )
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    //if (request?.PageSize <= 0)
-                    //    response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                //  All roles allowed (filtered in SP)
+                return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-                Console.WriteLine("BAL ERROR: " + ex.Message);
+                throw new Exception("BAL: Error in GetAll (BranchService)", ex);
             }
-            return response;
         }
 
         // ========================
         // GET BY ID
         // ========================
         /// <summary>
-        /// Branch Service API - Get Branch Service By Id
-        /// Author: Swapnlisa
-        /// Description:- We use this API to fetch branch service details using BranchServiceId.
-        /// Json Request Format Ex- {"BranchServiceId":"1"}
-        /// </summary>
-        /// <param name="id">BranchServiceId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns branch service details</returns>
-        public async Task<APIGetResponseModel<BranchServiceModel>> GetById(long id, TokenUserInfo user, IDbTransaction? transaction = null)
+        /// Branch Service API - Get By Id
+        /// Description: Fetch branch service details by ID.
+        /// Access: Super Admin, Org Admin, Branch Admin
+        public async Task<APIGetResponseModel<BranchServiceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<BranchServiceModel>()
-            {
-                Result = new BranchServiceModel()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCHSERVICE_VIEW"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCHSERVICE_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<BranchServiceModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Result = null;
-                    response.ErrorMsgs.Add("Invalid BranchServiceId");
-                }
+                return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetById (BranchService)", ex);
             }
-
-            return response;
         }
 
         // ========================
         // CREATE
         // ========================
         /// <summary>
-        /// Branch Service API - Create Branch Service
-        /// Author: Swapnlisa
-        /// Description:- We use this API to create a new branch service mapping.
-        /// Json Request Format Ex- {"BranchId":"1","ServiceId":"1","Prefix":"A","DailyLimit":"100"}
+        /// Create new Branch Service
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin
         /// </summary>
-        /// <param name="request">BranchServiceRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns created BranchServiceId</returns>
-        public async Task<APIGetResponseModel<long>> Create(BranchServiceRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(BranchServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCHSERVICE_CREATE"))
+                // ROLE CHECK (All 3 allowed)
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCHSERVICE_CREATE required)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.BranchId > 0 &&
-                    request.ServiceId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.Prefix) &&
-                    request.DailyLimit > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                //  VALIDATION
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (request.BranchId <= 0)
-                        response.ErrorMsgs.Add("Select Branch");
-
-                    if (request.ServiceId <= 0)
-                        response.ErrorMsgs.Add("Select Service");
-
-                    if (string.IsNullOrWhiteSpace(request.Prefix))
-                        response.ErrorMsgs.Add("Enter Prefix");
-
-                    if (request.DailyLimit <= 0)
-                        response.ErrorMsgs.Add("Enter Daily Limit");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
                 }
+
+                if (request.BranchId <= 0)
+                    response.ErrorMsgs.Add("Branch is required");
+
+                if (request.ServiceId <= 0)
+                    response.ErrorMsgs.Add("Service is required");
+
+                if (string.IsNullOrWhiteSpace(request.Prefix))
+                    response.ErrorMsgs.Add("Prefix is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                // CALL DAL
+                response = await _dal.Insert(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -194,66 +144,54 @@ namespace BAL.Implementation
         // UPDATE
         // ========================
         /// <summary>
-        /// Branch Service API - Update Branch Service
-        /// Author: Swapnlisa
-        /// Description:- We use this API to update branch service details.
-        /// Json Request Format Ex- {"BranchServiceId":"1","BranchId":"1","ServiceId":"1"}
-        /// </summary>
-        /// <param name="request">BranchServiceRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns updated BranchServiceId</returns>
-        public async Task<APIGetResponseModel<long>> Update(BranchServiceRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        /// Update Branch Service
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin
+        public async Task<APIGetResponseModel<int>> Update(BranchServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCHSERVICE_UPDATE"))
+                //  ROLE CHECK (All 3 allowed)
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCHSERVICE_UPDATE required)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.BranchServiceId > 0 &&
-                    request.BranchId > 0 &&
-                    request.ServiceId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.Prefix) &&
-                    request.DailyLimit > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null || request.BranchServiceId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (request.BranchServiceId <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchServiceId");
-
-                    if (request.BranchId <= 0)
-                        response.ErrorMsgs.Add("Select Branch");
-
-                    if (request.ServiceId <= 0)
-                        response.ErrorMsgs.Add("Select Service");
-
-                    if (string.IsNullOrWhiteSpace(request.Prefix))
-                        response.ErrorMsgs.Add("Enter Prefix");
-
-                    if (request.DailyLimit <= 0)
-                        response.ErrorMsgs.Add("Enter Daily Limit");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid branch service data.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.Prefix))
+                    response.ErrorMsgs.Add("Prefix is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                response = await _dal.Update(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -265,81 +203,65 @@ namespace BAL.Implementation
         // CHANGE STATUS
         // ========================
         /// <summary>
-        /// Branch Service API - Change Branch Service Status
-        /// Author: Swapnlisa
-        /// Description:- We use this API to activate or deactivate branch service.
-        /// </summary>
-        /// <param name="id">BranchServiceId</param>
-        /// <param name="status">0 = Inactive, 1 = Active</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
-        /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        /// Activate / Deactivate Branch Service
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// Branch Admin 
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCHSERVICE_STATUS"))
+                //  ROLE CHECK (All 3 allowed)
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCHSERVICE_STATUS required)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid BranchServiceId");
-
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
-
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid BranchService ID.");
+                    return response;
                 }
+
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            TokenUserInfo user,
-            IDbTransaction? transaction = null)
+        /// <summary>
+        /// Get Branch Service Dropdown
+        /// Access: branchadmin,superadmin,orgadmin
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
-            {
-                Result = new List<DropdownModel>()
-            };
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("BRANCHSERVICE_VIEW"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (BRANCHSERVICE_VIEW required)");
-                    return response;
-                }
-
-                response = await _dal.GetDropdown(transaction);
+                response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)
             {
@@ -351,5 +273,3 @@ namespace BAL.Implementation
         }
     }
 }
-
-

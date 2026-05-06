@@ -8,9 +8,8 @@ using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("branchservice")]
+    [Route("BeeQAPI")]
     [ApiController]
-    //[Authorize]
     public class BranchServiceController : ControllerBase
     {
         private readonly IBAL_BranchService _bal;
@@ -20,117 +19,92 @@ namespace BeeQAPI.Controllers
             _bal = bal;
         }
 
-        // 🔥 Get user from middleware
-        //private TokenUserInfo GetUser()
-        //{
-        //    return HttpContext.Items["User"] as TokenUserInfo;
-        //}
-
-        // for temporary testing without auth
-        private TokenUserInfo GetUser()
-        {
-            return new TokenUserInfo
-            {
-                Username = "1",
-                Permissions = new List<string>
-                {
-                    "BRANCHSERVICE_VIEW",
-                    "BRANCHSERVICE_CREATE",
-                    "BRANCHSERVICE_UPDATE",
-                    "BRANCHSERVICE_STATUS"
-                }
-            };
-        }
-
         // ========================
         // GET ALL
         // ========================
-        //[Authorize(Policy = "BRANCHSERVICE_VIEW")]
+        [Authorize(Policy = "VIEW_BRANCH_SERVICE")]
         [HttpPost("BranchServiceList")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<BranchServiceModel>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
+        public async Task<APIGetResponseModel<List<BranchServiceModel>>> GetAll([FromBody] PaginationRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.GetAll(request, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetAll(request, roles, email, transaction: null);
         }
 
         // ========================
         // GET BY ID
         // ========================
-        //[Authorize(Policy = "BRANCHSERVICE_VIEW")]
+        [Authorize(Policy = "VIEW_BRANCH_SERVICE")]
         [HttpPost("BranchServiceById")]
         [ProducesResponseType(typeof(APIGetResponseModel<BranchServiceModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetById([FromBody] long id)
+        public async Task<APIGetResponseModel<BranchServiceModel>> GetById([FromBody] long id)
         {
-            var user = GetUser(); // 🔁 replace with JWT later
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.GetById(id, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetById(id, roles, email, transaction: null);
         }
 
         // ========================
         // CREATE
         // ========================
-        //[Authorize(Policy = "BRANCHSERVICE_CREATE")]
+        [Authorize(Policy = "CREATE_BRANCH_SERVICE")]
         [HttpPost("NewBranchService")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Create([FromBody] BranchServiceRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Create([FromBody] BranchServiceRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.Create(request, user.Username, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.Create(request, roles, email, transaction: null);
         }
 
         // ========================
         // UPDATE
         // ========================
-        //[Authorize(Policy = "BRANCHSERVICE_UPDATE")]
+        [Authorize(Policy = "UPDATE_BRANCH_SERVICE")]
         [HttpPost("EditBranchService")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update([FromBody] BranchServiceRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Update([FromBody] BranchServiceRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.Update(request, user.Username, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.Update(request, roles, email, transaction: null);
         }
 
         // ========================
-        // CHANGE STATUS
+        // CHANGE STATUS (DELETE)
         // ========================
-        //[Authorize(Policy = "BRANCHSERVICE_STATUS")]
+        [Authorize(Policy = "DELETE_BRANCH_SERVICE")]
         [HttpPost("BranchServiceStatus")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ChangeStatus([FromBody] BranchServiceRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var result = await _bal.ChangeStatus(
-                request.BranchServiceId,
-                request.Status == true ? 1 : 0,
-                uid,
-                user
-            );
-
-            return Ok(result);
+            return await _bal.ChangeStatus(id, roles, email, transaction: null);
         }
-        // ===================
-        // DROPDOWN (PRODUCTION READY)
-        // ===================
-        [HttpGet("BranchServiceDropdown")]
-        //[Authorize(Policy = "BRANCHSERVICE_VIEW")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
-        public async Task<IActionResult> GetDropdown()
-        {
-            var user = HttpContext.Items["User"] as TokenUserInfo;
 
-            var result = await _bal.GetDropdown(user);
-            return Ok(result);
+        // ========================
+        // DROPDOWN
+        // ========================
+        [Authorize(Policy = "VIEW_BRANCH_SERVICE")]
+        [HttpGet("BranchServiceDropdown")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+        {
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetDropdown(email, transaction: null);
         }
     }
 }
