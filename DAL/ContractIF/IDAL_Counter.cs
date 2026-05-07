@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 
 namespace DAL.ContractIF
 {
-   
+
     public interface IDAL_Counter
     {
-        Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<CounterModel>> GetById(long id,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<CounterModel>> GetById(long id,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Insert(CounterRequestDto request,string userId,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Insert(CounterRequestDto request,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Update(CounterRequestDto request,string userId,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Update(CounterRequestDto request,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
     }
 }

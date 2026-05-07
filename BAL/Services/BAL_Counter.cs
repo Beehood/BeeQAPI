@@ -22,153 +22,119 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        /// <summary>
-        /// Retrieves a paginated list of counters based on the provided pagination request.
-        /// </summary>
-        /// <param name="request">Pagination details (PageNumber, PageSize)</param>
-        /// <param name="user">Authenticated user with permissions</param>
-        /// <param name="transaction">Optional database transaction</param>
-        /// <returns>List of CounterModel wrapped in API response</returns>
-        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(
+            PaginationRequestDto request,
+            List<string> roles,
+            string? email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<CounterModel>>()
-            {
-                Result = new List<CounterModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTER_VIEW"))
+                // ✅ ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (COUNTER_VIEW)");
-                    return response;
+                    return new APIGetResponseModel<List<CounterModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0)
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    //if (request?.PageSize <= 0)
-                    //    response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in Counter GetAll", ex);
             }
-
-            return response;
         }
 
         // ========================
         // GET BY ID
         // ========================
-        /// <summary>
-        /// Counter API - Get Counter By Id
-        /// Author: Swapnlisa
-        /// Description:- We use this API to fetch counter details using CounterId.
-        /// Json Request Format Ex- {"CounterId":"1"}
-        /// </summary>
-        public async Task<APIGetResponseModel<CounterModel>> GetById(long id, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<CounterModel>> GetById(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<CounterModel>();
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTER_VIEW"))
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (COUNTER_VIEW)");
-                    return response;
+                    return new APIGetResponseModel<CounterModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Result = null;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid CounterId");
-                }
+                return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in Counter GetById", ex);
             }
-
-            return response;
         }
 
         // ========================
         // CREATE
         // ========================
-        /// <summary>
-        /// Counter API - Create Counter
-        /// Author: Swapnlisa
-        /// Description:- We use this API to create a new counter.
-        /// Json Request Format Ex- {"BranchId":"1","CounterName":"Counter 1","CounterCode":"C001"}
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> Create(CounterRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(
+            CounterRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTER_CREATE"))
+                //  ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (COUNTER_CREATE)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.BranchId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.CounterName) &&
-                    userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                //  VALIDATION
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-                    response.TotalRecords = 0;
-
-                    if (request.BranchId <= 0)
-                        response.ErrorMsgs.Add("Select Branch");
-
-                    if (string.IsNullOrWhiteSpace(request.CounterName))
-                        response.ErrorMsgs.Add("Enter Counter Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.CounterName))
+                    response.ErrorMsgs.Add("Counter Name is required");
+
+                if (request.BranchId <= 0)
+                    response.ErrorMsgs.Add("Branch is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                // CALL DAL
+                response = await _dal.Insert(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -179,55 +145,52 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        /// <summary>
-        /// Counter API - Update Counter
-        /// Author: Swapnlisa
-        /// Description:- We use this API to update existing counter details.
-        /// Json Request Format Ex- {"CounterId":"1","BranchId":"1","CounterName":"Updated Counter"}
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> Update(CounterRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            CounterRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTER_UPDATE"))
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (COUNTER_UPDATE)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.CounterId > 0 &&
-                    request.BranchId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.CounterName) &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null || request.CounterId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-                    response.TotalRecords = 0;
-
-                    if (request.CounterId <= 0)
-                        response.ErrorMsgs.Add("Invalid CounterId");
-
-                    if (request.BranchId <= 0)
-                        response.ErrorMsgs.Add("Select Branch");
-
-                    if (string.IsNullOrWhiteSpace(request.CounterName))
-                        response.ErrorMsgs.Add("Enter Counter Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid counter data.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.CounterName))
+                    response.ErrorMsgs.Add("Counter Name is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                response = await _dal.Update(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -236,47 +199,64 @@ namespace BAL.Services
         }
 
         // ========================
-        // CHANGE STATUS
+        // STATUS
         // ========================
-        /// <summary>
-        /// Counter API - Change Counter Status
-        /// Author: Swapnlisa
-        /// Description:- We use this API to activate or deactivate a counter
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTER_STATUS"))
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (COUNTER_STATUS)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-                    response.TotalRecords = 0;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid CounterId");
-
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
-
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid counter ID.");
+                    return response;
                 }
+
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
+            }
+            catch (Exception ex)
+            {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
+            }
+
+            return response;
+        }
+
+        // ========================
+        // DROPDOWN
+        // ========================
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
+            string email,
+            IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>();
+
+            try
+            {
+                response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)
             {

@@ -10,14 +10,17 @@ namespace BAL.ContractIF
 {
     public interface IBAL_Counter
     {
-        Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<CounterModel>> GetById(long id,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<CounterModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Create(CounterRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Create(CounterRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Update(CounterRequestDto request,string userId,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Update(CounterRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> ChangeStatus(long id,int status,long userId,TokenUserInfo user,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
     }
 }
+

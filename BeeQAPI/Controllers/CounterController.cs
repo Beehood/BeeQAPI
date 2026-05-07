@@ -1,13 +1,15 @@
 ﻿using BAL.ContractIF;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Models;
 using System.Net;
+using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("Counter")]
+    [Route("BeeQAPI")]
     [ApiController]
-    //[Authorize]
     public class CounterController : ControllerBase
     {
         private readonly IBAL_Counter _bal;
@@ -17,97 +19,92 @@ namespace BeeQAPI.Controllers
             _bal = bal;
         }
 
-        // 🔥 Get user from middleware
-        //private TokenUserInfo GetUser()
-        //{
-        //    return HttpContext.Items["User"] as TokenUserInfo;
-        //}
-
-        //for temporaly testing without auth//
-        private TokenUserInfo GetUser()
-        {
-            return new TokenUserInfo
-            {
-                Username = "1",
-                Permissions = new List<string>
-                {
-                    "COUNTER_VIEW",
-                    "COUNTER_CREATE",
-                    "COUNTER_UPDATE",
-                    "COUNTER_STATUS"
-                }
-            };
-        }
-
         // ========================
         // GET ALL
         // ========================
+        [Authorize(Policy = "VIEW_COUNTER")]
         [HttpPost("CounterList")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<CounterModel>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
+        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll([FromBody] PaginationRequestDto request)
         {
-            var user = GetUser();
-            var result = await _bal.GetAll(request, user);
-            return Ok(result);
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetAll(request, roles, email, transaction: null);
         }
 
         // ========================
         // GET BY ID
         // ========================
+        [Authorize(Policy = "VIEW_COUNTER")]
         [HttpPost("CounterById")]
         [ProducesResponseType(typeof(APIGetResponseModel<CounterModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetById([FromBody] long id)
+        public async Task<APIGetResponseModel<CounterModel>> GetById([FromBody] long id)
         {
-            var user = GetUser();
-            var result = await _bal.GetById(id, user);
-            return Ok(result);
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetById(id, roles, email, transaction: null);
         }
 
         // ========================
         // CREATE
         // ========================
+        [Authorize(Policy = "CREATE_COUNTER")]
         [HttpPost("NewCounter")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Create([FromBody] CounterRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Create([FromBody] CounterRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.Create(request, user.Username, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.Create(request, roles, email, transaction: null);
         }
 
         // ========================
         // UPDATE
         // ========================
+        [Authorize(Policy = "UPDATE_COUNTER")]
         [HttpPost("EditCounter")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update([FromBody] CounterRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Update([FromBody] CounterRequestDto request)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.Update(request, user.Username, user);
-            return Ok(result);
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.Update(request, roles, email, transaction: null);
         }
 
         // ========================
-        // CHANGE STATUS
+        // STATUS
         // ========================
+        [Authorize(Policy = "DELETE_COUNTER")]
         [HttpPost("CounterStatus")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ChangeStatus([FromBody] CounterRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
         {
-            var user = GetUser();
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var result = await _bal.ChangeStatus(
-                request.CounterId,
-                request.Status,
-                uid,
-                user
-            );
+            return await _bal.ChangeStatus(id, roles, email, transaction: null);
+        }
 
-            return Ok(result);
+        // ========================
+        // DROPDOWN
+        // ========================
+        [Authorize(Policy = "VIEW_COUNTER")]
+        [HttpGet("CounterDropdown")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+        {
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetDropdown(email, transaction: null);
         }
     }
 }

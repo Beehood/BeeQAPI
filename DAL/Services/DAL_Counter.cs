@@ -22,17 +22,12 @@ namespace DAL.Services
         }
 
         // ========================
-        // GET ALL (Dynamic - Multi Result)
+        // GET ALL
         // ========================
-        /// <summary>
-        /// Counter DAL - Get All Counters
-        /// Author: Swapnlisa
-        /// Description:- Fetches paginated counter list using stored procedure (multi-result).
-        /// </summary>
-        /// <param name="request">PaginationRequestDto</param>
-        /// <param name="transaction">Optional DB transaction</param>
-        /// <returns>Returns list of CounterModel with total count</returns>
-        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(
+            PaginationRequestDto request,
+            string email,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<CounterModel>>();
 
@@ -41,38 +36,31 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "LIST");
-
                 param.Add("p_CounterId", null);
-                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
-                param.Add("p_CounterCode", null);
-                param.Add("p_Description", null);
-                param.Add("p_Status", null);
-
+                param.Add("p_BranchId", null);
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                //param.Add("p_PageSize", request.PageSize);
+                param.Add("p_UserEmail", email); // 🔥 IMPORTANT
 
-                param.Add("p_UserId", null);
+                using var multi = await conn.QueryMultipleAsync(
+                    "sp_manage_counter",
+                    param,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                using var multi = await conn.QueryMultipleAsync("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
-
-                // 🔹 1st Result → Total Count
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
 
-                // 🔹 2nd Result → Data
                 var list = (await multi.ReadAsync<CounterModel>()).ToList();
 
                 response.Result = list;
                 response.IsSuccess = list.Any();
-                //response.IsSuccess = true;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                response.ErrorMsgs.Add("Error while fetching counters");
                 Console.WriteLine("DAL COUNTER GET ALL ERROR: " + ex.Message);
             }
 
@@ -82,15 +70,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-        /// <summary>
-        /// Counter DAL - Get Counter By Id
-        /// Author: Swapnlisa
-        /// Description:- Fetches single counter using CounterId.
-        /// </summary>
-        /// <param name="id">CounterId</param>
-        /// <param name="transaction">Optional DB transaction</param>
-        /// <returns>Returns CounterModel</returns>
-        public async Task<APIGetResponseModel<CounterModel>> GetById(long id, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<CounterModel>> GetById(
+            long id,
+            string email,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<CounterModel>();
 
@@ -99,23 +82,19 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "GETBYID");
-
                 param.Add("p_CounterId", id);
-                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
-                param.Add("p_CounterCode", null);
-                param.Add("p_Description", null);
-                param.Add("p_Status", null);
-
+                param.Add("p_BranchId", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                param.Add("p_UserEmail", email);
 
-                param.Add("p_UserId", null);
-
-                var data = await conn.QueryFirstOrDefaultAsync<CounterModel>("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
+                var data = await conn.QueryFirstOrDefaultAsync<CounterModel>(
+                    "sp_manage_counter",
+                    param,
+                    commandType: CommandType.StoredProcedure
+                );
 
                 if (data != null)
                 {
@@ -125,8 +104,6 @@ namespace DAL.Services
                 }
                 else
                 {
-                    response.Result = null;
-                    response.TotalRecords = 0;
                     response.IsSuccess = false;
                 }
             }
@@ -134,7 +111,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching counter");
-                Console.WriteLine("DAL COUNTER GET BY ID ERROR: " + ex.Message);
+                Console.WriteLine("DAL COUNTER GETBYID ERROR: " + ex.Message);
             }
 
             return response;
@@ -143,42 +120,33 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        /// <summary>
-        /// Counter DAL - Insert Counter
-        /// Author: Swapnlisa
-        /// Description:- Inserts new counter record using stored procedure.
-        /// </summary>
-        /// <param name="request">CounterRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="transaction">Optional DB transaction</param>
-        /// <returns>Returns newly created CounterId</returns>
-        public async Task<APIGetResponseModel<long>> Insert(CounterRequestDto request, string userId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert(
+            CounterRequestDto request,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "INSERT");
-
                 param.Add("p_CounterId", null);
-                param.Add("p_BranchId", request.BranchId);
                 param.Add("p_CounterName", request.CounterName);
-                param.Add("p_CounterCode", request.CounterCode);
-                param.Add("p_Status", 1);
-
+                param.Add("p_BranchId", request.BranchId);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                param.Add("p_UserEmail", email);
 
-                param.Add("p_UserId", userId);
+                var id = await conn.ExecuteScalarAsync<long>(
+                    "sp_manage_counter",
+                    param,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                var id = await conn.ExecuteScalarAsync<long>("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
-
-                response.Result = id;
+                response.Result = (int)id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
             }
@@ -195,42 +163,33 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-        /// <summary>
-        /// Counter DAL - Update Counter
-        /// Author: Swapnlisa
-        /// Description:- Updates existing counter details.
-        /// </summary>
-        /// <param name="request">CounterRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="transaction">Optional DB transaction</param>
-        /// <returns>Returns updated CounterId</returns>
-        public async Task<APIGetResponseModel<long>> Update(CounterRequestDto request, string userId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            CounterRequestDto request,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "UPDATE");
-
                 param.Add("p_CounterId", request.CounterId);
-                param.Add("p_BranchId", request.BranchId);
                 param.Add("p_CounterName", request.CounterName);
-                param.Add("p_CounterCode", request.CounterCode);
-                param.Add("p_Status", request.Status);
-
+                param.Add("p_BranchId", request.BranchId);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                param.Add("p_UserEmail", email);
 
-                param.Add("p_UserId", userId);
+                var id = await conn.ExecuteScalarAsync<long>(
+                    "sp_manage_counter",
+                    param,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                var id = await conn.ExecuteScalarAsync<long>("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
-
-                response.Result = id;
+                response.Result = (int)id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
             }
@@ -245,44 +204,33 @@ namespace DAL.Services
         }
 
         // ========================
-        // CHANGE STATUS
+        // STATUS
         // ========================
-        /// <summary>
-        /// Counter DAL - Change Status
-        /// Author: Swapnlisa
-        /// Description:- Updates counter status (Active/Inactive).
-        /// </summary>
-        /// <param name="id">CounterId</param>
-        /// <param name="status">0 = Inactive, 1 = Active</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="transaction">Optional DB transaction</param>
-        /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "STATUS");
-
                 param.Add("p_CounterId", id);
-                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
-                param.Add("p_CounterCode", null);
-                param.Add("p_Description", null);
-                param.Add("p_Status", status);
-
+                param.Add("p_BranchId", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
+                param.Add("p_UserEmail", email);
 
-                param.Add("p_UserId", userId);
-
-                var result = await conn.ExecuteScalarAsync<long>("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
+                var result = await conn.ExecuteScalarAsync<int>(
+                    "sp_manage_counter",
+                    param,
+                    commandType: CommandType.StoredProcedure
+                );
 
                 response.Result = result;
                 response.IsSuccess = result > 0;
@@ -293,6 +241,48 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing counter status");
                 Console.WriteLine("DAL COUNTER STATUS ERROR: " + ex.Message);
+            }
+
+            return response;
+        }
+
+        // ========================
+        // DROPDOWN
+        // ========================
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
+            string email,
+            IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>();
+
+            try
+            {
+                using var conn = new MySqlConnection(_config.DefaultConnection);
+
+                var param = new DynamicParameters();
+                param.Add("p_Action", "DROPDOWN");
+                param.Add("p_CounterId", null);
+                param.Add("p_CounterName", null);
+                param.Add("p_BranchId", null);
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_UserEmail", email);
+
+                var data = (await conn.QueryAsync<DropdownModel>(
+                    "sp_manage_counter",
+                    param,
+                    commandType: CommandType.StoredProcedure
+                )).ToList();
+
+                response.Result = data;
+                response.TotalRecords = data.Count;
+                response.IsSuccess = data.Any();
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add("Error while fetching counter dropdown");
+                Console.WriteLine("DAL COUNTER DROPDOWN ERROR: " + ex.Message);
             }
 
             return response;
