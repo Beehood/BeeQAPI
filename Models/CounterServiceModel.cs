@@ -19,7 +19,7 @@ namespace Models
 
         public string? ServiceName { get; set; }
 
-        public int Status { get; set; }
+        public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }
@@ -32,7 +32,7 @@ namespace Models
 
         public long ServiceId { get; set; }
 
-        public int? Status { get; set; }
+        public bool? Status { get; set; }
 
         public long? UserId { get; set; }
     }

@@ -22,134 +22,117 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(
+            PaginationRequestDto request,
+            List<string> roles,
+            string? email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<CounterServiceModel>>()
-            {
-                Result = new List<CounterServiceModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTERSERVICE_VIEW"))
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (COUNTERSERVICE_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<List<CounterServiceModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0)
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    //if (request?.PageSize <= 0)
-                    //    response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetAll (CounterService)", ex);
             }
-
-            return response;
         }
 
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<CounterServiceModel>> GetById(long id, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<CounterServiceModel>> GetById(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<CounterServiceModel>()
-            {
-                Result = new CounterServiceModel()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTERSERVICE_VIEW"))
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (COUNTERSERVICE_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<CounterServiceModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Result = null;
-                    response.ErrorMsgs.Add("Invalid CounterServiceId");
-                }
+                return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in GetById (CounterService)", ex);
             }
-
-            return response;
         }
 
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<long>> Create(CounterServiceRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(
+            CounterServiceRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTERSERVICE_CREATE"))
+                // ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (COUNTERSERVICE_CREATE required)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.CounterId > 0 &&
-                    request.ServiceId > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                // VALIDATION
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (request.CounterId <= 0)
-                        response.ErrorMsgs.Add("Select Counter");
-
-                    if (request.ServiceId <= 0)
-                        response.ErrorMsgs.Add("Select Service");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
                 }
+
+                if (request.CounterId <= 0)
+                    response.ErrorMsgs.Add("Counter is required");
+
+                if (request.ServiceId <= 0)
+                    response.ErrorMsgs.Add("Service is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                response = await _dal.Insert(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -160,48 +143,44 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<long>> Update(CounterServiceRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            CounterServiceRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTERSERVICE_UPDATE"))
+                // ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (COUNTERSERVICE_UPDATE required)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.CounterServiceId > 0 &&
-                    request.CounterId > 0 &&
-                    request.ServiceId > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null || request.CounterServiceId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (request.CounterServiceId <= 0)
-                        response.ErrorMsgs.Add("Invalid CounterServiceId");
-
-                    if (request.CounterId <= 0)
-                        response.ErrorMsgs.Add("Select Counter");
-
-                    if (request.ServiceId <= 0)
-                        response.ErrorMsgs.Add("Select Service");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid counter service data.");
+                    return response;
                 }
+
+                response = await _dal.Update(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -212,42 +191,44 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTERSERVICE_STATUS"))
+                // ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (COUNTERSERVICE_STATUS required)");
+                    response.ErrorMsgs.Add("Access denied.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid CounterServiceId");
-
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
-
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid CounterService ID.");
+                    return response;
                 }
+
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -258,24 +239,15 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
-            {
-                Result = new List<DropdownModel>()
-            };
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("COUNTERSERVICE_VIEW"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (COUNTERSERVICE_VIEW required)");
-                    return response;
-                }
-
-                response = await _dal.GetDropdown(transaction);
+                response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)
             {
@@ -287,3 +259,4 @@ namespace BAL.Services
         }
     }
 }
+
