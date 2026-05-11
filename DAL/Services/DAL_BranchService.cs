@@ -147,7 +147,7 @@ namespace DAL.Implementation
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-                param.Add("p_Action", "UPDATE");
+                param.Add("p_Action","UPDATE");
                 param.Add("p_BranchServiceId", request.BranchServiceId);
                 param.Add("p_BranchId", request.BranchId);
                 param.Add("p_ServiceId", request.ServiceId);

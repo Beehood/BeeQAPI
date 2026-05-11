@@ -50,7 +50,9 @@ namespace BeeQAPI.Controllers
             // ========================
             // GET ALL
             // ========================
+            //[Authorize(Policy = "PERMISSION_VIEW")]
             [HttpPost("PermissionList")]
+            [ProducesResponseType(typeof(APIGetResponseModel<List<PermissionModel>>), (int)HttpStatusCode.OK)]
             public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
             {
                 var user = GetUser();
@@ -62,7 +64,9 @@ namespace BeeQAPI.Controllers
             // ========================
             // CREATE
             // ========================
+            //[Authorize(Policy = "PERMISSION_CREATE")]
             [HttpPost("NewPermission")]
+            [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
             public async Task<IActionResult> Create([FromBody] PermissionRequestDto request)
             {
                 var user = GetUser();
@@ -74,7 +78,9 @@ namespace BeeQAPI.Controllers
             // ========================
             // UPDATE
             // ========================
+            //[Authorize(Policy = "PERMISSION_UPDATE")]
             [HttpPost("EditPermission")]
+            [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
             public async Task<IActionResult> Update([FromBody] PermissionRequestDto request)
             {
                 var user = GetUser();
@@ -86,7 +92,9 @@ namespace BeeQAPI.Controllers
             // ========================
             // CHANGE STATUS
             // ========================
+            //[Authorize(Policy = "PERMISSION_STATUS")]
             [HttpPost("PermissionStatus")]
+            [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
             public async Task<IActionResult> ChangeStatus([FromBody] PermissionRequestDto request)
             {
                 var user = GetUser();
@@ -95,7 +103,7 @@ namespace BeeQAPI.Controllers
 
                 var result = await _bal.ChangeStatus(
                     request.PermissionId,
-                    request.Status ?? 0,
+                    request.Status == true ? 1 : 0,
                     uid,
                     user
                 );
@@ -103,13 +111,15 @@ namespace BeeQAPI.Controllers
                 return Ok(result);
             }
 
-            // ========================
-            // DROPDOWN
-            // ========================
-            [HttpPost("PermissionDropdown")]
+            // ===================
+            // DROPDOWN (PRODUCTION READY)
+            // ===================
+            [HttpGet("PermissionDropdown")]
+            [Authorize(Policy = "PERMISSION_VIEW")]
+            [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
             public async Task<IActionResult> GetDropdown()
             {
-                var user = GetUser();
+                var user = HttpContext.Items["User"] as TokenUserInfo;
 
                 var result = await _bal.GetDropdown(user);
                 return Ok(result);

@@ -6,17 +6,23 @@ using System.Net;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("role")]
+    [Route("user")]
     [ApiController]
     //[Authorize]
-    public class RoleController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly IBAL_Role _bal;
+        private readonly IBAL_User _bal;
 
-        public RoleController(IBAL_Role bal)
+        public UserController(IBAL_User bal)
         {
             _bal = bal;
         }
+
+        // 🔥 Get user from middleware
+        //private TokenUserInfo GetUser()
+        //{
+        //    return HttpContext.Items["User"] as TokenUserInfo;
+        //}
 
         // for temporary testing without auth
         private TokenUserInfo GetUser()
@@ -26,10 +32,10 @@ namespace BeeQAPI.Controllers
                 Username = "1",
                 Permissions = new List<string>
                 {
-                    "ROLE_VIEW",
-                    "ROLE_CREATE",
-                    "ROLE_UPDATE",
-                    "ROLE_STATUS"
+                    "USER_VIEW",
+                    "USER_CREATE",
+                    "USER_UPDATE",
+                    "USER_STATUS"
                 }
             };
         }
@@ -37,9 +43,9 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET ALL
         // ========================
-        //[Authorize(Policy = "ROLE_VIEW")]
-        [HttpPost("RoleList")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<RoleModel>>), (int)HttpStatusCode.OK)]
+        //[Authorize(Policy = "USER_VIEW")]
+        [HttpPost("UserList")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<UserModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
         {
             var user = GetUser();
@@ -51,9 +57,9 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET BY ID
         // ========================
-        //[Authorize(Policy = "ROLE_VIEW")]
-        [HttpPost("RoleById")]
-        [ProducesResponseType(typeof(APIGetResponseModel<RoleModel>), (int)HttpStatusCode.OK)]
+        //[Authorize(Policy = "USER_VIEW")]
+        [HttpPost("UserById")]
+        [ProducesResponseType(typeof(APIGetResponseModel<UserModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetById([FromBody] long id)
         {
             var user = GetUser();
@@ -65,10 +71,10 @@ namespace BeeQAPI.Controllers
         // ========================
         // CREATE
         // ========================
-        //[Authorize(Policy = "ROLE_CREATE")]
-        [HttpPost("NewRole")]
+        //[Authorize(Policy = "USER_CREATE")]
+        [HttpPost("NewUser")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Create([FromBody] RoleRequestDto request)
+        public async Task<IActionResult> Create([FromBody] UserRequestDto request)
         {
             var user = GetUser();
 
@@ -79,10 +85,10 @@ namespace BeeQAPI.Controllers
         // ========================
         // UPDATE
         // ========================
-        //[Authorize(Policy = "ROLE_UPDATE")]
-        [HttpPost("EditRole")]
+        //[Authorize(Policy = "USER_UPDATE")]
+        [HttpPost("EditUser")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update([FromBody] RoleRequestDto request)
+        public async Task<IActionResult> Update([FromBody] UserRequestDto request)
         {
             var user = GetUser();
 
@@ -93,16 +99,21 @@ namespace BeeQAPI.Controllers
         // ========================
         // CHANGE STATUS
         // ========================
-        //[Authorize(Policy = "ROLE_STATUS")]
-        [HttpPost("RoleStatus")]
+        //[Authorize(Policy = "USER_STATUS")]
+        [HttpPost("UserStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ChangeStatus([FromBody] RoleRequestDto request)
+        public async Task<IActionResult> ChangeStatus([FromBody] UserRequestDto request)
         {
             var user = GetUser();
 
             long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
 
-            var result = await _bal.ChangeStatus(request.RoleId, request.Status == true ? 1 : 0, uid,user);
+            var result = await _bal.ChangeStatus(
+                request.UserId,
+                 request.Status == true ? 1 : 0,
+                uid,
+                user
+            );
 
             return Ok(result);
         }
@@ -110,9 +121,8 @@ namespace BeeQAPI.Controllers
         // ===================
         // DROPDOWN (PRODUCTION READY)
         // ===================
-        [HttpGet("RoleDropdown")]
-        [AllowAnonymous]
-        //[Authorize(Policy = "ROLE_VIEW")]
+        [HttpGet("UserDropdown")]
+        [Authorize(Policy = "USER_VIEW")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
         public async Task<IActionResult> GetDropdown()
         {

@@ -16,7 +16,7 @@ namespace Models
 
         public string? Module { get; set; }
 
-        public int Status { get; set; }
+        public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }
@@ -31,7 +31,7 @@ namespace Models
 
         public string? Module { get; set; }
 
-        public int? Status { get; set; }
+        public bool? Status { get; set; }
 
         public string? SearchKey { get; set; }
 

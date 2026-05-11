@@ -335,11 +335,7 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var data = (await conn.QueryAsync<DropdownModel>(
-                    "sp_manage_organization",
-                    param,
-                    commandType: CommandType.StoredProcedure)).ToList();
-
+                var data = (await conn.QueryAsync<DropdownModel>("sp_manage_organization",param,commandType: CommandType.StoredProcedure)).ToList();
                 response.Result = data;
                 response.TotalRecords = data.Count;
                 response.IsSuccess = data.Any();

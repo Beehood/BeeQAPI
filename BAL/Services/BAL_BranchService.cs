@@ -100,7 +100,7 @@ namespace BAL.Implementation
                 }
 
                 //  VALIDATION
-                if (request == null)
+                if (request == null || request.BranchServiceId <= 0)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid payload.");

@@ -20,7 +20,7 @@ namespace Models
 
         public long RoleId { get; set; }   // from user_roles
 
-        public int Status { get; set; }
+        public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }
@@ -40,7 +40,7 @@ namespace Models
 
         public long RoleId { get; set; }
 
-        public int? Status { get; set; }
+        public bool? Status { get; set; }
 
         public long? UserId_Login { get; set; }
     }

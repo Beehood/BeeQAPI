@@ -32,6 +32,7 @@ namespace Models
     {
         public string? Username { get; set; }   // email login identity
         public string? Name { get; set; }
+       
 
         // Role based (legacy / UI use)
         public List<string> Roles { get; set; } = new();

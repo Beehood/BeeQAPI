@@ -15,7 +15,7 @@ namespace Models
         public string? RoleCode { get; set; }
         public string? Description { get; set; }
 
-        public int Status { get; set; }
+        public bool Status { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 
@@ -28,7 +28,7 @@ namespace Models
         public string? RoleCode { get; set; }
         public string? Description { get; set; }
 
-        public int? Status { get; set; }
+        public bool? Status { get; set; }
 
         public string? SearchKey { get; set; }
         public int? PageNo { get; set; }

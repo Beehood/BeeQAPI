@@ -151,7 +151,7 @@ namespace DAL.Services
                 param.Add("p_PermissionName", request.PermissionName);
                 param.Add("p_PermissionCode", request.PermissionCode);
                 param.Add("p_Module", request.Module);
-                param.Add("p_Status", request.Status ?? 1);
+                //param.Add("p_Status", request.Status ?? 1);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
