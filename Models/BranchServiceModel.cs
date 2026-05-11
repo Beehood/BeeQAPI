@@ -9,6 +9,7 @@ namespace Models
     public class BranchServiceModel
     {
         public long BranchServiceId { get; set; }
+        public string? OrganizationName { get; set; }
         public long BranchId { get; set; }
         public long ServiceId { get; set; }
 

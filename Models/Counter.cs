@@ -16,7 +16,7 @@ namespace Models
 
         public string CounterName { get; set; }
 
-        public string? CounterCode { get; set; }
+        public string? CounterNumber { get; set; }
         public string? BranchName { get; set; }
 
 
