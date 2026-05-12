@@ -34,6 +34,7 @@ namespace Models
         public long BranchId { get; set; }
 
         public string CounterName { get; set; }
+        public string? CounterNumber { get; set; }
 
         public string? CounterCode { get; set; }
 

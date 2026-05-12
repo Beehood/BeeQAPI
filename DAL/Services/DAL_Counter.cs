@@ -36,22 +36,29 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "LIST");
                 param.Add("p_CounterId", null);
+                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
                 param.Add("p_CounterNumber", null);
-                param.Add("p_BranchId", null);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                param.Add("p_UserEmail", email); // 🔥 IMPORTANT
+                param.Add("p_UserEmail", email);
 
                 using var multi = await conn.QueryMultipleAsync("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
 
                 // FIRST RESULT = DATA
-                var list = (await multi.ReadAsync<CounterModel>()).ToList();
+                //var list = (await multi.ReadAsync<CounterModel>()).ToList();
 
                 // SECOND RESULT = TOTAL
+                //response.TotalRecords = await multi.ReadFirstAsync<int>();
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
+
+                var list = (await multi.ReadAsync<CounterModel>()).ToList();
+
+                response.Result = list;
 
                 response.Result = list;
                 response.IsSuccess = true;
@@ -83,9 +90,10 @@ namespace DAL.Services
                 var param = new DynamicParameters();
                 param.Add("p_Action", "GETBYID");
                 param.Add("p_CounterId", id);
+                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
                 param.Add("p_CounterNumber", null);
-                param.Add("p_BranchId", null);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -134,9 +142,10 @@ namespace DAL.Services
                 var param = new DynamicParameters();
                 param.Add("p_Action", "INSERT");
                 param.Add("p_CounterId", null);
-                param.Add("p_CounterName", request.CounterName);
-                param.Add("p_CounterNumber", null);
                 param.Add("p_BranchId", request.BranchId);
+                param.Add("p_CounterName", request.CounterName);
+                param.Add("p_CounterNumber", request.CounterNumber);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -178,9 +187,10 @@ namespace DAL.Services
                 var param = new DynamicParameters();
                 param.Add("p_Action", "UPDATE");
                 param.Add("p_CounterId", request.CounterId);
-                param.Add("p_CounterName", request.CounterName);
-                param.Add("p_CounterNumber", null);
                 param.Add("p_BranchId", request.BranchId);
+                param.Add("p_CounterName", request.CounterName);
+                param.Add("p_CounterNumber", request.CounterNumber);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -222,9 +232,10 @@ namespace DAL.Services
                 var param = new DynamicParameters();
                 param.Add("p_Action", "STATUS");
                 param.Add("p_CounterId", id);
+                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
                 param.Add("p_CounterNumber", null);
-                param.Add("p_BranchId", null);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -265,9 +276,10 @@ namespace DAL.Services
                 var param = new DynamicParameters();
                 param.Add("p_Action", "DROPDOWN");
                 param.Add("p_CounterId", null);
+                param.Add("p_BranchId", null);
                 param.Add("p_CounterName", null);
                 param.Add("p_CounterNumber", null);
-                param.Add("p_BranchId", null);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
