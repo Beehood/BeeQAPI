@@ -108,7 +108,7 @@ namespace BAL.Implementation
                 if (request.BranchId <= 0)
                     response.ErrorMsgs.Add("Branch is required");
 
-                if (request.ServiceId <= 0)
+                if (request.BranchServiceId <= 0)
                     response.ErrorMsgs.Add("Service is required");
 
                 if (string.IsNullOrWhiteSpace(request.Prefix))

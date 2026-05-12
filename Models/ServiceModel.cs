@@ -22,6 +22,7 @@ namespace Models
     {
         public long ServiceId { get; set; }
         public long OrganizationId { get; set; }
+        public long BranchServiceId { get; set; }
         public string ServiceName { get; set; } = string.Empty;
         public string? ServiceCode { get; set; }
         public int? EstimatedTime { get; set; }
@@ -30,6 +31,7 @@ namespace Models
         public string? SearchKey { get; set; }
         public int? PageNo { get; set; }
         public long? UserId { get; set; }
+      
     }
     //public class BranchServiceSearchKeys
     //{

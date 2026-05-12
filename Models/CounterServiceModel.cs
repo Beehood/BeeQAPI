@@ -8,16 +8,17 @@ namespace Models
 {
     public class CounterServiceModel
     {
-        public long CounterServiceId { get; set; }
-        public string OrganizationName { get; set; }
+        public string? OrganizationName { get; set; }
 
-        public string BranchName { get; set; }
+        public string? BranchName { get; set; }
+
+        public long CounterServiceId { get; set; }
 
         public long CounterId { get; set; }
 
-        public long ServiceId { get; set; }
+        public long BranchServiceId { get; set; }
 
-        // Dropdown display values
+        // Display
         public string? CounterName { get; set; }
 
         public string? ServiceName { get; set; }
@@ -30,13 +31,10 @@ namespace Models
     public class CounterServiceRequestDto
     {
         public long CounterServiceId { get; set; }
-        public string OrganizationName { get; set; }
-
-        public string BranchName { get; set; }
 
         public long CounterId { get; set; }
 
-        public long ServiceId { get; set; }
+        public long BranchServiceId { get; set; }
 
         public bool? Status { get; set; }
 

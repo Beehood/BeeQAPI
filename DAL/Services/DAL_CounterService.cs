@@ -36,7 +36,8 @@ namespace DAL.Services
                 param.Add("p_Action", "LIST");
                 param.Add("p_CounterServiceId", null);
                 param.Add("p_CounterId", null);
-                param.Add("p_ServiceId", null);
+                param.Add("p_BranchServiceId", null);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
                 param.Add("p_UserEmail", email);
@@ -84,7 +85,8 @@ namespace DAL.Services
                 param.Add("p_Action", "GETBYID");
                 param.Add("p_CounterServiceId", id);
                 param.Add("p_CounterId", null);
-                param.Add("p_ServiceId", null);
+                param.Add("p_BranchServiceId", null);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -127,7 +129,8 @@ namespace DAL.Services
                 param.Add("p_Action", "INSERT");
                 param.Add("p_CounterServiceId", null);
                 param.Add("p_CounterId", request.CounterId);
-                param.Add("p_ServiceId", request.ServiceId);
+                param.Add("p_BranchServiceId", request.BranchServiceId);
+                param.Add("p_Status", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -163,7 +166,8 @@ namespace DAL.Services
                 param.Add("p_Action", "UPDATE");
                 param.Add("p_CounterServiceId", request.CounterServiceId);
                 param.Add("p_CounterId", request.CounterId);
-                param.Add("p_ServiceId", request.ServiceId);
+                param.Add("p_BranchServiceId", request.BranchServiceId);
+                param.Add("p_Status", request.Status);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -177,8 +181,11 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while updating counter service");
-                Console.WriteLine("DAL COUNTER SERVICE UPDATE ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(ex.Message);
+
+                Console.WriteLine("DAL COUNTER SERVICE UPDATE ERROR:");
+                Console.WriteLine(ex.ToString());
             }
 
             return response;
@@ -199,7 +206,7 @@ namespace DAL.Services
                 param.Add("p_Action", "STATUS");
                 param.Add("p_CounterServiceId", id);
                 param.Add("p_CounterId", null);
-                param.Add("p_ServiceId", null);
+                param.Add("p_BranchServiceId", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
@@ -235,7 +242,7 @@ namespace DAL.Services
                 param.Add("p_Action", "DROPDOWN");
                 param.Add("p_CounterServiceId", null);
                 param.Add("p_CounterId", null);
-                param.Add("p_ServiceId", null);
+                param.Add("p_BranchServiceId", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);

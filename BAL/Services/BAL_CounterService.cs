@@ -102,8 +102,8 @@ namespace BAL.Services
                 if (request.CounterId <= 0)
                     response.ErrorMsgs.Add("Counter is required");
 
-                if (request.ServiceId <= 0)
-                    response.ErrorMsgs.Add("Service is required");
+                if (request.BranchServiceId <= 0)
+                    response.ErrorMsgs.Add("BranchService is required");
 
                 if (response.ErrorMsgs.Any())
                 {
