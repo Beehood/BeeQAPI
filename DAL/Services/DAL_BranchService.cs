@@ -248,5 +248,76 @@ namespace DAL.Implementation
 
             return response;
         }
+        // ========================
+        // BRANCH DROPDOWN BY ORGANIZATION
+        // ========================
+
+        public async Task<
+        APIGetResponseModel<List<DropdownModel>>>
+        GetBranchDropdownByOrganization(
+            long orgId,
+            string email,
+            IDbTransaction? transaction = null
+        )
+        {
+            var response =
+                new APIGetResponseModel<List<DropdownModel>>();
+
+            try
+            {
+                using var conn =
+                    new MySqlConnection(_config.DefaultConnection);
+
+                var param = new DynamicParameters();
+
+                param.Add("p_Action", "DROPDOWN_BY_ORG");
+
+                param.Add("p_BranchServiceId", null);
+
+                param.Add("p_BranchId", orgId);
+
+                param.Add("p_ServiceId", null);
+
+                param.Add("p_Prefix", null);
+
+                param.Add("p_DailyLimit", null);
+
+                param.Add("p_SearchKey", null);
+
+                param.Add("p_PageNo", null);
+
+                param.Add("p_UserEmail", email);
+
+                var data =
+                    (
+                        await conn.QueryAsync<DropdownModel>(
+                            "sp_manage_branch_service",
+                            param,
+                            commandType: CommandType.StoredProcedure
+                        )
+                    ).ToList();
+
+                response.Result = data;
+
+                response.TotalRecords = data.Count;
+
+                response.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+
+                response.ErrorMsgs.Add(
+                    "Error while fetching branch dropdown"
+                );
+
+                Console.WriteLine(
+                    "DAL DROPDOWN_BY_ORG ERROR: "
+                    + ex.Message
+                );
+            }
+
+            return response;
+        }
     }
 }

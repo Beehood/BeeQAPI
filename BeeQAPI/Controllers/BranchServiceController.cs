@@ -107,5 +107,26 @@ namespace BeeQAPI.Controllers
 
             return await _bal.GetDropdown(email, transaction: null);
         }
+        // ========================
+        // BRANCH
+        // ========================
+
+        [Authorize(Policy = "VIEW_BRANCH_SERVICE")]
+        [HttpPost("BranchDropdownByOrganization")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+
+        public async Task<APIGetResponseModel<List<DropdownModel>>>
+        GetBranchDropdownByOrganization([FromBody] long orgId)
+        {
+            var email =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal
+                .GetBranchDropdownByOrganization(
+                    orgId,
+                    email,
+                    transaction: null
+                );
+        }
     }
 }

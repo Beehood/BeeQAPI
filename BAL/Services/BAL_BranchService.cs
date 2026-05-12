@@ -248,24 +248,66 @@ namespace BAL.Implementation
 
             return response;
         }
-
         // ========================
         // DROPDOWN
         // ========================
-        /// <summary>
-        /// Get Branch Service Dropdown
-        /// Access: branchadmin,superadmin,orgadmin
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
+
+        public async Task<
+        APIGetResponseModel<List<DropdownModel>>>
+        GetDropdown(
+            string email,
+            IDbTransaction? transaction = null
+        )
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>();
+            var response =
+                new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                response = await _dal.GetDropdown(email, transaction);
+                response =
+                    await _dal.GetDropdown(
+                        email,
+                        transaction
+                    );
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
+
+                response.ErrorMsgs.Add(ex.Message);
+            }
+
+            return response;
+        }
+
+        // ========================
+        // BRANCH DROPDOWN BY ORGANIZATION
+        // ========================
+
+        public async Task<
+        APIGetResponseModel<List<DropdownModel>>>
+        GetBranchDropdownByOrganization(
+            long orgId,
+            string email,
+            IDbTransaction? transaction = null
+        )
+        {
+            var response =
+                new APIGetResponseModel<List<DropdownModel>>();
+
+            try
+            {
+                response =
+                    await _dal.GetBranchDropdownByOrganization(
+                        orgId,
+                        email,
+                        transaction
+                    );
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+
                 response.ErrorMsgs.Add(ex.Message);
             }
 
