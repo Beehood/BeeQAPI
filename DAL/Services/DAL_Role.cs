@@ -22,14 +22,10 @@ namespace DAL.Services
         }
 
         // ========================
-        // GET ALL (Dynamic - Multi Result)
+        // GET ALL
         // ========================
-        /// <summary>
-        /// Role DAL - Get All Roles
-        /// Author: Swapnlisa
-        /// Description:- Fetches paginated role list using stored procedure (multi-result).
-        /// </summary>
-        public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<RoleModel>>();
 
@@ -45,35 +41,43 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_Status", null);
                 param.Add("p_OrganizationId", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                //param.Add("p_PageSize", request.PageSize);
 
-                param.Add("p_UserId", null);
+                param.Add("p_UserEmail", email);
 
                 using var multi = await conn.QueryMultipleAsync(
                     "sp_manage_role",
                     param,
-                    commandType: CommandType.StoredProcedure);
+                    commandType: CommandType.StoredProcedure
+                );
 
-                // 1st Result → Total Count
-                response.TotalRecords = await multi.ReadFirstAsync<int>();
+                response.TotalRecords =
+                    await multi.ReadFirstAsync<int>();
 
-                // 2nd Result → Data
-                var list = (await multi.ReadAsync<RoleModel>()).ToList();
+                var list =
+                    (await multi.ReadAsync<RoleModel>())
+                    .ToList();
 
                 response.Result = list;
+
                 response.IsSuccess = list.Any();
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                //response.ErrorMsgs.Add("Error while fetching roles");
-                response.ErrorMsgs.Add(ex.ToString());
-                Console.WriteLine("DAL GET ALL ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(
+                    "Error while fetching roles"
+                );
+
+                Console.WriteLine(
+                    "DAL ROLE GET ALL ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;
@@ -82,10 +86,8 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-        /// <summary>
-        /// Role DAL - Get Role By Id
-        /// </summary>
-        public async Task<APIGetResponseModel<RoleModel>> GetById(long id, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<RoleModel>> GetById(long id, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<RoleModel>();
 
@@ -101,38 +103,50 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_Status", null);
                 param.Add("p_OrganizationId", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", null);
+                param.Add("p_UserEmail", email);
 
-                var data = await conn.QueryFirstOrDefaultAsync<RoleModel>(
-                    "sp_manage_role",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var data =
+                    await conn.QueryFirstOrDefaultAsync<RoleModel>(
+                        "sp_manage_role",
+                        param,
+                        commandType: CommandType.StoredProcedure
+                    );
 
                 if (data != null)
                 {
                     response.Result = data;
+
                     response.TotalRecords = 1;
+
                     response.IsSuccess = true;
                 }
                 else
                 {
                     response.Result = null;
+
                     response.TotalRecords = 0;
+
                     response.IsSuccess = false;
                 }
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching role");
-                Console.WriteLine("DAL GET BY ID ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(
+                    "Error while fetching role"
+                );
+
+                Console.WriteLine(
+                    "DAL ROLE GET BY ID ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;
@@ -141,12 +155,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        /// <summary>
-        /// Role DAL - Insert Role
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> Insert(RoleRequestDto request, string userId, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<int>> Insert(RoleRequestDto request, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -160,29 +172,40 @@ namespace DAL.Services
                 param.Add("p_RoleName", request.RoleName);
                 param.Add("p_RoleCode", request.RoleCode);
                 param.Add("p_Description", request.Description);
-                param.Add("p_Status", 1);
                 param.Add("p_OrganizationId", request.OrganizationId);
+                param.Add("p_Status", 1);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_role",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var id =
+                    await conn.ExecuteScalarAsync<long>(
+                        "sp_manage_role",
+                        param,
+                        commandType: CommandType.StoredProcedure
+                    );
 
-                response.Result = id;
+                response.Result = (int)id;
+
                 response.IsSuccess = id > 0;
-                response.TotalRecords = id > 0 ? 1 : 0;
+
+                response.TotalRecords =
+                    id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-                Console.WriteLine("DAL INSERT ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(
+                    "Error while inserting role"
+                );
+
+                Console.WriteLine(
+                    "DAL ROLE INSERT ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;
@@ -191,12 +214,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-        /// <summary>
-        /// Role DAL - Update Role
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> Update(RoleRequestDto request, string userId, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<int>> Update(RoleRequestDto request, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -210,29 +231,40 @@ namespace DAL.Services
                 param.Add("p_RoleName", request.RoleName);
                 param.Add("p_RoleCode", request.RoleCode);
                 param.Add("p_Description", request.Description);
-                param.Add("p_Status", request.Status);
                 param.Add("p_OrganizationId", request.OrganizationId);
+                param.Add("p_Status", request.Status);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_role",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var id =
+                    await conn.ExecuteScalarAsync<long>(
+                        "sp_manage_role",
+                        param,
+                        commandType: CommandType.StoredProcedure
+                    );
 
-                response.Result = id;
+                response.Result = (int)id;
+
                 response.IsSuccess = id > 0;
-                response.TotalRecords = id > 0 ? 1 : 0;
+
+                response.TotalRecords =
+                    id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while updating role");
-                Console.WriteLine("DAL UPDATE ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(
+                    "Error while updating role"
+                );
+
+                Console.WriteLine(
+                    "DAL ROLE UPDATE ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;
@@ -241,12 +273,10 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        /// <summary>
-        /// Role DAL - Change Status
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -260,29 +290,40 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_Status", status);
                 param.Add("p_OrganizationId", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_role",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var result =
+                    await conn.ExecuteScalarAsync<int>(
+                        "sp_manage_role",
+                        param,
+                        commandType: CommandType.StoredProcedure
+                    );
 
                 response.Result = result;
+
                 response.IsSuccess = result > 0;
-                response.TotalRecords = result > 0 ? 1 : 0;
+
+                response.TotalRecords =
+                    result > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while changing status");
-                Console.WriteLine("DAL STATUS ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(
+                    "Error while changing role status"
+                );
+
+                Console.WriteLine(
+                    "DAL ROLE STATUS ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;
@@ -291,7 +332,8 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
@@ -299,19 +341,49 @@ namespace DAL.Services
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
-                var data = (await conn.QueryAsync<DropdownModel>(
-                    @"SELECT role_id AS Id, role_name AS Name FROM roles WHERE status = 1"))
-                    .ToList();
+                var param = new DynamicParameters();
+
+                param.Add("p_Action", "DROPDOWN");
+
+                param.Add("p_RoleId", null);
+                param.Add("p_RoleName", null);
+                param.Add("p_RoleCode", null);
+                param.Add("p_Description", null);
+                param.Add("p_OrganizationId", null);
+                param.Add("p_Status", null);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+
+                param.Add("p_UserEmail", email);
+
+                var data =
+                    (
+                        await conn.QueryAsync<DropdownModel>(
+                            "sp_manage_role",
+                            param,
+                            commandType: CommandType.StoredProcedure
+                        )
+                    ).ToList();
 
                 response.Result = data;
+
                 response.TotalRecords = data.Count;
+
                 response.IsSuccess = data.Any();
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching dropdown");
-                Console.WriteLine("DAL DROPDOWN ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(
+                    "Error while fetching role dropdown"
+                );
+
+                Console.WriteLine(
+                    "DAL ROLE DROPDOWN ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;

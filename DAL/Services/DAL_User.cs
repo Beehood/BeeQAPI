@@ -53,7 +53,6 @@ namespace DAL.Services
 
                 param.Add("p_Password", null);
 
-                param.Add("p_Address", null);
 
                 param.Add("p_SearchKey", request.SearchKey);
 
@@ -114,8 +113,6 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
 
                 param.Add("p_Password", null);
-
-                param.Add("p_Address", null);
 
                 param.Add("p_SearchKey", null);
 
@@ -178,7 +175,6 @@ namespace DAL.Services
 
                 param.Add("p_Password", request.Password);
 
-                param.Add("p_Address", request.Address);
 
                 param.Add("p_SearchKey", null);
 
@@ -238,8 +234,6 @@ namespace DAL.Services
 
                 param.Add("p_Password",request.Password);
 
-                param.Add("p_Address",request.Address);
-
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
@@ -298,8 +292,6 @@ namespace DAL.Services
 
                 param.Add("p_Password", null);
 
-                param.Add("p_Address", null);
-
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
@@ -330,8 +322,7 @@ namespace DAL.Services
         // DROPDOWN
         // ========================
 
-        public async Task<APIGetResponseModel<List<DropdownModel>>>
-        GetDropdown(string email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>>GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<List<DropdownModel>>();
 
@@ -358,8 +349,6 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
 
                 param.Add("p_Password", null);
-
-                param.Add("p_Address", null);
 
                 param.Add("p_SearchKey", null);
 

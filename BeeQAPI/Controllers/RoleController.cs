@@ -3,124 +3,121 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using System.Net;
+using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    [Route("role")]
-    [ApiController]
-    //[Authorize]
-    public class RoleController : ControllerBase
-    {
-        private readonly IBAL_Role _bal;
-
-        public RoleController(IBAL_Role bal)
+  
+    
+        [Route("BeeQAPI")]
+        [ApiController]
+        public class RoleController : ControllerBase
         {
-            _bal = bal;
-        }
+            private readonly IBAL_Role _bal;
 
-        // for temporary testing without auth
-        private TokenUserInfo GetUser()
-        {
-            return new TokenUserInfo
+            public RoleController(IBAL_Role bal)
             {
-                Username = "1",
-                Permissions = new List<string>
-                {
-                    "ROLE_VIEW",
-                    "ROLE_CREATE",
-                    "ROLE_UPDATE",
-                    "ROLE_STATUS"
-                }
-            };
-        }
+                _bal = bal;
+            }
 
-        // ========================
-        // GET ALL
-        // ========================
-        //[Authorize(Policy = "ROLE_VIEW")]
-        [HttpPost("RoleList")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<RoleModel>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
-        {
-            var user = GetUser();
+            // ========================
+            // GET ALL
+            // ========================
 
-            var result = await _bal.GetAll(request, user);
-            return Ok(result);
-        }
+            [Authorize(Policy = "VIEW_ROLE")]
+            [HttpPost("RoleList")]
+            [ProducesResponseType(typeof(APIGetResponseModel<List<RoleModel>>), (int)HttpStatusCode.OK)]
 
-        // ========================
-        // GET BY ID
-        // ========================
-        //[Authorize(Policy = "ROLE_VIEW")]
-        [HttpPost("RoleById")]
-        [ProducesResponseType(typeof(APIGetResponseModel<RoleModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetById([FromBody] long id)
-        {
-            var user = GetUser();
+            public async Task<APIGetResponseModel<List<RoleModel>>> GetAll([FromBody] PaginationRequestDto request)
+            {
+                var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.GetById(id, user);
-            return Ok(result);
-        }
+                var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        // ========================
-        // CREATE
-        // ========================
-        //[Authorize(Policy = "ROLE_CREATE")]
-        [HttpPost("NewRole")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Create([FromBody] RoleRequestDto request)
-        {
-            var user = GetUser();
+                return await _bal.GetAll(request, roles, email, transaction: null);
+            }
 
-            var result = await _bal.Create(request, user.Username, user);
-            return Ok(result);
-        }
+            // ========================
+            // GET BY ID
+            // ========================
 
-        // ========================
-        // UPDATE
-        // ========================
-        //[Authorize(Policy = "ROLE_UPDATE")]
-        [HttpPost("EditRole")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update([FromBody] RoleRequestDto request)
-        {
-            var user = GetUser();
+            [Authorize(Policy = "VIEW_ROLE")]
+            [HttpPost("RoleById")]
+            [ProducesResponseType(typeof(APIGetResponseModel<RoleModel>), (int)HttpStatusCode.OK)]
 
-            var result = await _bal.Update(request, user.Username, user);
-            return Ok(result);
-        }
+            public async Task<APIGetResponseModel<RoleModel>> GetById([FromBody] long id)
+            {
+                var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-        // ========================
-        // CHANGE STATUS
-        // ========================
-        //[Authorize(Policy = "ROLE_STATUS")]
-        [HttpPost("RoleStatus")]
-        [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ChangeStatus([FromBody] RoleRequestDto request)
-        {
-            var user = GetUser();
+                var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
+                return await _bal.GetById(id, roles, email, transaction: null);
+            }
 
-            var result = await _bal.ChangeStatus(request.RoleId, request.Status == true ? 1 : 0, uid,user);
+            // ========================
+            // CREATE
+            // ========================
 
-            return Ok(result);
-        }
+            [Authorize(Policy = "CREATE_ROLE")]
+            [HttpPost("NewRole")]
+            [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
 
-        // ===================
-        // DROPDOWN (PRODUCTION READY)
-        // ===================
-        [HttpGet("RoleDropdown")]
-        [AllowAnonymous]
-        //[Authorize(Policy = "ROLE_VIEW")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
-        public async Task<IActionResult> GetDropdown()
-        {
-            var user = HttpContext.Items["User"] as TokenUserInfo;
+            public async Task<APIGetResponseModel<int>> Create([FromBody] RoleRequestDto request)
+            {
+                var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            var result = await _bal.GetDropdown(user);
-            return Ok(result);
+                var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                return await _bal.Create(request, roles, email, transaction: null);
+            }
+
+            // ========================
+            // UPDATE
+            // ========================
+
+            [Authorize(Policy = "UPDATE_ROLE")]
+            [HttpPost("EditRole")]
+            [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+
+            public async Task<APIGetResponseModel<int>> Update([FromBody] RoleRequestDto request)
+            {
+                var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+                var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                return await _bal.Update(request, roles, email, transaction: null);
+            }
+
+            // ========================
+            // CHANGE STATUS
+            // ========================
+
+            [Authorize(Policy = "DELETE_ROLE")]
+            [HttpPost("RoleStatus")]
+            [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+
+            public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] RoleRequestDto request)
+            {
+                var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+                var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                return await _bal.ChangeStatus(request.RoleId, roles, email, transaction: null);
+            }
+
+            // ========================
+            // DROPDOWN
+            // ========================
+
+            [Authorize(Policy = "VIEW_ROLE")]
+            [HttpGet("RoleDropdown")]
+            [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+
+            public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+            {
+                var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                return await _bal.GetDropdown(email, transaction: null);
+            }
         }
     }
-}
-

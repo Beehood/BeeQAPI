@@ -10,275 +10,282 @@ using System.Threading.Tasks;
 
 namespace BAL.Services
 {
-    public class BAL_Role : IBAL_Role
-    {
-        private readonly IDAL_Role _dal;
-
-        public BAL_Role(IDAL_Role dal)
+   
+        public class BAL_Role : IBAL_Role
         {
-            _dal = dal;
-        }
+            private readonly IDAL_Role _dal;
 
-        // ========================
-        // GET ALL
-        // ========================
-        /// <summary>
-        /// Retrieves a paginated list of roles.
-        /// </summary>
-        public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<List<RoleModel>>()
+            public BAL_Role(IDAL_Role dal)
             {
-                Result = new List<RoleModel>()
-            };
+                _dal = dal;
+            }
 
-            try
+            // ========================
+            // GET ALL
+            // ========================
+
+            public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ROLE_VIEW"))
+                try
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (ROLE_VIEW)");
-                    return response;
-                }
+                    // ROLE CHECK
 
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0 )
-                {
-                    response = await _dal.GetAll(request, transaction);
+                    if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
+                    {
+                        return new APIGetResponseModel<List<RoleModel>>
+                        {
+                            IsSuccess = false,
+                            ErrorMsgs = new List<string>
+                        {
+                            "Access denied."
+                        }
+                        };
+                    }
+
+                    return await _dal.GetAll(request, email, transaction);
                 }
-                else
+                catch (Exception ex)
                 {
-                    response.IsSuccess = false;
+                    throw new Exception("BAL: Error in Role GetAll", ex);
+                }
+            }
+
+            // ========================
+            // GET BY ID
+            // ========================
+
+            public async Task<APIGetResponseModel<RoleModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null)
+            {
+                try
+                {
+                    if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
+                    {
+                        return new APIGetResponseModel<RoleModel>
+                        {
+                            IsSuccess = false,
+                            ErrorMsgs = new List<string>
+                        {
+                            "Access denied."
+                        }
+                        };
+                    }
+
+                    return await _dal.GetById(id, email, transaction);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("BAL: Error in Role GetById", ex);
+                }
+            }
+
+            // ========================
+            // CREATE
+            // ========================
+
+            public async Task<APIGetResponseModel<int>> Create(RoleRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+            {
+                var response = new APIGetResponseModel<int>();
+
+                IDbTransaction? localtran = null;
+
+                try
+                {
+                    // ROLE CHECK
+
+                    if (!(roles.Contains("Super Admin")))
+                    {
+                        response.IsSuccess = false;
+
+                        response.ErrorMsgs.Add("Access denied.");
+
+                        return response;
+                    }
+
+                    // VALIDATION
 
                     if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
+                    {
+                        response.IsSuccess = false;
 
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
+                        response.ErrorMsgs.Add("Invalid payload.");
 
-                   
-                }
-            }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
-        }
-
-        // ========================
-        // GET BY ID
-        // ========================
-        public async Task<APIGetResponseModel<RoleModel>> GetById(long id, TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<RoleModel>();
-
-            try
-            {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ROLE_VIEW"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (ROLE_VIEW)");
-                    return response;
-                }
-
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid RoleId");
-                }
-            }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
-        }
-
-        // ========================
-        // CREATE
-        // ========================
-        public async Task<APIGetResponseModel<long>> Create(RoleRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<long>();
-
-            try
-            {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ROLE_CREATE"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (ROLE_CREATE)");
-                    return response;
-                }
-
-                // ✅ VALIDATION
-                if (!string.IsNullOrWhiteSpace(request.RoleName) &&
-                    request.OrganizationId > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
+                        return response;
+                    }
 
                     if (string.IsNullOrWhiteSpace(request.RoleName))
-                        response.ErrorMsgs.Add("Enter Role Name");
+                        response.ErrorMsgs.Add("Role name is required");
 
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Select Organization");
+                    if (string.IsNullOrWhiteSpace(request.RoleCode))
+                        response.ErrorMsgs.Add("Role code is required");
 
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    if (response.ErrorMsgs.Any())
+                    {
+                        response.IsSuccess = false;
+
+                        return response;
+                    }
+
+                    // DAL CALL
+
+                    response = await _dal.Insert(request, email, transaction: localtran);
+
+                    if (transaction == null && localtran != null)
+                    {
+                        localtran.Commit();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
-        }
-
-        // ========================
-        // UPDATE
-        // ========================
-        public async Task<APIGetResponseModel<long>> Update(RoleRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<long>();
-
-            try
-            {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ROLE_UPDATE"))
+                catch (Exception ex)
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (ROLE_UPDATE)");
-                    return response;
-                }
+                    if (transaction == null && localtran != null)
+                    {
+                        localtran.Rollback();
+                    }
 
-                // ✅ VALIDATION
-                if (request.RoleId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.RoleName) &&
-                    request.OrganizationId > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
-                {
                     response.IsSuccess = false;
 
-                    if (request.RoleId <= 0)
-                        response.ErrorMsgs.Add("Invalid RoleId");
+                    response.ErrorMsgs.Add(ex.Message);
+                }
+
+                return response;
+            }
+
+            // ========================
+            // UPDATE
+            // ========================
+
+            public async Task<APIGetResponseModel<int>> Update(RoleRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+            {
+                var response = new APIGetResponseModel<int>();
+
+                IDbTransaction? localtran = null;
+
+                try
+                {
+                    if (!(roles.Contains("Super Admin")))
+                    {
+                        response.IsSuccess = false;
+
+                        response.ErrorMsgs.Add("Access denied.");
+
+                        return response;
+                    }
+
+                    if (request == null || request.RoleId <= 0)
+                    {
+                        response.IsSuccess = false;
+
+                        response.ErrorMsgs.Add("Invalid role data.");
+
+                        return response;
+                    }
 
                     if (string.IsNullOrWhiteSpace(request.RoleName))
-                        response.ErrorMsgs.Add("Enter Role Name");
+                        response.ErrorMsgs.Add("Role name is required");
 
-                    if (request.OrganizationId <= 0)
-                        response.ErrorMsgs.Add("Select Organization");
+                    if (string.IsNullOrWhiteSpace(request.RoleCode))
+                        response.ErrorMsgs.Add("Role code is required");
 
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    if (response.ErrorMsgs.Any())
+                    {
+                        response.IsSuccess = false;
+
+                        return response;
+                    }
+
+                    response = await _dal.Update(request, email, transaction: localtran);
+
+                    if (transaction == null && localtran != null)
+                    {
+                        localtran.Commit();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
-        }
-
-        // ========================
-        // CHANGE STATUS
-        // ========================
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<long>();
-
-            try
-            {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ROLE_STATUS"))
+                catch (Exception ex)
                 {
+                    if (transaction == null && localtran != null)
+                    {
+                        localtran.Rollback();
+                    }
+
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (ROLE_STATUS)");
-                    return response;
+
+                    response.ErrorMsgs.Add(ex.Message);
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
+                return response;
+            }
+
+            // ========================
+            // CHANGE STATUS
+            // ========================
+
+            public async Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email, IDbTransaction? transaction = null)
+            {
+                var response = new APIGetResponseModel<int>();
+
+                IDbTransaction? localtran = null;
+
+                try
                 {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
+                    if (!(roles.Contains("Super Admin")))
+                    {
+                        response.IsSuccess = false;
+
+                        response.ErrorMsgs.Add("Access denied.");
+
+                        return response;
+                    }
 
                     if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid RoleId");
+                    {
+                        response.IsSuccess = false;
 
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
+                        response.ErrorMsgs.Add("Invalid role ID.");
 
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                        return response;
+                    }
+
+                    response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                    if (transaction == null && localtran != null)
+                    {
+                        localtran.Commit();
+                    }
                 }
+                catch (Exception ex)
+                {
+                    if (transaction == null && localtran != null)
+                    {
+                        localtran.Rollback();
+                    }
+
+                    response.IsSuccess = false;
+
+                    response.ErrorMsgs.Add(ex.Message);
+                }
+
+                return response;
             }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
 
-            return response;
-        }
+            // ========================
+            // DROPDOWN
+            // ========================
 
-        // ========================
-        // DROPDOWN
-        // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
+            public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
             {
-                Result = new List<DropdownModel>()
-            };
+                var response = new APIGetResponseModel<List<DropdownModel>>();
 
-            try
-            {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("ROLE_VIEW"))
+                try
+                {
+                    response = await _dal.GetDropdown(email, transaction);
+                }
+                catch (Exception ex)
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized (ROLE_VIEW)");
-                    return response;
+
+                    response.ErrorMsgs.Add(ex.Message);
                 }
 
-                response = await _dal.GetDropdown(transaction);
+                return response;
             }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
         }
     }
-}
-

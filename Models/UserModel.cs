@@ -28,8 +28,6 @@ namespace Models
 
         public string? Phone { get; set; }
 
-        public string? Address { get; set; }
-
         public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
@@ -53,10 +51,8 @@ namespace Models
 
         public string? Password { get; set; }
 
-        public string? Address { get; set; }
-
         public bool? Status { get; set; }
 
-        public long? UserId_Login { get; set; }
+        //public long? UserId_Login { get; set; }
     }
 }
