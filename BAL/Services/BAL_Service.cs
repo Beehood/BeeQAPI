@@ -1,5 +1,4 @@
 ﻿using BAL.ContractIF;
-using BAL.ContractIF;
 using DAL.ContractIF;
 using Dapper;
 using Models;
@@ -29,9 +28,7 @@ namespace BAL.Implementation
             try
             {
                 //  Role validation (same pattern as Organization)
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<List<ServiceModel>>
                     {
@@ -59,9 +56,7 @@ namespace BAL.Implementation
             try
             {
                 // Role validation added
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<ServiceModel>
                     {
@@ -94,9 +89,7 @@ namespace BAL.Implementation
             try
             {
                 //  ROLE CHECK
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -140,15 +133,15 @@ namespace BAL.Implementation
             return response;
         }
 
-        // ========================
-        // UPDATE
-        // ========================
-        /// <summary>
-        /// Update service
-        /// Access:
-        /// Super Admin
-        /// Org Admin
-        /// Branch Admin (Allowed)
+        /* ========================
+         UPDATE
+         ========================
+        <summary>
+          Update service
+          Access:
+          Super Admin
+          Org Admin
+          Branch Admin (Allowed)*/
     
         public async Task<APIGetResponseModel<int>> Update(ServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
@@ -158,9 +151,7 @@ namespace BAL.Implementation
             try
             {
                 //  ROLE CHECK
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -219,9 +210,7 @@ namespace BAL.Implementation
             try
             {
                 //  ROLE CHECK
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");

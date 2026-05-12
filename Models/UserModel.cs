@@ -12,18 +12,29 @@ namespace Models
 
         public long OrganizationId { get; set; }
 
+        public string? OrganizationName { get; set; }
+
         public long BranchId { get; set; }
+
+        public string? BranchName { get; set; }
+
+        public long RoleId { get; set; }
+
+        public string? RoleName { get; set; }
 
         public string? Name { get; set; }
 
         public string? Email { get; set; }
 
-        public long RoleId { get; set; }   // from user_roles
+        public string? Phone { get; set; }
+
+        public string? Address { get; set; }
 
         public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }
+
     public class UserRequestDto
     {
         public long UserId { get; set; }
@@ -32,13 +43,17 @@ namespace Models
 
         public long BranchId { get; set; }
 
+        public long RoleId { get; set; }
+
         public string? Name { get; set; }
 
         public string? Email { get; set; }
 
+        public string? Phone { get; set; }
+
         public string? Password { get; set; }
 
-        public long RoleId { get; set; }
+        public string? Address { get; set; }
 
         public bool? Status { get; set; }
 

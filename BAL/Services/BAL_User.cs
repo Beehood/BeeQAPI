@@ -22,152 +22,127 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        /// <summary>
-        /// User BAL - Get All Users
-        /// Author: Swapnlisa
-        /// Description:- Fetches paginated user list with RBAC validation.
 
-        public async Task<APIGetResponseModel<List<UserModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<UserModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null )
         {
-            var response = new APIGetResponseModel<List<UserModel>>()
-            {
-                Result = new List<UserModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("USER_VIEW"))
+                // ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (USER_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<List<UserModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string>
+                        {
+                            "Access denied."
+                        }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0)
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    //if (request?.PageSize <= 0)
-                    //    response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                return await _dal.GetAll(request,email,transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in User GetAll",ex);
             }
-
-            return response;
         }
 
         // ========================
         // GET BY ID
         // ========================
-        /// <summary>
-        /// User BAL - Get User By Id
-        /// Author: Swapnlisa
-        /// Description:- Fetches single user based on UserId.
-        public async Task<APIGetResponseModel<UserModel>> GetById(long id, TokenUserInfo user, IDbTransaction? transaction = null)
-        {
-            var response = new APIGetResponseModel<UserModel>()
-            {
-                Result = new UserModel()
-            };
 
+        public async Task<APIGetResponseModel<UserModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
+        {
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("USER_VIEW"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (USER_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<UserModel>{IsSuccess = false,ErrorMsgs = new List<string>{"Access denied."}
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (id > 0)
-                {
-                    response = await _dal.GetById(id, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.Result = null;
-                    response.ErrorMsgs.Add("Invalid UserId");
-                }
+                return await _dal.GetById(id,email,transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in User GetById",ex);
             }
-
-            return response;
         }
 
         // ========================
         // CREATE
         // ========================
-        /// <summary>
-        /// User BAL - Create User
-        /// Author: Swapnlisa
-        /// Description:- Validates and inserts new user.
-        public async Task<APIGetResponseModel<long>> Create(UserRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<int>> Create(UserRequestDto request,List<string> roles, string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response =new APIGetResponseModel<int>();
+
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("USER_CREATE"))
+                // ROLE CHECK
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (USER_CREATE required)");
+
+                    response.ErrorMsgs.Add("Access denied.");
+
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (!string.IsNullOrEmpty(request.Name) &&
-                    !string.IsNullOrEmpty(request.Email) &&
-                    request.RoleId > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                // VALIDATION
+
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
 
-                    if (string.IsNullOrEmpty(request.Name))
-                        response.ErrorMsgs.Add("Name is required");
+                    response.ErrorMsgs.Add("Invalid payload.");
 
-                    if (string.IsNullOrEmpty(request.Email))
-                        response.ErrorMsgs.Add("Email is required");
+                    return response;
+                }
 
-                    if (request.RoleId <= 0)
-                        response.ErrorMsgs.Add("Select Role");
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    response.ErrorMsgs.Add("User Name is required");
 
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    response.ErrorMsgs.Add("Email is required");
+
+                if (string.IsNullOrWhiteSpace(request.Phone))
+                    response.ErrorMsgs.Add("Phone is required");
+
+                if (string.IsNullOrWhiteSpace(request.Password))
+                    response.ErrorMsgs.Add("Password is required");
+
+                if (request.RoleId <= 0)
+                    response.ErrorMsgs.Add("Role is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+
+                    return response;
+                }
+
+                // DAL CALL
+
+                response = await _dal.Insert(request,email,transaction: localtran);
+
+                if (transaction == null &&localtran != null)
+                {
+                    localtran.Commit();
                 }
             }
             catch (Exception ex)
             {
+                if (transaction == null &&localtran != null)
+                {
+                    localtran.Rollback();
+                }
+
                 response.IsSuccess = false;
+
                 response.ErrorMsgs.Add(ex.Message);
             }
 
@@ -177,57 +152,68 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        /// <summary>
-        /// User BAL - Update User
-        /// Author: Swapnlisa
-        /// Description:- Updates user details.
-        public async Task<APIGetResponseModel<long>> Update(UserRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<int>> Update(UserRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response =new APIGetResponseModel<int>();
+
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("USER_UPDATE"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (USER_UPDATE required)");
+
+                    response.ErrorMsgs.Add("Access denied.");
+
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.UserId > 0 &&
-                    !string.IsNullOrEmpty(request.Name) &&
-                    !string.IsNullOrEmpty(request.Email) &&
-                    request.RoleId > 0 &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null ||request.UserId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
 
-                    if (request.UserId <= 0)
-                        response.ErrorMsgs.Add("Invalid UserId");
+                    response.ErrorMsgs.Add("Invalid user data.");
 
-                    if (string.IsNullOrEmpty(request.Name))
-                        response.ErrorMsgs.Add("Name is required");
+                    return response;
+                }
 
-                    if (string.IsNullOrEmpty(request.Email))
-                        response.ErrorMsgs.Add("Email is required");
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    response.ErrorMsgs.Add("User Name is required");
 
-                    if (request.RoleId <= 0)
-                        response.ErrorMsgs.Add("Select Role");
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    response.ErrorMsgs.Add("Email is required");
 
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                if (string.IsNullOrWhiteSpace(request.Phone))
+                    response.ErrorMsgs.Add("Phone is required");
+
+                if (request.RoleId <= 0)
+                    response.ErrorMsgs.Add("Role is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+
+                    return response;
+                }
+
+                response = await _dal.Update( request,email,transaction: localtran);
+
+                if (transaction == null &&localtran != null)
+                {
+                    localtran.Commit();
                 }
             }
             catch (Exception ex)
             {
+                if (transaction == null &&localtran != null)
+                {
+                    localtran.Rollback();
+                }
+
                 response.IsSuccess = false;
+
                 response.ErrorMsgs.Add(ex.Message);
             }
 
@@ -237,47 +223,49 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        /// <summary>
-        /// User BAL - Dropdown
-        /// Author: Swapnlisa
-        /// Description:- Fetches active users for dropdown.
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response =new APIGetResponseModel<int>();
+
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("USER_STATUS"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (USER_STATUS required)");
+
+                    response.ErrorMsgs.Add("Access denied.");
+
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
 
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid UserId");
+                    response.ErrorMsgs.Add("Invalid user ID.");
 
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
+                    return response;
+                }
 
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                response = await _dal.ChangeStatus(id,email,transaction: localtran);
+
+                if (transaction == null &&localtran != null)
+                {
+                    localtran.Commit();
                 }
             }
             catch (Exception ex)
             {
+                if (transaction == null &&localtran != null)
+                {
+                    localtran.Rollback();
+                }
+
                 response.IsSuccess = false;
+
                 response.ErrorMsgs.Add(ex.Message);
             }
 
@@ -287,28 +275,19 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
+
+        public async Task<APIGetResponseModel<List<DropdownModel>>>GetDropdown(string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
-            {
-                Result = new List<DropdownModel>()
-            };
+            var response =new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("USER_VIEW"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (USER_VIEW required)");
-                    return response;
-                }
-
-                response = await _dal.GetDropdown(transaction);
+                response =await _dal.GetDropdown(email, transaction );
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
+
                 response.ErrorMsgs.Add(ex.Message);
             }
 
@@ -316,4 +295,3 @@ namespace BAL.Services
         }
     }
 }
-

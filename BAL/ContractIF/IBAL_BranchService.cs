@@ -17,12 +17,7 @@ namespace BAL.ContractIF
         Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<List<DropdownModel>>> 
-GetBranchDropdownByOrganization(
-    long orgId,
-    string email,
-    IDbTransaction? transaction = null
-);
+        Task<APIGetResponseModel<List<DropdownModel>>> GetBranchDropdownByOrganization(long orgId,string email,IDbTransaction? transaction = null);
        
     }
 }

@@ -53,17 +53,11 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<CounterModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<CounterModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<CounterModel>
                     {
@@ -83,11 +77,7 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(
-            CounterRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(CounterRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -95,9 +85,7 @@ namespace BAL.Services
             try
             {
                 //  ROLE CHECK
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -127,13 +115,11 @@ namespace BAL.Services
                 // CALL DAL
                 response = await _dal.Insert(request, email, transaction: localtran);
 
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
+                if (transaction == null && localtran != null)localtran.Commit();
             }
             catch (Exception ex)
             {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
+                if (transaction == null && localtran != null)localtran.Rollback();
 
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
@@ -145,20 +131,14 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            CounterRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(CounterRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -201,20 +181,14 @@ namespace BAL.Services
         // ========================
         // STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -248,9 +222,7 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 

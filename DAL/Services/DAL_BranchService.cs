@@ -288,14 +288,7 @@ namespace DAL.Implementation
 
                 param.Add("p_UserEmail", email);
 
-                var data =
-                    (
-                        await conn.QueryAsync<DropdownModel>(
-                            "sp_manage_branch_service",
-                            param,
-                            commandType: CommandType.StoredProcedure
-                        )
-                    ).ToList();
+                var data =(await conn.QueryAsync<DropdownModel>("sp_manage_branch_service",param,commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
 
@@ -307,14 +300,9 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while fetching branch dropdown"
-                );
+                response.ErrorMsgs.Add("Error while fetching branch dropdown");
 
-                Console.WriteLine(
-                    "DAL DROPDOWN_BY_ORG ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL DROPDOWN_BY_ORG ERROR: "+ ex.Message);
             }
 
             return response;

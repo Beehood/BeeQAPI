@@ -90,9 +90,7 @@ namespace BAL.Implementation
             try
             {
                 // ROLE CHECK (All 3 allowed)
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin") || roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -125,13 +123,11 @@ namespace BAL.Implementation
                 // CALL DAL
                 response = await _dal.Insert(request, email, transaction: localtran);
 
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
+                if (transaction == null && localtran != null)localtran.Commit();
             }
             catch (Exception ex)
             {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
+                if (transaction == null && localtran != null)localtran.Rollback();
 
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
@@ -157,9 +153,7 @@ namespace BAL.Implementation
             try
             {
                 //  ROLE CHECK (All 3 allowed)
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin") || roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -184,13 +178,11 @@ namespace BAL.Implementation
 
                 response = await _dal.Update(request, email, transaction: localtran);
 
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
+                if (transaction == null && localtran != null)localtran.Commit();
             }
             catch (Exception ex)
             {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
+                if (transaction == null && localtran != null)localtran.Rollback();
 
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
@@ -216,9 +208,7 @@ namespace BAL.Implementation
             try
             {
                 //  ROLE CHECK (All 3 allowed)
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -234,13 +224,11 @@ namespace BAL.Implementation
 
                 response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
+                if (transaction == null && localtran != null)localtran.Commit();
             }
             catch (Exception ex)
             {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
+                if (transaction == null && localtran != null)localtran.Rollback();
 
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
@@ -252,23 +240,13 @@ namespace BAL.Implementation
         // DROPDOWN
         // ========================
 
-        public async Task<
-        APIGetResponseModel<List<DropdownModel>>>
-        GetDropdown(
-            string email,
-            IDbTransaction? transaction = null
-        )
+        public async Task<APIGetResponseModel<List<DropdownModel>>>GetDropdown(string email,IDbTransaction? transaction = null)
         {
-            var response =
-                new APIGetResponseModel<List<DropdownModel>>();
+            var response =new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                response =
-                    await _dal.GetDropdown(
-                        email,
-                        transaction
-                    );
+                response =await _dal.GetDropdown(email,transaction);
             }
             catch (Exception ex)
             {
@@ -284,25 +262,13 @@ namespace BAL.Implementation
         // BRANCH DROPDOWN BY ORGANIZATION
         // ========================
 
-        public async Task<
-        APIGetResponseModel<List<DropdownModel>>>
-        GetBranchDropdownByOrganization(
-            long orgId,
-            string email,
-            IDbTransaction? transaction = null
-        )
+        public async Task<APIGetResponseModel<List<DropdownModel>>>GetBranchDropdownByOrganization(long orgId,string email,IDbTransaction? transaction = null)
         {
-            var response =
-                new APIGetResponseModel<List<DropdownModel>>();
+            var response =new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                response =
-                    await _dal.GetBranchDropdownByOrganization(
-                        orgId,
-                        email,
-                        transaction
-                    );
+                response =await _dal.GetBranchDropdownByOrganization(orgId,email,transaction);
             }
             catch (Exception ex)
             {

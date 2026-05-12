@@ -10,16 +10,17 @@ namespace DAL.ContractIF
 {
     public interface IDAL_User
     {
-        Task<APIGetResponseModel<List<UserModel>>> GetAll(PaginationRequestDto request, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<UserModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<UserModel>> GetById(long id, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<UserModel>> GetById(long id,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Insert(UserRequestDto request, string userId, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Insert(UserRequestDto request,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> Update(UserRequestDto request, string userId, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> Update(UserRequestDto request,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
     }
 }
+
