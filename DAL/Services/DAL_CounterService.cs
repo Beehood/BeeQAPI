@@ -24,10 +24,7 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(
-            PaginationRequestDto request,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<CounterServiceModel>>();
 
@@ -92,11 +89,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var data = await conn.QueryFirstOrDefaultAsync<CounterServiceModel>(
-                    "sp_manage_counter_service",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var data = await conn.QueryFirstOrDefaultAsync<CounterServiceModel>("sp_manage_counter_service",param,commandType: CommandType.StoredProcedure);
 
                 if (data != null)
                 {
@@ -122,10 +115,7 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        public async Task<APIGetResponseModel<int>> Insert(
-            CounterServiceRequestDto request,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert(CounterServiceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -142,11 +132,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_counter_service",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_counter_service",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = (int)id;
                 response.IsSuccess = id > 0;
@@ -165,10 +151,7 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            CounterServiceRequestDto request,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(CounterServiceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -185,11 +168,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_counter_service",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_counter_service",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = (int)id;
                 response.IsSuccess = id > 0;
@@ -208,10 +187,7 @@ namespace DAL.Services
         // ========================
         // STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -228,11 +204,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<int>(
-                    "sp_manage_counter_service",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_counter_service",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = result;
                 response.IsSuccess = result > 0;
@@ -251,9 +223,7 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
@@ -270,11 +240,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var data = (await conn.QueryAsync<DropdownModel>(
-                    "sp_manage_counter_service",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                )).ToList();
+                var data = (await conn.QueryAsync<DropdownModel>("sp_manage_counter_service",param,commandType: CommandType.StoredProcedure  )).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;

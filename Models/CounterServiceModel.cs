@@ -9,6 +9,9 @@ namespace Models
     public class CounterServiceModel
     {
         public long CounterServiceId { get; set; }
+        public string OrganizationName { get; set; }
+
+        public string BranchName { get; set; }
 
         public long CounterId { get; set; }
 
@@ -27,6 +30,9 @@ namespace Models
     public class CounterServiceRequestDto
     {
         public long CounterServiceId { get; set; }
+        public string OrganizationName { get; set; }
+
+        public string BranchName { get; set; }
 
         public long CounterId { get; set; }
 

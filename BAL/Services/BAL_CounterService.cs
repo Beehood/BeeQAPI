@@ -22,11 +22,7 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(
-            PaginationRequestDto request,
-            List<string> roles,
-            string? email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -52,11 +48,7 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<CounterServiceModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<CounterServiceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -82,11 +74,7 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(
-            CounterServiceRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(CounterServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -143,11 +131,7 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            CounterServiceRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(CounterServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -191,11 +175,7 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -239,9 +219,7 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
