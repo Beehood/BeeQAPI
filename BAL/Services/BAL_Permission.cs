@@ -26,18 +26,12 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(
-            PaginationRequestDto request,
-            List<string> roles,
-            string? email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
-                // ✅ RBAC: All roles can view based on SP filtering
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                // RBAC: All roles can view based on SP filtering
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<List<PermissionModel>>
                     {
@@ -57,17 +51,11 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<PermissionModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<PermissionModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<PermissionModel>
                     {
@@ -87,18 +75,14 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(
-            PermissionRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(PermissionRequestDto request,List<string> roles,  string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // 🔥 Only Super Admin can create permissions
+                // Only Super Admin can create permissions
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -106,7 +90,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                // ✅ VALIDATION
+                //  VALIDATION
                 if (request == null)
                 {
                     response.IsSuccess = false;
@@ -126,7 +110,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                // ✅ CALL DAL
+                //  CALL DAL
                 response = await _dal.Insert(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
@@ -147,18 +131,14 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            PermissionRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(PermissionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // 🔥 Only Super Admin can update permissions
+                //  Only Super Admin can update permissions
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -205,18 +185,14 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // 🔥 Only Super Admin can change permission status
+                //  Only Super Admin can change permission status
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -251,9 +227,7 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 

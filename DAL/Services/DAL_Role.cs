@@ -49,18 +49,11 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_manage_role",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                using var multi = await conn.QueryMultipleAsync("sp_manage_role",param,commandType: CommandType.StoredProcedure);
 
-                response.TotalRecords =
-                    await multi.ReadFirstAsync<int>();
+                response.TotalRecords =await multi.ReadFirstAsync<int>();
 
-                var list =
-                    (await multi.ReadAsync<RoleModel>())
-                    .ToList();
+                var list =(await multi.ReadAsync<RoleModel>()).ToList();
 
                 response.Result = list;
 
@@ -70,14 +63,9 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while fetching roles"
-                );
+                response.ErrorMsgs.Add("Error while fetching roles");
 
-                Console.WriteLine(
-                    "DAL ROLE GET ALL ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE GET ALL ERROR: "+ ex.Message);
             }
 
             return response;
@@ -112,11 +100,7 @@ namespace DAL.Services
                 param.Add("p_UserEmail", email);
 
                 var data =
-                    await conn.QueryFirstOrDefaultAsync<RoleModel>(
-                        "sp_manage_role",
-                        param,
-                        commandType: CommandType.StoredProcedure
-                    );
+                    await conn.QueryFirstOrDefaultAsync<RoleModel>( "sp_manage_role",param,commandType: CommandType.StoredProcedure);
 
                 if (data != null)
                 {
@@ -139,14 +123,9 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while fetching role"
-                );
+                response.ErrorMsgs.Add("Error while fetching role");
 
-                Console.WriteLine(
-                    "DAL ROLE GET BY ID ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE GET BY ID ERROR: "+ ex.Message);
             }
 
             return response;
@@ -180,32 +159,21 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var id =
-                    await conn.ExecuteScalarAsync<long>(
-                        "sp_manage_role",
-                        param,
-                        commandType: CommandType.StoredProcedure
-                    );
+                var id =await conn.ExecuteScalarAsync<long>( "sp_manage_role",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = (int)id;
 
                 response.IsSuccess = id > 0;
 
-                response.TotalRecords =
-                    id > 0 ? 1 : 0;
+                response.TotalRecords =id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while inserting role"
-                );
+                response.ErrorMsgs.Add("Error while inserting role");
 
-                Console.WriteLine(
-                    "DAL ROLE INSERT ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE INSERT ERROR: "+ ex.Message);
             }
 
             return response;
@@ -239,32 +207,21 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var id =
-                    await conn.ExecuteScalarAsync<long>(
-                        "sp_manage_role",
-                        param,
-                        commandType: CommandType.StoredProcedure
-                    );
+                var id =await conn.ExecuteScalarAsync<long>("sp_manage_role",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = (int)id;
 
                 response.IsSuccess = id > 0;
 
-                response.TotalRecords =
-                    id > 0 ? 1 : 0;
+                response.TotalRecords = id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while updating role"
-                );
+                response.ErrorMsgs.Add("Error while updating role");
 
-                Console.WriteLine(
-                    "DAL ROLE UPDATE ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE UPDATE ERROR: "+ ex.Message);
             }
 
             return response;
@@ -298,32 +255,21 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var result =
-                    await conn.ExecuteScalarAsync<int>(
-                        "sp_manage_role",
-                        param,
-                        commandType: CommandType.StoredProcedure
-                    );
+                var result =await conn.ExecuteScalarAsync<int>("sp_manage_role", param,commandType: CommandType.StoredProcedure);
 
                 response.Result = result;
 
                 response.IsSuccess = result > 0;
 
-                response.TotalRecords =
-                    result > 0 ? 1 : 0;
+                response.TotalRecords =result > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while changing role status"
-                );
+                response.ErrorMsgs.Add("Error while changing role status");
 
-                Console.WriteLine(
-                    "DAL ROLE STATUS ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE STATUS ERROR: " + ex.Message);
             }
 
             return response;
@@ -357,14 +303,7 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var data =
-                    (
-                        await conn.QueryAsync<DropdownModel>(
-                            "sp_manage_role",
-                            param,
-                            commandType: CommandType.StoredProcedure
-                        )
-                    ).ToList();
+                var data =(await conn.QueryAsync<DropdownModel>(  "sp_manage_role",param,commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
 
@@ -376,14 +315,9 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add(
-                    "Error while fetching role dropdown"
-                );
+                response.ErrorMsgs.Add("Error while fetching role dropdown");
 
-                Console.WriteLine(
-                    "DAL ROLE DROPDOWN ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE DROPDOWN ERROR: "+ ex.Message);
             }
 
             return response;

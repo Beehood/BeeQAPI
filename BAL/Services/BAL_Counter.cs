@@ -22,18 +22,12 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(
-            PaginationRequestDto request,
-            List<string> roles,
-            string? email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
                 // ✅ ROLE CHECK
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<List<CounterModel>>
                     {

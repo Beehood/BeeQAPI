@@ -42,11 +42,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", request.PageNo);
                 param.Add("p_UserEmail", email);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_manage_counter_service",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                using var multi = await conn.QueryMultipleAsync("sp_manage_counter_service",param,commandType: CommandType.StoredProcedure);
 
                 // Count
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
@@ -70,10 +66,7 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<CounterServiceModel>> GetById(
-            long id,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<CounterServiceModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<CounterServiceModel>();
 
