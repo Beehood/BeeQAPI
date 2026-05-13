@@ -9,7 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BAL.Services
-{
+{  /// <summary>
+   /// Permission API - BAL Layer
+   /// Author: Swapnlisa
+   /// Description:- Handles permission business logic with RBAC access control.
+   /// </summary>
     public class BAL_Permission : IBAL_Permission
     {
         private readonly IDAL_Permission _dal;
@@ -22,198 +26,221 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        /// <summary>
-        /// Permission API - Get All Permissions
-        /// Author: Swapnlisa
-        /// Description:- Fetch permission list with pagination.
-        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(
+            PaginationRequestDto request,
+            List<string> roles,
+            string? email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<PermissionModel>>()
-            {
-                Result = new List<PermissionModel>()
-            };
-
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("PERMISSION_VIEW"))
+                // ✅ RBAC: All roles can view based on SP filtering
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (PERMISSION_VIEW required)");
-                    return response;
+                    return new APIGetResponseModel<List<PermissionModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
-                // ✅ VALIDATION
-                if (request != null && request.PageNo > 0 )
-                {
-                    response = await _dal.GetAll(request, transaction);
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.TotalRecords = 0;
-
-                    if (request == null)
-                        response.ErrorMsgs.Add("Request cannot be null");
-
-                    if (request?.PageNo <= 0)
-                        response.ErrorMsgs.Add("Invalid PageNumber");
-
-                    //if (request?.PageSize <= 0)
-                    //    response.ErrorMsgs.Add("Invalid PageSize");
-                }
+                return await _dal.GetAll(request, email, transaction);
             }
             catch (Exception ex)
             {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
+                throw new Exception("BAL: Error in Permission GetAll", ex);
             }
-
-            return response;
         }
+
+        // ========================
+        // GET BY ID
+        // ========================
+        public async Task<APIGetResponseModel<PermissionModel>> GetById(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
+        {
+            try
+            {
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
+                {
+                    return new APIGetResponseModel<PermissionModel>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
+                }
+
+                return await _dal.GetById(id, email, transaction);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("BAL: Error in Permission GetById", ex);
+            }
+        }
+
         // ========================
         // CREATE
         // ========================
-        /// <summary>
-        /// Permission API - Create Permission
-        /// Author: Swapnlisa
-        /// Description:- Create new permission.
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> Create(PermissionRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(
+            PermissionRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("PERMISSION_CREATE"))
+                // 🔥 Only Super Admin can create permissions
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (PERMISSION_CREATE required)");
+                    response.ErrorMsgs.Add("Only Super Admin can create permissions.");
                     return response;
                 }
 
                 // ✅ VALIDATION
-                if (!string.IsNullOrWhiteSpace(request.PermissionName) && userId != null)
-                {
-                    response = await _dal.Insert(request, userId, transaction);
-                }
-                else
+                if (request == null)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (string.IsNullOrWhiteSpace(request.PermissionName))
-                        response.ErrorMsgs.Add("Enter Permission Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid payload.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    response.ErrorMsgs.Add("Permission Name is required");
+
+                if (string.IsNullOrWhiteSpace(request.Code))
+                    response.ErrorMsgs.Add("Permission Code is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                // ✅ CALL DAL
+                response = await _dal.Insert(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // UPDATE
         // ========================
-        /// <summary>
-        /// Permission API - Update Permission
-        /// Author: Swapnlisa
-        /// Description:- We use this API to update permission details.
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> Update(PermissionRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            PermissionRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("PERMISSION_UPDATE"))
+                // 🔥 Only Super Admin can update permissions
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (PERMISSION_UPDATE required)");
+                    response.ErrorMsgs.Add("Only Super Admin can update permissions.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (request.PermissionId > 0 &&
-                    !string.IsNullOrWhiteSpace(request.PermissionName) &&
-                    userId != null)
-                {
-                    response = await _dal.Update(request, userId, transaction);
-                }
-                else
+                if (request == null || request.PermissionId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (request.PermissionId <= 0)
-                        response.ErrorMsgs.Add("Invalid PermissionId");
-
-                    if (string.IsNullOrWhiteSpace(request.PermissionName))
-                        response.ErrorMsgs.Add("Enter Permission Name");
-
-                    if (userId == null)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid permission data.");
+                    return response;
                 }
+
+                if (string.IsNullOrWhiteSpace(request.Name))
+                    response.ErrorMsgs.Add("Permission Name is required");
+
+                if (string.IsNullOrWhiteSpace(request.Code))
+                    response.ErrorMsgs.Add("Permission Code is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
+                    return response;
+                }
+
+                response = await _dal.Update(request, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // CHANGE STATUS
         // ========================
-        /// <summary>
-        /// Permission API - Change Permission Status
-        /// Author: Swapnlisa
-        /// Description:- We use this API to activate or deactivate a permission.
-        /// </summary>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
+            IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("PERMISSION_STATUS"))
+                // 🔥 Only Super Admin can change permission status
+                if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (PERMISSION_STATUS required)");
+                    response.ErrorMsgs.Add("Only Super Admin can change permission status.");
                     return response;
                 }
 
-                // ✅ VALIDATION
-                if (id > 0 && (status == 0 || status == 1) && userId > 0)
-                {
-                    response = await _dal.ChangeStatus(id, status, userId, transaction);
-                }
-                else
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.Result = 0;
-
-                    if (id <= 0)
-                        response.ErrorMsgs.Add("Invalid PermissionId");
-
-                    if (status != 0 && status != 1)
-                        response.ErrorMsgs.Add("Invalid Status");
-
-                    if (userId <= 0)
-                        response.ErrorMsgs.Add("User not authorized");
+                    response.ErrorMsgs.Add("Invalid permission ID.");
+                    return response;
                 }
+
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                if (transaction == null && localtran != null)
+                    localtran.Commit();
             }
             catch (Exception ex)
             {
+                if (transaction == null && localtran != null)
+                    localtran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
@@ -224,29 +251,15 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        /// <summary>
-        /// Permission API - Get Dropdown
-        /// Author: Swapnlisa
-        /// Description:- Fetch active permission dropdown list.
-        /// </summary>
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
+            string email,
+            IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<DropdownModel>>()
-            {
-                Result = new List<DropdownModel>()
-            };
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                // 🔐 RBAC
-                if (user == null || !user.Permissions.Contains("PERMISSION_VIEW"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access (PERMISSION_VIEW required)");
-                    return response;
-                }
-
-                response = await _dal.GetDropdown(transaction);
+                response = await _dal.GetDropdown(email, transaction);
             }
             catch (Exception ex)
             {
@@ -258,4 +271,3 @@ namespace BAL.Services
         }
     }
 }
-    

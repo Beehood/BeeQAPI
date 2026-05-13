@@ -20,11 +20,17 @@ namespace BAL.Services
                 _dal = dal;
             }
 
-            // ========================
-            // GET ALL
-            // ========================
+        // ========================
+        // GET ALL
+        // ========================
+        /// <summary>
+        /// Fetch all roles (paginated)
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// </summary>
 
-            public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
             {
                 try
                 {
@@ -50,11 +56,17 @@ namespace BAL.Services
                 }
             }
 
-            // ========================
-            // GET BY ID
-            // ========================
+        // ========================
+        // GET BY ID
+        // ========================
+        /// <summary>
+        /// Fetch role by ID
+        /// Access:
+        /// Super Admin
+        /// Org Admin
+        /// </summary>
 
-            public async Task<APIGetResponseModel<RoleModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<RoleModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null)
             {
                 try
                 {
@@ -78,11 +90,15 @@ namespace BAL.Services
                 }
             }
 
-            // ========================
-            // CREATE
-            // ========================
-
-            public async Task<APIGetResponseModel<int>> Create(RoleRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+        // ========================
+        // CREATE
+        // ========================
+        /// <summary>
+        /// Create new role
+        /// Access:
+        /// Super Admin ONLY
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> Create(RoleRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
             {
                 var response = new APIGetResponseModel<int>();
 
@@ -149,11 +165,16 @@ namespace BAL.Services
                 return response;
             }
 
-            // ========================
-            // UPDATE
-            // ========================
+        // ========================
+        // UPDATE
+        // ========================
+        /// <summary>
+        /// Update role details
+        /// Access:
+        /// Super Admin ONLY
+        /// </summary>
 
-            public async Task<APIGetResponseModel<int>> Update(RoleRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(RoleRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
             {
                 var response = new APIGetResponseModel<int>();
 
@@ -214,11 +235,15 @@ namespace BAL.Services
                 return response;
             }
 
-            // ========================
-            // CHANGE STATUS
-            // ========================
+        // ========================
+        // CHANGE STATUS
+        // ========================
+        /// Activate / Deactivate role
+        /// Access:
+        /// Super Admin ONLY
+        /// </summary>  
 
-            public async Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email, IDbTransaction? transaction = null)
             {
                 var response = new APIGetResponseModel<int>();
 
@@ -266,11 +291,16 @@ namespace BAL.Services
                 return response;
             }
 
-            // ========================
-            // DROPDOWN
-            // ========================
+        // ========================
+        // DROPDOWN
+        // ========================
+        /// <summary>
+        /// Fetch role dropdown list
+        /// Access:
+        /// All authorized users
+        /// </summary>
 
-            public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
             {
                 var response = new APIGetResponseModel<List<DropdownModel>>();
 

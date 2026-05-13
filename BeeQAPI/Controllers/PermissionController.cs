@@ -1,129 +1,104 @@
 ﻿using BAL.ContractIF;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using System.Net;
+using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    using BAL.ContractIF;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Models;
-    using System.Net;
-    using System.Security.Claims;
-
-    namespace BeeQAPI.Controllers
+    [Route("BeeQAPI")]
+    [ApiController]
+    public class PermissionController : ControllerBase
     {
-        [Route("permission")]
-        [ApiController]
-        //[Authorize]
-        public class PermissionController : ControllerBase
+        private readonly IBAL_Permission _bal;
+
+        public PermissionController(IBAL_Permission bal)
         {
-            private readonly IBAL_Permission _bal;
+            _bal = bal;
+        }
 
-            public PermissionController(IBAL_Permission bal)
-            {
-                _bal = bal;
-            }
+        // ========================
+        // GET ALL
+        // ========================
+        [Authorize(Policy = "VIEW_PERMISSION")]
+        [HttpPost("PermissionList")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<PermissionModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll([FromBody] PaginationRequestDto request)
+        {
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // 🔥 Get user from middleware
-            //private TokenUserInfo GetUser()
-            //{
-            //    return HttpContext.Items["User"] as TokenUserInfo;
-            //}
+            return await _bal.GetAll(request, roles, email, transaction: null);
+        }
 
-            // for temporary testing without auth
-            private TokenUserInfo GetUser()
-            {
-                return new TokenUserInfo
-                {
-                    Username = "1",
-                    Permissions = new List<string>
-                {
-                    "PERMISSION_VIEW",
-                    "PERMISSION_CREATE",
-                    "PERMISSION_UPDATE",
-                    "PERMISSION_STATUS"
-                }
-                };
-            }
+        // ========================
+        // GET BY ID
+        // ========================
+        [Authorize(Policy = "VIEW_PERMISSION")]
+        [HttpPost("PermissionById")]
+        [ProducesResponseType(typeof(APIGetResponseModel<PermissionModel>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<PermissionModel>> GetById([FromBody] long id)
+        {
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // ========================
-            // GET ALL
-            // ========================
-            //[Authorize(Policy = "PERMISSION_VIEW")]
-            [HttpPost("PermissionList")]
-            [ProducesResponseType(typeof(APIGetResponseModel<List<PermissionModel>>), (int)HttpStatusCode.OK)]
-            public async Task<IActionResult> GetAll([FromBody] PaginationRequestDto request)
-            {
-                var user = GetUser();
+            return await _bal.GetById(id, roles, email, transaction: null);
+        }
 
-                var result = await _bal.GetAll(request, user);
-                return Ok(result);
-            }
+        // ========================
+        // CREATE
+        // ========================
+        [Authorize(Policy = "CREATE_PERMISSION")]
+        [HttpPost("NewPermission")]
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Create([FromBody] PermissionRequestDto request)
+        {
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // ========================
-            // CREATE
-            // ========================
-            //[Authorize(Policy = "PERMISSION_CREATE")]
-            [HttpPost("NewPermission")]
-            [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-            public async Task<IActionResult> Create([FromBody] PermissionRequestDto request)
-            {
-                var user = GetUser();
+            return await _bal.Create(request, roles, email, transaction: null);
+        }
 
-                var result = await _bal.Create(request, user.Username, user);
-                return Ok(result);
-            }
+        // ========================
+        // UPDATE
+        // ========================
+        [Authorize(Policy = "UPDATE_PERMISSION")]
+        [HttpPost("EditPermission")]
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Update([FromBody] PermissionRequestDto request)
+        {
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // ========================
-            // UPDATE
-            // ========================
-            //[Authorize(Policy = "PERMISSION_UPDATE")]
-            [HttpPost("EditPermission")]
-            [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-            public async Task<IActionResult> Update([FromBody] PermissionRequestDto request)
-            {
-                var user = GetUser();
+            return await _bal.Update(request, roles, email, transaction: null);
+        }
 
-                var result = await _bal.Update(request, user.Username, user);
-                return Ok(result);
-            }
+        // ========================
+        // STATUS
+        // ========================
+        [Authorize(Policy = "DELETE_PERMISSION")]
+        [HttpPost("PermissionStatus")]
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] PermissionRequestDto request)
+        {
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // ========================
-            // CHANGE STATUS
-            // ========================
-            //[Authorize(Policy = "PERMISSION_STATUS")]
-            [HttpPost("PermissionStatus")]
-            [ProducesResponseType(typeof(APIGetResponseModel<long>), (int)HttpStatusCode.OK)]
-            public async Task<IActionResult> ChangeStatus([FromBody] PermissionRequestDto request)
-            {
-                var user = GetUser();
+            return await _bal.ChangeStatus(request.PermissionId, roles, email, transaction: null);
+        }
 
-                long uid = long.TryParse(user.Username, out var parsed) ? parsed : 0;
+        // ========================
+        // DROPDOWN
+        // ========================
+        [Authorize(Policy = "VIEW_PERMISSION")]
+        [HttpGet("PermissionDropdown")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+        {
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                var result = await _bal.ChangeStatus(
-                    request.PermissionId,
-                    request.Status == true ? 1 : 0,
-                    uid,
-                    user
-                );
-
-                return Ok(result);
-            }
-
-            // ===================
-            // DROPDOWN (PRODUCTION READY)
-            // ===================
-            [HttpGet("PermissionDropdown")]
-            [Authorize(Policy = "PERMISSION_VIEW")]
-            [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), 200)]
-            public async Task<IActionResult> GetDropdown()
-            {
-                var user = HttpContext.Items["User"] as TokenUserInfo;
-
-                var result = await _bal.GetDropdown(user);
-                return Ok(result);
-            }
+            return await _bal.GetDropdown(email, transaction: null);
         }
     }
 }

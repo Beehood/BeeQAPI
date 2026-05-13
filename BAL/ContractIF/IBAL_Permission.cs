@@ -10,10 +10,16 @@ namespace BAL.ContractIF
 {
     public interface IBAL_Permission
     {
-        Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request, TokenUserInfo user, IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<long>> Create(PermissionRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<long>> Update(PermissionRequestDto request, string userId, TokenUserInfo user, IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, TokenUserInfo user, IDbTransaction? transaction = null);
-        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(TokenUserInfo user, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<PermissionModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<int>> Create(PermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<int>> Update(PermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email, IDbTransaction? transaction = null);
+
+        Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null);
     }
 }

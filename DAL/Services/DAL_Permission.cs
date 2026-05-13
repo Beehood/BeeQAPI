@@ -12,6 +12,14 @@ using System.Threading.Tasks;
 
 namespace DAL.Services
 {
+    /// <summary>
+    /// Permission DAL Service
+    /// Author: Swapnlisa
+    /// Description:- Handles all database operations related to Permissions 
+    /// using stored procedure (sp_manage_permission).
+    /// Supports RBAC-based access via UserEmail.
+    /// </summary>
+
     public class DAL_Permission : IDAL_Permission
     {
         private readonly DBConnection _config;
@@ -22,14 +30,17 @@ namespace DAL.Services
         }
 
         // ========================
-        // GET ALL (Dynamic - Multi Result)
+        // GET ALL
         // ========================
         /// <summary>
-        /// Permission DAL - Get All Permissions
-        /// Author: Swapnlisa
-        /// Description:- Fetches paginated permission list using stored procedure.
+        /// Fetches paginated list of permissions.
+        /// Applies search filter and RBAC access based on logged-in user.
         /// </summary>
-        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request, IDbTransaction? transaction = null)
+        /// <param name="request">PaginationRequestDto (SearchKey, PageNo)</param>
+        /// <param name="email">Logged-in user email</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>List of PermissionModel with total count</returns>
+        public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<PermissionModel>>();
 
@@ -40,38 +51,80 @@ namespace DAL.Services
                 var param = new DynamicParameters();
 
                 param.Add("p_Action", "LIST");
-
                 param.Add("p_PermissionId", null);
-                param.Add("p_PermissionName", null);
-                param.Add("p_PermissionCode", null);
-                param.Add("p_Module", null);
-                param.Add("p_Status", null);
+                param.Add("p_Name", null);
+                param.Add("p_Code", null);
+                param.Add("p_Description", null);
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
-                //param.Add("p_PageSize", request.PageSize);
 
-                param.Add("p_UserId", null);
+                param.Add("p_UserEmail", email);
 
-                using var multi = await conn.QueryMultipleAsync(
-                    "sp_manage_permission",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                using var multi = await conn.QueryMultipleAsync("sp_manage_permission", param, commandType: CommandType.StoredProcedure);
 
-                // 1st Result → Total Count
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
 
-                // 2nd Result → Data
                 var list = (await multi.ReadAsync<PermissionModel>()).ToList();
 
                 response.Result = list;
-                response.IsSuccess = true;
+                response.IsSuccess = list.Any();
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-                Console.WriteLine("DAL GET ALL ERROR: " + ex.ToString());
+                response.ErrorMsgs.Add("Error while fetching permissions");
+                Console.WriteLine("DAL PERMISSION GET ALL ERROR: " + ex.Message);
+            }
+
+            return response;
+        }
+
+        // ========================
+        // GET BY ID
+        // ========================
+        /// <summary>
+        /// Fetches permission details by PermissionId.
+        /// </summary>
+        /// <param name="id">PermissionId</param>
+        /// <param name="email">Logged-in user email</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Single PermissionModel</returns>
+        public async Task<APIGetResponseModel<PermissionModel>> GetById(long id, string email, IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<PermissionModel>();
+
+            try
+            {
+                using var conn = new MySqlConnection(_config.DefaultConnection);
+
+                var param = new DynamicParameters();
+
+                param.Add("p_Action", "GETBYID");
+                param.Add("p_PermissionId", id);
+                param.Add("p_Name", null);
+                param.Add("p_Code", null);
+                param.Add("p_Description", null);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+
+                param.Add("p_UserEmail", email);
+
+                var data = await conn.QueryFirstOrDefaultAsync<PermissionModel>("sp_manage_permission", param, commandType: CommandType.StoredProcedure);
+
+                if (data != null)
+                {
+                    response.Result = data;
+                    response.TotalRecords = 1;
+                    response.IsSuccess = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add("Error while fetching permission");
+                Console.WriteLine("DAL PERMISSION GET BY ID ERROR: " + ex.Message);
             }
 
             return response;
@@ -81,13 +134,16 @@ namespace DAL.Services
         // INSERT
         // ========================
         /// <summary>
-        /// Permission DAL - Insert Permission
-        /// Author: Swapnlisa
-        /// Description:- Inserts new permission record.
+        /// Inserts a new permission record.
+        /// Validates uniqueness of permission code in stored procedure.
         /// </summary>
-        public async Task<APIGetResponseModel<long>> Insert(PermissionRequestDto request, string userId, IDbTransaction? transaction = null)
+        /// <param name="request">PermissionRequestDto</param>
+        /// <param name="email">Logged-in user email</param>
+        /// <param name="transaction">Optional DB transaction</param>
+        /// <returns>Newly created PermissionId</returns>
+        public async Task<APIGetResponseModel<int>> Insert(PermissionRequestDto request, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -96,48 +152,42 @@ namespace DAL.Services
                 var param = new DynamicParameters();
 
                 param.Add("p_Action", "INSERT");
-
                 param.Add("p_PermissionId", null);
-                param.Add("p_PermissionName", request.PermissionName);
-                param.Add("p_PermissionCode", request.PermissionCode);
-                param.Add("p_Module", request.Module);
-                param.Add("p_Status", 1);
+                param.Add("p_Name", request.Name);
+                param.Add("p_Code", request.Code);
+                param.Add("p_Description", request.Description);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", long.TryParse(userId, out var uid) ? uid : 0);
+                param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_permission",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_permission", param, commandType: CommandType.StoredProcedure);
 
-                response.Result = id;
+                response.Result = (int)id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-                Console.WriteLine("DAL INSERT ERROR: " + ex.Message);
+                response.ErrorMsgs.Add("Error while inserting permission");
+                Console.WriteLine("DAL PERMISSION INSERT ERROR: " + ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // UPDATE
         // ========================
         /// <summary>
-        /// Permission DAL - Update Permission
-        /// Author: Swapnlisa
-        /// Description:- Updates existing permission details.
+        /// Updates existing permission details.
+        /// Ensures unique permission code validation.
         /// </summary>
-        public async Task<APIGetResponseModel<long>> Update(PermissionRequestDto request, string userId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(PermissionRequestDto request, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -146,26 +196,19 @@ namespace DAL.Services
                 var param = new DynamicParameters();
 
                 param.Add("p_Action", "UPDATE");
-
                 param.Add("p_PermissionId", request.PermissionId);
-                param.Add("p_PermissionName", request.PermissionName);
-                param.Add("p_PermissionCode", request.PermissionCode);
-                param.Add("p_Module", request.Module);
-                //param.Add("p_Status", request.Status ?? 1);
+                param.Add("p_Name", request.Name);
+                param.Add("p_Code", request.Code);
+                param.Add("p_Description", request.Description);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_permission",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_permission", param, commandType: CommandType.StoredProcedure);
 
-                response.Result = id;
+                response.Result = (int)id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
             }
@@ -173,22 +216,21 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating permission");
-                Console.WriteLine("DAL UPDATE ERROR: " + ex.Message);
+                Console.WriteLine("DAL PERMISSION UPDATE ERROR: " + ex.Message);
             }
 
             return response;
         }
+
         // ========================
         // CHANGE STATUS
         // ========================
         /// <summary>
-        /// Permission DAL - Change Status
-        /// Author: Swapnlisa
-        /// Description:- Updates permission status (Active/Inactive).
+        /// Toggles permission status (Active/Inactive).
         /// </summary>
-        public async Task<APIGetResponseModel<long>> ChangeStatus(long id, int status, long userId, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<long>();
+            var response = new APIGetResponseModel<int>();
 
             try
             {
@@ -197,24 +239,17 @@ namespace DAL.Services
                 var param = new DynamicParameters();
 
                 param.Add("p_Action", "STATUS");
-
                 param.Add("p_PermissionId", id);
-                param.Add("p_PermissionName", null);
-                param.Add("p_PermissionCode", null);
-                param.Add("p_Module", null);
-                param.Add("p_Status", status);
+                param.Add("p_Name", null);
+                param.Add("p_Code", null);
+                param.Add("p_Description", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-                param.Add("p_PageSize", null);
 
-                param.Add("p_UserId", userId);
+                param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_permission",
-                    param,
-                    commandType: CommandType.StoredProcedure
-                );
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_permission", param, commandType: CommandType.StoredProcedure);
 
                 response.Result = result;
                 response.IsSuccess = result > 0;
@@ -223,8 +258,8 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while changing status");
-                Console.WriteLine("DAL STATUS ERROR: " + ex.Message);
+                response.ErrorMsgs.Add("Error while changing permission status");
+                Console.WriteLine("DAL PERMISSION STATUS ERROR: " + ex.Message);
             }
 
             return response;
@@ -234,11 +269,10 @@ namespace DAL.Services
         // DROPDOWN
         // ========================
         /// <summary>
-        /// Permission DAL - Get Dropdown
-        /// Author: Swapnlisa
-        /// Description:- Fetches active permission dropdown list.
+        /// Fetches active permissions for dropdown.
+        /// Used in UI for selection lists.
         /// </summary>
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
@@ -246,11 +280,20 @@ namespace DAL.Services
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
-                var data = (await conn.QueryAsync<DropdownModel>(
-                    @"SELECT permission_id AS Id, permission_name AS Name 
-                      FROM permissions 
-                      WHERE status = 1"))
-                    .ToList();
+                var param = new DynamicParameters();
+
+                param.Add("p_Action", "DROPDOWN");
+                param.Add("p_PermissionId", null);
+                param.Add("p_Name", null);
+                param.Add("p_Code", null);
+                param.Add("p_Description", null);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+
+                param.Add("p_UserEmail", email);
+
+                var data = (await conn.QueryAsync<DropdownModel>("sp_manage_permission", param, commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
@@ -259,8 +302,8 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching dropdown");
-                Console.WriteLine("DAL DROPDOWN ERROR: " + ex.Message);
+                response.ErrorMsgs.Add("Error while fetching permission dropdown");
+                Console.WriteLine("DAL PERMISSION DROPDOWN ERROR: " + ex.Message);
             }
 
             return response;

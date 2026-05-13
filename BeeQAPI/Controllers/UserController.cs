@@ -65,7 +65,7 @@ namespace BeeQAPI.Controllers
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+   
             return await _bal.Create(request,roles,email,transaction: null);
         }
 
@@ -82,8 +82,11 @@ namespace BeeQAPI.Controllers
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;return await _bal.Update(request,roles,email,transaction: null);
-        }
+            
+            return await _bal.Update(request, roles, email, transaction: null);
 
+        }
+                                                           
         // ========================
         // CHANGE STATUS
         // ========================
