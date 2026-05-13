@@ -52,6 +52,7 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
 
                 param.Add("p_Password", null);
+                param.Add("p_Status", null);
 
 
                 param.Add("p_SearchKey", request.SearchKey);
@@ -113,6 +114,7 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
 
                 param.Add("p_Password", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
 
@@ -171,9 +173,10 @@ namespace DAL.Services
 
                 param.Add("p_Email", request.Email);
 
-                param.Add("p_Phone", request.Phone);
+                //param.Add("p_Phone", request.Phone);
 
                 param.Add("p_Password", request.Password);
+                param.Add("p_Status", 1);
 
 
                 param.Add("p_SearchKey", null);
@@ -230,9 +233,10 @@ namespace DAL.Services
 
                 param.Add("p_Email",request.Email);
 
-                param.Add("p_Phone",request.Phone);
+                //param.Add("p_Phone",request.Phone);
 
                 param.Add("p_Password",request.Password);
+                param.Add("p_Status", request.Status);
 
                 param.Add("p_SearchKey", null);
 
@@ -291,6 +295,7 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
 
                 param.Add("p_Password", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
 
@@ -349,6 +354,7 @@ namespace DAL.Services
                 param.Add("p_Phone", null);
 
                 param.Add("p_Password", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
 

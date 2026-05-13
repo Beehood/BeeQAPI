@@ -1,6 +1,7 @@
 ﻿using BAL.ContractIF;
 using DAL.ContractIF;
 using Models;
+using Org.BouncyCastle.Crypto.Generators;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -109,8 +110,8 @@ namespace BAL.Services
                 if (string.IsNullOrWhiteSpace(request.Email))
                     response.ErrorMsgs.Add("Email is required");
 
-                if (string.IsNullOrWhiteSpace(request.Phone))
-                    response.ErrorMsgs.Add("Phone is required");
+                //if (string.IsNullOrWhiteSpace(request.Phone))
+                    //response.ErrorMsgs.Add("Phone is required");
 
                 if (string.IsNullOrWhiteSpace(request.Password))
                     response.ErrorMsgs.Add("Password is required");
@@ -124,7 +125,8 @@ namespace BAL.Services
 
                     return response;
                 }
-
+                request.Password =
+                    BAL_Auth.GetHashString(request.Password);
                 // DAL CALL
 
                 response = await _dal.Insert(request,email,transaction: localtran);
@@ -185,8 +187,8 @@ namespace BAL.Services
                 if (string.IsNullOrWhiteSpace(request.Email))
                     response.ErrorMsgs.Add("Email is required");
 
-                if (string.IsNullOrWhiteSpace(request.Phone))
-                    response.ErrorMsgs.Add("Phone is required");
+                //if (string.IsNullOrWhiteSpace(request.Phone))
+                    //response.ErrorMsgs.Add("Phone is required");
 
                 if (request.RoleId <= 0)
                     response.ErrorMsgs.Add("Role is required");
@@ -197,7 +199,14 @@ namespace BAL.Services
 
                     return response;
                 }
-
+                if (!string.IsNullOrWhiteSpace(request.Password))
+                {
+                    if (!string.IsNullOrWhiteSpace(request.Password))
+                    {
+                        request.Password =
+                            BAL_Auth.GetHashString(request.Password);
+                    }
+                }
                 response = await _dal.Update( request,email,transaction: localtran);
 
                 if (transaction == null &&localtran != null)
