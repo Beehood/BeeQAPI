@@ -1,219 +1,97 @@
 ﻿using BAL.ContractIF;
 using DAL.ContractIF;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using System.Data;
+using System.Net;
+using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
-    public class BAL_RolePermission : IBAL_RolePermission
+    [ApiController]
+    public class RolePermissionController : ControllerBase
     {
-        private readonly IDAL_RolePermission _dal;
+        private readonly IBAL_RolePermission _bal;
 
-        public BAL_RolePermission(IDAL_RolePermission dal)
+        public RolePermissionController(IBAL_RolePermission bal)
         {
-            _dal = dal;
+            _bal = bal;
         }
 
         // ========================
         // GET ALL
         // ========================
-        /// <summary>
-        /// RolePermission API - Get All Role Permissions
-        /// Author: Swapnlisa
-        /// Description:- Fetch role-permission mappings with pagination.
-        /// </summary>
-        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
-            PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
+        [Authorize(Policy = "VIEW_PERMISSION")]
+        [HttpPost("RolePermissionList")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<RolePermissionModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll([FromBody] PaginationRequestDto request)
         {
-            try
-            {
-                // All roles can view (SP handles filtering)
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
-                {
-                    return new APIGetResponseModel<List<RolePermissionModel>>
-                    {
-                        IsSuccess = false,
-                        ErrorMsgs = new List<string> { "Access denied." }
-                    };
-                }
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-                return await _dal.GetAll(request, email, transaction);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("BAL: Error in RolePermission GetAll", ex);
-            }
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetAll(request, roles, email, transaction: null);
         }
 
         // ========================
         // GET BY ROLE
         // ========================
-        /// <summary>
-        /// RolePermission API - Get Permissions By RoleId
-        /// </summary>
-        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetByRoleId(
-            long roleId, List<string> roles, string email, IDbTransaction? transaction = null)
+        [Authorize(Policy = "VIEW_PERMISSION")]
+        [HttpPost("RolePermissionByRole")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<RolePermissionModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetByRoleId([FromBody] long roleId)
         {
-            try
-            {
-                if (!(roles.Contains("Super Admin") ||
-                      roles.Contains("Org Admin") ||
-                      roles.Contains("Branch Admin")))
-                {
-                    return new APIGetResponseModel<List<RolePermissionModel>>
-                    {
-                        IsSuccess = false,
-                        ErrorMsgs = new List<string> { "Access denied." }
-                    };
-                }
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-                return await _dal.GetByRoleId(roleId, email, transaction);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("BAL: Error in RolePermission GetByRoleId", ex);
-            }
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.GetByRoleId(roleId, roles, email, transaction: null);
         }
 
         // ========================
         // CREATE (Single Assign)
         // ========================
-        /// <summary>
-        /// RolePermission API - Assign Single Permission to Role
-        /// </summary>
-        public async Task<APIGetResponseModel<int>> Create(
-            RolePermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+        [Authorize(Policy = "ASSIGN_PERMISSION")]
+        [HttpPost("AssignPermission")]
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Create([FromBody] RolePermissionRequestDto request)
         {
-            var response = new APIGetResponseModel<int>();
-            IDbTransaction? localtran = null;
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            try
-            {
-                //  Only Super Admin
-                if (!roles.Contains("Super Admin"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can assign permissions.");
-                    return response;
-                }
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (request == null || request.RoleId <= 0 || request.PermissionId <= 0)
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid role permission data.");
-                    return response;
-                }
-
-                response = await _dal.Insert(request, email, transaction: localtran);
-
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
-            }
-            catch (Exception ex)
-            {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
-
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
+            return await _bal.Create(request, roles, email, transaction: null);
         }
 
         // ========================
         // BULK ASSIGN (UPDATE)
         // ========================
-        /// <summary>
-        /// RolePermission API - Bulk Assign Permissions to Role
-        /// </summary>
-        public async Task<APIGetResponseModel<int>> BulkAssign(
-            RolePermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+        [Authorize(Policy = "ASSIGN_PERMISSION")]
+        [HttpPost("AssignPermissionsBulk")]
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> BulkAssign([FromBody] RolePermissionRequestDto request)
         {
-            var response = new APIGetResponseModel<int>();
-            IDbTransaction? localtran = null;
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            try
-            {
-                //  Only Super Admin
-                if (!roles.Contains("Super Admin"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can assign permissions.");
-                    return response;
-                }
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (request == null || request.RoleId <= 0 || string.IsNullOrWhiteSpace(request.PermissionIds))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid bulk permission data.");
-                    return response;
-                }
-
-                response = await _dal.BulkInsert(request, email, transaction: localtran);
-
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
-            }
-            catch (Exception ex)
-            {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
-
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
+            return await _bal.BulkAssign(request, roles, email, transaction: null);
         }
 
         // ========================
         // DELETE
         // ========================
-        /// <summary>
-        /// RolePermission API - Remove Permission from Role
-        /// </summary>
-        public async Task<APIGetResponseModel<int>> Delete(
-            RolePermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+        [Authorize(Policy = "ASSIGN_PERMISSION")]
+        [HttpPost("RemovePermission")]
+        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<int>> Delete([FromBody] RolePermissionRequestDto request)
         {
-            var response = new APIGetResponseModel<int>();
-            IDbTransaction? localtran = null;
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-            try
-            {
-                //  Only Super Admin
-                if (!roles.Contains("Super Admin"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can remove permissions.");
-                    return response;
-                }
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (request == null || request.RoleId <= 0 || request.PermissionId <= 0)
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid role permission data.");
-                    return response;
-                }
-
-                response = await _dal.Delete(request, email, transaction: localtran);
-
-                if (transaction == null && localtran != null)
-                    localtran.Commit();
-            }
-            catch (Exception ex)
-            {
-                if (transaction == null && localtran != null)
-                    localtran.Rollback();
-
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
-
-            return response;
+            return await _bal.Delete(request, roles, email, transaction: null);
         }
     }
-
 }

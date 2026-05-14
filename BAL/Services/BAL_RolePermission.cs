@@ -22,12 +22,20 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
+        /// <summary>
+        /// RolePermission API - Get All Role Permissions
+        /// Author: Swapnlisa
+        /// Description:- Fetch role-permission mappings with pagination.
+        /// </summary>
+        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
+            PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
         {
             try
             {
-                //  All roles can view (SP will filter data)
-                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
+                // All roles can view (SP handles filtering)
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<List<RolePermissionModel>>
                     {
@@ -47,11 +55,17 @@ namespace BAL.Services
         // ========================
         // GET BY ROLE
         // ========================
-        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetByRoleId(long roleId,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <summary>
+        /// RolePermission API - Get Permissions By RoleId
+        /// </summary>
+        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetByRoleId(
+            long roleId, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             try
             {
-                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||
+                      roles.Contains("Org Admin") ||
+                      roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<List<RolePermissionModel>>
                     {
@@ -71,14 +85,18 @@ namespace BAL.Services
         // ========================
         // CREATE (Single Assign)
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(RolePermissionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <summary>
+        /// RolePermission API - Assign Single Permission to Role
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> Create(
+            RolePermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                //  Only Super Admin can assign permission
+                //  Only Super Admin
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -113,14 +131,18 @@ namespace BAL.Services
         // ========================
         // BULK ASSIGN (UPDATE)
         // ========================
-        public async Task<APIGetResponseModel<int>> BulkAssign(RolePermissionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <summary>
+        /// RolePermission API - Bulk Assign Permissions to Role
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> BulkAssign(
+            RolePermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // Only Super Admin can assign permissions
+                //  Only Super Admin
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
@@ -155,14 +177,18 @@ namespace BAL.Services
         // ========================
         // DELETE
         // ========================
-        public async Task<APIGetResponseModel<int>> Delete(RolePermissionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <summary>
+        /// RolePermission API - Remove Permission from Role
+        /// </summary>
+        public async Task<APIGetResponseModel<int>> Delete(
+            RolePermissionRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                //  Only Super Admin can remove permission
+                //  Only Super Admin
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
