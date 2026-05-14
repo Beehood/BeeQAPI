@@ -103,6 +103,8 @@ namespace BAL.Services
 
                 if (string.IsNullOrWhiteSpace(request.PermissionCode))
                     response.ErrorMsgs.Add("Permission Code is required");
+                if (string.IsNullOrWhiteSpace(request.Module))
+                    response.ErrorMsgs.Add("Module is required");
 
                 if (response.ErrorMsgs.Any())
                 {
@@ -158,6 +160,8 @@ namespace BAL.Services
 
                 if (string.IsNullOrWhiteSpace(request.PermissionCode))
                     response.ErrorMsgs.Add("Permission Code is required");
+                if (string.IsNullOrWhiteSpace(request.Module))
+                    response.ErrorMsgs.Add("Module is required");
 
                 if (response.ErrorMsgs.Any())
                 {

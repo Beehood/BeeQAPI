@@ -203,7 +203,7 @@ namespace DAL.Services
                 param.Add("p_PermissionId", request.PermissionId);
                 param.Add("p_Name", request.PermissionName);
                 param.Add("p_Code", request.PermissionCode);
-                param.Add("p_Module", null);
+                param.Add("p_Module", request.Module);
                 param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
@@ -220,7 +220,8 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while updating permission");
+                response.ErrorMsgs.Add(ex.Message);
+
                 Console.WriteLine("DAL PERMISSION UPDATE ERROR: " + ex.Message);
             }
 
