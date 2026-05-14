@@ -54,7 +54,8 @@ namespace DAL.Services
                 param.Add("p_PermissionId", null);
                 param.Add("p_Name", null);
                 param.Add("p_Code", null);
-                param.Add("p_Description", null);
+                param.Add("p_Module", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
@@ -73,8 +74,9 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching permissions");
-                Console.WriteLine("DAL PERMISSION GET ALL ERROR: " + ex.Message);
+                //response.ErrorMsgs.Add("Error while fetching permissions");
+                response.ErrorMsgs.Add(ex.Message);
+
             }
 
             return response;
@@ -104,7 +106,8 @@ namespace DAL.Services
                 param.Add("p_PermissionId", id);
                 param.Add("p_Name", null);
                 param.Add("p_Code", null);
-                param.Add("p_Description", null);
+                param.Add("p_Module", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
@@ -153,9 +156,10 @@ namespace DAL.Services
 
                 param.Add("p_Action", "INSERT");
                 param.Add("p_PermissionId", null);
-                param.Add("p_Name", request.Name);
-                param.Add("p_Code", request.Code);
-                param.Add("p_Description", request.Description);
+                param.Add("p_Name", request.PermissionName);
+                param.Add("p_Code", request.PermissionCode);
+                param.Add("p_Module", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
@@ -197,9 +201,10 @@ namespace DAL.Services
 
                 param.Add("p_Action", "UPDATE");
                 param.Add("p_PermissionId", request.PermissionId);
-                param.Add("p_Name", request.Name);
-                param.Add("p_Code", request.Code);
-                param.Add("p_Description", request.Description);
+                param.Add("p_Name", request.PermissionName);
+                param.Add("p_Code", request.PermissionCode);
+                param.Add("p_Module", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
@@ -242,7 +247,8 @@ namespace DAL.Services
                 param.Add("p_PermissionId", id);
                 param.Add("p_Name", null);
                 param.Add("p_Code", null);
-                param.Add("p_Description", null);
+                param.Add("p_Module", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
@@ -286,7 +292,8 @@ namespace DAL.Services
                 param.Add("p_PermissionId", null);
                 param.Add("p_Name", null);
                 param.Add("p_Code", null);
-                param.Add("p_Description", null);
+                param.Add("p_Module", null);
+                param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);

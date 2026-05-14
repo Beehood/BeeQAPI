@@ -10,11 +10,11 @@ namespace Models
     {
         public long PermissionId { get; set; }
 
-        public string Name { get; set; }
+        public string PermissionName { get; set; } = string.Empty;
 
-        public string Code { get; set; }
+        public string? PermissionCode { get; set; }
 
-        public string? Description { get; set; }
+        public string? Module { get; set; }
 
         public bool Status { get; set; }
 
@@ -25,12 +25,20 @@ namespace Models
     {
         public long PermissionId { get; set; }
 
-        public string Name { get; set; }
+        public string PermissionName { get; set; } = string.Empty;
 
-        public string Code { get; set; }
+        public string? PermissionCode { get; set; }
 
-        public string? Description { get; set; }
+        public string? Module { get; set; }
 
-        public bool Status { get; set; }
+        public bool? Status { get; set; }
+
+        public string? SearchKey { get; set; }
+
+        public int? PageNo { get; set; }
+
+        public int? PageSize { get; set; }
+
+        public long? UserId { get; set; }
     }
 }

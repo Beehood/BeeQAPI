@@ -98,10 +98,10 @@ namespace BAL.Services
                     return response;
                 }
 
-                if (string.IsNullOrWhiteSpace(request.Name))
+                if (string.IsNullOrWhiteSpace(request.PermissionName))
                     response.ErrorMsgs.Add("Permission Name is required");
 
-                if (string.IsNullOrWhiteSpace(request.Code))
+                if (string.IsNullOrWhiteSpace(request.PermissionCode))
                     response.ErrorMsgs.Add("Permission Code is required");
 
                 if (response.ErrorMsgs.Any())
@@ -153,10 +153,10 @@ namespace BAL.Services
                     return response;
                 }
 
-                if (string.IsNullOrWhiteSpace(request.Name))
+                if (string.IsNullOrWhiteSpace(request.PermissionName))
                     response.ErrorMsgs.Add("Permission Name is required");
 
-                if (string.IsNullOrWhiteSpace(request.Code))
+                if (string.IsNullOrWhiteSpace(request.PermissionCode))
                     response.ErrorMsgs.Add("Permission Code is required");
 
                 if (response.ErrorMsgs.Any())
