@@ -19,41 +19,6 @@ namespace BeeQAPI.Controllers
             _bal = bal;
         }
 
-        //  Get user from middleware
-        //private TokenUserInfo GetUser()
-        //{
-        //    return HttpContext.Items["User"] as TokenUserInfo;
-        //}
-
-        //private TokenUserInfo GetUser()
-        //{
-        //    return new TokenUserInfo
-        //    {
-        //        Username = "1",
-        //        Permissions = new List<string>
-        //{                                                      //for temporaly testing without auth
-        //    "VIEW_ORG",
-        //    "CREATE_ORG",
-        //    "UPDATE_ORG",
-        //    "DELETE_ORG"
-        //}
-        //    };
-
-        //}
-        //private TokenUserInfo GetUser()
-        //{
-        //    var user = new TokenUserInfo();
-
-        //    user.Username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        //    user.Permissions = User.Claims
-        //        .Where(c => c.Type == "permission")
-        //        .Select(c => c.Value)
-        //        .ToList();
-
-        //    return user;
-        //}
-
         // ========================
         // GET ALL
         // ========================

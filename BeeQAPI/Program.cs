@@ -105,6 +105,11 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 //=========================
 builder.Services.AddScoped<IBAL_Menu, BAL_Menu>();
  builder.Services.AddScoped<IDAL_Menu, DAL_Menu>();
+// ========================
+// ROLE PERMISSION
+// ========================
+builder.Services.AddScoped<IBAL_RolePermission, BAL_RolePermission>();
+builder.Services.AddScoped<IDAL_RolePermission, DAL_RolePermission>();
 
 
 builder.Services.AddControllers();
