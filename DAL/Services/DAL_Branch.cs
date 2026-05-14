@@ -52,7 +52,7 @@ namespace DAL.Services
                 var list = (await multi.ReadAsync<BranchModel>()).ToList();
 
                 response.Result = list;
-                response.IsSuccess = list.Any();
+                response.IsSuccess = true;
             }
             catch (Exception ex)
             {

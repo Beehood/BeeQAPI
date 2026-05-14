@@ -9,6 +9,7 @@ using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
 {
+    [Route("BeeQAPI")]
     [ApiController]
     public class RolePermissionController : ControllerBase
     {
