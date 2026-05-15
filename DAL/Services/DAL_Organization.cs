@@ -15,7 +15,6 @@ namespace DAL.Services
     public class DAL_Organization : IDAL_Organization
     {
         private readonly DBConnection _config;
-
         public DAL_Organization(DBConnection config)
         {
             _config = config;
@@ -40,9 +39,7 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "LIST");
-
                 param.Add("p_OrganizationId", null);
                 param.Add("p_Name", null);
                 param.Add("p_Email", null);
@@ -58,10 +55,10 @@ namespace DAL.Services
                 param.Add("p_UserEmail", null);
                 using var multi = await conn.QueryMultipleAsync("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
 
-                // 🔹 1st Result → Total Count
+                //  1st Result → Total Count
                 response.TotalRecords = await multi.ReadFirstAsync<int>();
 
-                // 🔹 2nd Result → Data
+                // 2nd Result → Data
                 var list = (await multi.ReadAsync<OrganizationModel>()).ToList();
 
                 response.Result = list;
@@ -95,23 +92,18 @@ namespace DAL.Services
             try
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
-
-                var param = new DynamicParameters();
-
-                param.Add("p_Action", "GETBYID");
-
-                param.Add("p_OrganizationId", id);
+                 var param = new DynamicParameters();
+                 param.Add("p_Action", "GETBYID");
+                 param.Add("p_OrganizationId", id);
                 param.Add("p_Name", null);
                 param.Add("p_Email", null);
                 param.Add("p_Phone", null);
                 param.Add("p_Address", null);
                 param.Add("p_SubscriptionPlan", null);
                 //param.Add("p_Status", null);
-
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 //param.Add("p_PageSize", null);
-
                 param.Add("p_UserEmail", null);
                 var data = await conn.QueryFirstOrDefaultAsync<OrganizationModel>("sp_manage_organization",param,commandType: CommandType.StoredProcedure  );
 
@@ -156,11 +148,8 @@ namespace DAL.Services
             try
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
-
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "INSERT");
-
                 param.Add("p_OrganizationId", null);
                 param.Add("p_Name", request.Name);
                 param.Add("p_Email", request.Email);
@@ -168,15 +157,11 @@ namespace DAL.Services
                 param.Add("p_Address", request.Address);
                 param.Add("p_SubscriptionPlan", request.SubscriptionPlan);
                 //param.Add("p_Status", 1);
-
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 //param.Add("p_PageSize", null);
-
                 param.Add("p_UserEmail", email);
-
-                var id = await conn.ExecuteScalarAsync<long>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
-
+               var id = await conn.ExecuteScalarAsync<long>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
                 response.Result =(int) id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;
@@ -209,11 +194,8 @@ namespace DAL.Services
             try
             {
                 using var conn = new MySqlConnection(_config.DefaultConnection);
-
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "UPDATE");
-
                 param.Add("p_OrganizationId", request.OrganizationId);
                 param.Add("p_Name", request.Name);
                 param.Add("p_Email", request.Email);
@@ -221,15 +203,11 @@ namespace DAL.Services
                 param.Add("p_Address", request.Address);
                 param.Add("p_SubscriptionPlan", request.SubscriptionPlan);
                 //param.Add("p_Status", request.Status);
-
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 //param.Add("p_PageSize", null);
-
                 param.Add("p_UserEmail", email);
-
                 var id = await conn.ExecuteScalarAsync<long>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
-
                 response.Result = (int)id;
                 response.IsSuccess = id > 0;
                 response.TotalRecords = id > 0 ? 1 : 0;

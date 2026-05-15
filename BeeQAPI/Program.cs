@@ -110,6 +110,11 @@ builder.Services.AddScoped<IBAL_Menu, BAL_Menu>();
 // ========================
 builder.Services.AddScoped<IBAL_RolePermission, BAL_RolePermission>();
 builder.Services.AddScoped<IDAL_RolePermission, DAL_RolePermission>();
+// ========================
+// CUSTOMER
+// ========================
+builder.Services.AddScoped<IBAL_Customer, BAL_Customer>();
+builder.Services.AddScoped<IDAL_Customer, DAL_Customer>();
 
 
 builder.Services.AddControllers();

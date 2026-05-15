@@ -10,71 +10,84 @@ using System.Threading.Tasks;
 
 namespace BAL.Services
 {
-
-
-    public class BAL_Organization : IBAL_Organization
+    public class BAL_Customer : IBAL_Customer
     {
-        private readonly IDAL_Organization _dal;
+        private readonly IDAL_Customer _dal;
 
-        public BAL_Organization(IDAL_Organization dal)
+        public BAL_Customer(IDAL_Customer dal)
         {
             _dal = dal;
         }
+
         // ========================
         // GET ALL
         // ========================
-
         /// <summary>
-        /// Organization API - Get All Organizations
+        /// Customer API - Get All Customers
         /// Author: Swapnlisa
-        /// Description:- We use this API to fetch organization list with pagination.
+        /// Description:- We use this API to fetch customer list with pagination.
         /// Json Request Format Ex- {"PageNumber":"1","PageSize":"10"}
         /// </summary>
         /// <param name="request">PaginationRequestDto</param>
-        /// <param name="user">TokenUserInfo</param>
+        /// <param name="roles">User Roles</param>
+        /// <param name="email">Logged in User Email</param>
         /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns paginated organization list</returns>
-        public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
+        /// <returns>Returns paginated customer list</returns>
+        public async Task<APIGetResponseModel<List<CustomerModel>>> GetAll(PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
         {
             try
             {
-                //  Only Super Admin can access Organizations
-                if (!roles.Contains("Super Admin"))
+                //  Super Admin → Full access
+                if (roles.Contains("Super Admin"))
                 {
-                    return new APIGetResponseModel<List<OrganizationModel>>
-                    {
-                        IsSuccess = false,
-                        ErrorMsgs = new List<string> { "Access denied. Only Super Admin allowed." }
-                    };
+                    return await _dal.GetAll(request, email, transaction);
                 }
 
-                return await _dal.GetAll(request, email, transaction);
+                //  Org Admin / Branch Admin → SP will filter
+                if (roles.Contains("Org Admin") || roles.Contains("Branch Admin"))
+                {
+                    return await _dal.GetAll(request, email, transaction);
+                }
+
+                //  Custom Role → Allow if has permission
+                if (roles.Any())
+                {
+                    return await _dal.GetAll(request, email, transaction);
+                }
+
+                return new APIGetResponseModel<List<CustomerModel>>
+                {
+                    IsSuccess = false,
+                    ErrorMsgs = new List<string> { "Access denied." }
+                };
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetAll", ex);
+                throw new Exception("BAL: Error in Customer GetAll", ex);
             }
         }
+
         // ========================
         // GET BY ID
         // ========================
         /// <summary>
-        /// Organization API - Get Organization By Id
+        /// Customer API - Get Customer By Id
         /// Author: Swapnlisa
-        /// Description:- We use this API to fetch organization details using OrganizationId.
-        /// Json Request Format Ex- {"OrganizationId":"1"}
+        /// Description:- We use this API to fetch customer details using CustomerId.
+        /// Json Request Format Ex- {"CustomerId":"1"}
         /// </summary>
-        /// <param name="id">OrganizationId</param>
-        /// <param name="user">TokenUserInfo</param>
+        /// <param name="id">CustomerId</param>
+        /// <param name="roles">User Roles</param>
+        /// <param name="email">Logged in User Email</param>
         /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns organization details</returns>
-        public async Task<APIGetResponseModel<OrganizationModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <returns>Returns customer details</returns>
+        public async Task<APIGetResponseModel<CustomerModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             try
             {
-                if (!roles.Contains("Super Admin"))
+                if (!roles.Any())
                 {
-                    return new APIGetResponseModel<OrganizationModel>
+                    return new APIGetResponseModel<CustomerModel>
                     {
                         IsSuccess = false,
                         ErrorMsgs = new List<string> { "Access denied." }
@@ -85,39 +98,40 @@ namespace BAL.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetById", ex);
+                throw new Exception("BAL: Error in Customer GetById", ex);
             }
         }
+
         // ========================
         // CREATE
         // ========================
         /// <summary>
-        /// Organization API - Create Organization
+        /// Customer API - Create Customer
         /// Author: Swapnlisa
-        /// Description:- We use this API to create a new organization.
-        /// Json Request Format Ex- {"OrganizationName":"ABC Pvt Ltd","Address":"BBSR"}
+        /// Description:- We use this API to create a new customer.
+        /// Json Request Format Ex- {"Name":"John","Phone":"9999999999"}
         /// </summary>
-        /// <param name="request">OrganizationRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
+        /// <param name="request">CustomerRequestDto</param>
+        /// <param name="roles">User Roles</param>
+        /// <param name="email">Logged in User Email</param>
         /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns created OrganizationId</returns>
-        public async Task<APIGetResponseModel<int>> Create(OrganizationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <returns>Returns created CustomerId</returns>
+        public async Task<APIGetResponseModel<int>> Create(CustomerRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                //  ROLE CHECK
+                //  Only Super Admin OR Custom Permission
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can create organization.");
+                    response.ErrorMsgs.Add("Only Super Admin can create customer.");
                     return response;
                 }
 
-                //  VALIDATION
+                // VALIDATION
                 if (request == null)
                 {
                     response.IsSuccess = false;
@@ -126,10 +140,7 @@ namespace BAL.Services
                 }
 
                 if (string.IsNullOrWhiteSpace(request.Name))
-                    response.ErrorMsgs.Add("Organization Name is required");
-
-                if (string.IsNullOrWhiteSpace(request.Email))
-                    response.ErrorMsgs.Add("Email is required");
+                    response.ErrorMsgs.Add("Customer Name is required");
 
                 if (string.IsNullOrWhiteSpace(request.Phone))
                     response.ErrorMsgs.Add("Phone is required");
@@ -140,7 +151,6 @@ namespace BAL.Services
                     return response;
                 }
 
-                // CALL DAL
                 response = await _dal.Insert(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
@@ -162,17 +172,18 @@ namespace BAL.Services
         // UPDATE
         // ========================
         /// <summary>
-        /// Organization API - Update Organization
+        /// Customer API - Update Customer
         /// Author: Swapnlisa
-        /// Description:- We use this API to update organization details.
-        /// Json Request Format Ex- {"OrganizationId":"1","OrganizationName":"Updated Name"}
+        /// Description:- We use this API to update customer details.
+        /// Json Request Format Ex- {"CustomerId":"1","Name":"Updated Name"}
         /// </summary>
-        /// <param name="request">OrganizationRequestDto</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
+        /// <param name="request">CustomerRequestDto</param>
+        /// <param name="roles">User Roles</param>
+        /// <param name="email">Logged in User Email</param>
         /// <param name="transaction">DB Transaction</param>
-        /// <returns>Returns updated OrganizationId</returns>
-        public async Task<APIGetResponseModel<int>> Update(OrganizationRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
+        /// <returns>Returns updated CustomerId</returns>
+
+        public async Task<APIGetResponseModel<int>> Update(CustomerRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -182,22 +193,19 @@ namespace BAL.Services
                 if (!roles.Contains("Super Admin"))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can update organization.");
+                    response.ErrorMsgs.Add("Only Super Admin can update customer.");
                     return response;
                 }
 
-                if (request == null || request.OrganizationId <= 0)
+                if (request == null || request.CustomerId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid organization data.");
+                    response.ErrorMsgs.Add("Invalid customer data.");
                     return response;
                 }
 
                 if (string.IsNullOrWhiteSpace(request.Name))
-                    response.ErrorMsgs.Add("Organization Name is required");
-
-                if (string.IsNullOrWhiteSpace(request.Email))
-                    response.ErrorMsgs.Add("Email is required");
+                    response.ErrorMsgs.Add("Customer Name is required");
 
                 if (string.IsNullOrWhiteSpace(request.Phone))
                     response.ErrorMsgs.Add("Phone is required");
@@ -207,7 +215,6 @@ namespace BAL.Services
                     response.IsSuccess = false;
                     return response;
                 }
-
 
                 response = await _dal.Update(request, email, transaction: localtran);
 
@@ -225,21 +232,21 @@ namespace BAL.Services
 
             return response;
         }
+
         // ========================
         // STATUS
         // ========================
         /// <summary>
-        /// Organization API - Change Organization Status
+        /// Customer API - Change Customer Status
         /// Author: Swapnlisa
-        /// Description:- We use this API to activate or deactivate an organization.
+        /// Description:- We use this API to activate or deactivate a customer.
         /// </summary>
-        /// <param name="id">OrganizationId</param>
-        /// <param name="status">0 = Inactive, 1 = Active</param>
-        /// <param name="userId">Logged in UserId</param>
-        /// <param name="user">TokenUserInfo</param>
+        /// <param name="id">CustomerId</param>
+        /// <param name="roles">User Roles</param>
+        /// <param name="email">Logged in User Email</param>
         /// <param name="transaction">DB Transaction</param>
         /// <returns>Returns status update result</returns>
-        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -256,7 +263,7 @@ namespace BAL.Services
                 if (id <= 0)
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid organization ID.");
+                    response.ErrorMsgs.Add("Invalid customer ID.");
                     return response;
                 }
 
@@ -276,6 +283,18 @@ namespace BAL.Services
 
             return response;
         }
+
+        // ========================
+        // DROPDOWN
+        // ========================
+        /// <summary>
+        /// Customer API - Get Customer Dropdown
+        /// Author: Swapnlisa
+        /// Description:- Fetches active customer dropdown list.
+        /// </summary>
+        /// <param name="email">Logged in User Email</param>
+        /// <param name="transaction">DB Transaction</param>
+        /// <returns>Returns customer dropdown list</returns>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
@@ -292,6 +311,6 @@ namespace BAL.Services
 
             return response;
         }
-
     }
+
 }
