@@ -29,40 +29,73 @@ namespace DAL.Services
         /// Author: Swapnlisa
         /// Description:- Fetches paginated role-permission mapping list using stored procedure.
         /// </summary>
-        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
+      PaginationRequestDto request,
+      string email,
+      IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<List<RolePermissionModel>>();
+            var response =
+                new APIGetResponseModel<List<RolePermissionModel>>();
 
             try
             {
-                using var conn = new MySqlConnection(_config.DefaultConnection);
+                using var conn =
+                    new MySqlConnection(
+                        _config.DefaultConnection
+                    );
 
-                var param = new DynamicParameters();
+                var param =
+                    new DynamicParameters();
 
-                param.Add("p_Action", "LIST");
+                param.Add("p_Action", "GETALL");
+
                 param.Add("p_RoleId", null);
+
                 param.Add("p_PermissionId", null);
+
                 param.Add("p_PermissionIds", null);
 
-                param.Add("p_SearchKey", request.SearchKey);
-                param.Add("p_PageNo", request.PageNo);
+                param.Add("p_SearchKey",
+                    request.SearchKey);
 
-                param.Add("p_UserEmail", email);
+                param.Add("p_PageNo",
+                    request.PageNo);
 
-                using var multi = await conn.QueryMultipleAsync("sp_manage_role_permission", param, commandType: CommandType.StoredProcedure);
+                param.Add("p_UserEmail",
+                    email);
 
-                response.TotalRecords = await multi.ReadFirstAsync<int>();
+                using var multi =
+                    await conn.QueryMultipleAsync(
+                        "sp_manage_role_permission",
+                        param,
+                        commandType:
+                        CommandType.StoredProcedure
+                    );
 
-                var list = (await multi.ReadAsync<RolePermissionModel>()).ToList();
+                // FIRST RESULT SET
+                var list =
+                    (await multi.ReadAsync<RolePermissionModel>())
+                    .ToList();
+
+                // SECOND RESULT SET
+                response.TotalRecords =
+                    (await multi.ReadAsync<int>())
+                    .FirstOrDefault();
 
                 response.Result = list;
-                response.IsSuccess = list.Any();
+
+                response.IsSuccess = true;
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching role permissions");
-                Console.WriteLine("DAL ROLE PERMISSION GET ALL ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(ex.Message);
+
+                Console.WriteLine(
+                    "DAL ROLE PERMISSION ERROR: "
+                    + ex.Message
+                );
             }
 
             return response;

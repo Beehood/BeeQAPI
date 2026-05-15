@@ -17,6 +17,9 @@ namespace Models
         public string? PermissionName { get; set; }
 
         public string? PermissionCode { get; set; }
+        public string? Module { get; set; }
+
+        public bool IsAssigned { get; set; }
     }
 
     public class RolePermissionRequestDto
