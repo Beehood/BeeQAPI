@@ -29,7 +29,7 @@ namespace DAL.Services
         /// Author: Swapnlisa
         /// Description:- Fetches paginated role-permission mapping list using stored procedure.
         /// </summary>
-        public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
+public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
       PaginationRequestDto request,
       string email,
       IDbTransaction? transaction = null)
@@ -58,11 +58,10 @@ namespace DAL.Services
                 param.Add("p_SearchKey",
                     request.SearchKey);
 
-                param.Add("p_PageNo",
-                    request.PageNo);
+                param.Add("p_PageNo",request.PageNo);
+                param.Add("p_PageSize", request.PageSize);
 
-                param.Add("p_UserEmail",
-                    email);
+                param.Add("p_UserEmail",email);
 
                 using var multi =
                     await conn.QueryMultipleAsync(
@@ -124,6 +123,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
 
@@ -166,6 +166,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
 
@@ -208,6 +209,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
 
@@ -250,6 +252,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
+                param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
 

@@ -19,6 +19,8 @@ namespace Models
     }
     public class PaginationRequestDto
     {
+        public object? PageSize;
+
         public int ID { get; set; }
         public string? SearchKey { get; set; }
         public int? PageNo { get; set; }  
