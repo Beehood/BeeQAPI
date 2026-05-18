@@ -116,6 +116,10 @@ builder.Services.AddScoped<IDAL_RolePermission, DAL_RolePermission>();
 builder.Services.AddScoped<IBAL_Customer, BAL_Customer>();
 builder.Services.AddScoped<IDAL_Customer, DAL_Customer>();
 
+builder.Services.AddScoped<IBAL_Token, BAL_Token>();
+
+builder.Services.AddScoped<IDAL_Token, DAL_Token>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

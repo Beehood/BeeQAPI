@@ -54,8 +54,9 @@ namespace Models
             public long BranchId { get; set; }
 
             public long BranchServiceId { get; set; }
+            public long CounterId { get; set; }
 
-            public int TokenNumber { get; set; }
+        public int TokenNumber { get; set; }
 
             public DateTime? TokenDate { get; set; }
 
@@ -70,7 +71,13 @@ namespace Models
             public int Priority { get; set; }
 
         }
+    public class TokenStatusModel
+    {
+        public int StatusId { get; set; }
 
+        public string? StatusName { get; set; }
     }
+
+}
 
 

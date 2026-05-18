@@ -232,6 +232,45 @@ namespace DAL.Services
 
             return response;
         }
+        public async Task
+<APIGetResponseModel<List<TokenStatusModel>>>
+GetStatuses(
+    string email,
+    IDbTransaction? transaction = null)
+        {
+            var response =
+                new APIGetResponseModel
+                <List<TokenStatusModel>>();
+
+            try
+            {
+                using var conn =
+                    new MySqlConnection(
+                        _config.DefaultConnection
+                    );
+
+                var list =
+                    (await conn.QueryAsync<TokenStatusModel>(
+                        @"SELECT
+                    status_id AS StatusId,
+                    status_name AS StatusName
+                  FROM token_status_master
+                  ORDER BY status_name"
+                    )).ToList();
+
+                response.Result = list;
+
+                response.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+
+                response.ErrorMsgs.Add(ex.Message);
+            }
+
+            return response;
+        }
 
         // ========================
         // DROPDOWN

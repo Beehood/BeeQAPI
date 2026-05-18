@@ -209,6 +209,13 @@ namespace BAL.Services
             return response;
         }
 
+        public async Task
+       <APIGetResponseModel<List<TokenStatusModel>>>
+        GetStatuses(string email,IDbTransaction? transaction = null)
+        {
+            return await _dal.GetStatuses(email,transaction);
+        }
+
         // ========================
         // DROPDOWN
         // ========================

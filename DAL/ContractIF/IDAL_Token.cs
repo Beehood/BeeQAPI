@@ -19,6 +19,7 @@ namespace DAL.ContractIF
         Task<APIGetResponseModel<int>> ChangeStatus( TokenRequestDto request,string email,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<TokenModel>> CallNextToken( TokenRequestDto request, string email,IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<TokenStatusModel>>>GetStatuses(string email,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown( string email, IDbTransaction? transaction = null);
     }

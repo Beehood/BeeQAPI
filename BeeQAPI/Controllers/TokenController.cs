@@ -89,6 +89,31 @@ namespace BeeQAPI.Controllers
         }
 
         // ========================
+        // STATUS LIST
+        // ========================
+
+        [Authorize(Policy = "VIEW_TOKEN")]
+        [HttpGet("TokenStatusList")]
+        [ProducesResponseType(
+            typeof(APIGetResponseModel<List<TokenStatusModel>>),
+            (int)HttpStatusCode.OK)]
+        public async Task
+        <APIGetResponseModel<List<TokenStatusModel>>>
+        GetStatuses()
+        {
+            var email =
+                User.FindFirst(
+                    ClaimTypes.NameIdentifier
+                )?.Value;
+
+            return await _bal
+                .GetStatuses(
+                    email,
+                    transaction: null
+                );
+        }
+
+        // ========================
         // DROPDOWN
         // ========================
         [Authorize(Policy = "VIEW_TOKEN")]
