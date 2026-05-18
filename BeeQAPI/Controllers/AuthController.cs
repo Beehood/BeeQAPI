@@ -32,7 +32,7 @@ namespace BeeQAPI.Controllers
         //[HttpGet("GetSalt")]
         //public async Task<string> GetSalt()
         //{
-        //    return "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV"; // ✅ static salt
+        //    return "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV"; //  static salt
         //}
 
 
