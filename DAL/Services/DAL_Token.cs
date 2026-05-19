@@ -45,10 +45,10 @@ namespace DAL.Services
                 param.Add("p_user_id", null);
                 param.Add("p_branch_service_id", null);
 
-                param.Add("p_organization_id", null);   // 🔥 FIX
-                param.Add("p_branch_id", null);         // 🔥 FIX
+                param.Add("p_organization_id", null);   
+                param.Add("p_branch_id", null);        
                 param.Add("p_status", null);
-                param.Add("p_token_date", null);        // 🔥 FIX
+                param.Add("p_token_date", null);        
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
@@ -93,7 +93,12 @@ namespace DAL.Services
                 param.Add("p_counter_id", null);
                 param.Add("p_user_id", null);
                 param.Add("p_branch_service_id", null);
+
+                // 🔥 ADD THESE (MISSING)
+                param.Add("p_organization_id", null);
+                param.Add("p_branch_id", null);
                 param.Add("p_status", null);
+                param.Add("p_token_date", null);
 
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
@@ -174,8 +179,11 @@ namespace DAL.Services
                 param.Add("p_counter_id", request.CounterId);
                 param.Add("p_user_id", null);
                 param.Add("p_branch_service_id", null);
+                param.Add("p_organization_id", null);
+                param.Add("p_branch_id", null);
+            
                 param.Add("p_status", request.Status);
-
+                param.Add("p_token_date", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
 

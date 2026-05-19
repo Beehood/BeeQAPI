@@ -94,23 +94,12 @@ namespace BeeQAPI.Controllers
 
         [Authorize(Policy = "VIEW_TOKEN")]
         [HttpGet("TokenStatusList")]
-        [ProducesResponseType(
-            typeof(APIGetResponseModel<List<TokenStatusModel>>),
-            (int)HttpStatusCode.OK)]
-        public async Task
-        <APIGetResponseModel<List<TokenStatusModel>>>
-        GetStatuses()
+        [ProducesResponseType(typeof(APIGetResponseModel<List<TokenStatusModel>>),(int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<TokenStatusModel>>>GetStatuses()
         {
-            var email =
-                User.FindFirst(
-                    ClaimTypes.NameIdentifier
-                )?.Value;
+            var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal
-                .GetStatuses(
-                    email,
-                    transaction: null
-                );
+            return await _bal.GetStatuses(email,transaction: null);
         }
 
         // ========================
