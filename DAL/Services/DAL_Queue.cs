@@ -118,14 +118,20 @@ namespace DAL.Services
         // ========================
         // INSERT (CREATE TOKEN)
         // ========================
-        public async Task<APIGetResponseModel<int>> Insert(QueueRequestDto request, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert(
+      QueueRequestDto request,
+      string email,
+      IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
+            using var conn = new MySqlConnection(_config.DefaultConnection);
+            await conn.OpenAsync();
+
+            using var tran = conn.BeginTransaction();
+
             try
             {
-                using var conn = new MySqlConnection(_config.DefaultConnection);
-
                 var param = new DynamicParameters();
                 param.Add("p_Action", "INSERT");
                 param.Add("p_TokenId", null);
@@ -134,13 +140,18 @@ namespace DAL.Services
                 param.Add("p_TokenNumber", null);
                 param.Add("p_CustomerName", request.CustomerName);
                 param.Add("p_Status", 1);
-
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>("sp_manage_queue", param, commandType: CommandType.StoredProcedure);
+                var id = await conn.ExecuteScalarAsync<long>(
+                    "sp_manage_queue",
+                    param,
+                    transaction: tran,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                tran.Commit();
 
                 response.Result = (int)id;
                 response.IsSuccess = id > 0;
@@ -148,8 +159,11 @@ namespace DAL.Services
             }
             catch (Exception ex)
             {
+                tran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while creating token");
+
                 Console.WriteLine("DAL QUEUE INSERT ERROR: " + ex.Message);
             }
 
@@ -163,10 +177,13 @@ namespace DAL.Services
         {
             var response = new APIGetResponseModel<int>();
 
+            using var conn = new MySqlConnection(_config.DefaultConnection);
+            await conn.OpenAsync();
+
+            using var tran = conn.BeginTransaction();
+
             try
             {
-                using var conn = new MySqlConnection(_config.DefaultConnection);
-
                 var param = new DynamicParameters();
                 param.Add("p_Action", "UPDATE");
                 param.Add("p_TokenId", request.TokenId);
@@ -175,13 +192,18 @@ namespace DAL.Services
                 param.Add("p_TokenNumber", null);
                 param.Add("p_CustomerName", request.CustomerName);
                 param.Add("p_Status", request.Priority);
-
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
-
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>("sp_manage_queue", param, commandType: CommandType.StoredProcedure);
+                var id = await conn.ExecuteScalarAsync<long>(
+                    "sp_manage_queue",
+                    param,
+                    transaction: tran,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                tran.Commit();
 
                 response.Result = (int)id;
                 response.IsSuccess = id > 0;
@@ -189,24 +211,29 @@ namespace DAL.Services
             }
             catch (Exception ex)
             {
+                tran.Rollback();
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating queue");
+
                 Console.WriteLine("DAL QUEUE UPDATE ERROR: " + ex.Message);
             }
 
             return response;
         }
-
         // ========================
         // CHANGE STATUS (CALL / COMPLETE)
         // ========================
         public async Task<APIGetResponseModel<int>> ChangeStatus(QueueRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
+            using var conn = new MySqlConnection(_config.DefaultConnection);
+            await conn.OpenAsync();
+            using var tran = conn.BeginTransaction();
 
             try
             {
-                using var conn = new MySqlConnection(_config.DefaultConnection);
+             
 
                 var param = new DynamicParameters();
                 param.Add("p_Action", request.Action);
@@ -222,7 +249,9 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<int>("sp_manage_queue", param, commandType: CommandType.StoredProcedure);
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_queue", param, transaction: tran, 
+            commandType: CommandType.StoredProcedure);
+                tran.Commit();
 
                 response.Result = result;
                 response.IsSuccess = result > 0;
@@ -230,10 +259,15 @@ namespace DAL.Services
             }
             catch (Exception ex)
             {
+                tran.Rollback(); // ❌ FAIL SAFE
+
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating queue status");
+
                 Console.WriteLine("DAL QUEUE STATUS ERROR: " + ex.Message);
             }
+
+            return response;
 
             return response;
         }
@@ -241,7 +275,7 @@ namespace DAL.Services
         // ========================
         // QUEUE DISPLAY (MONITOR)
         // ========================
-        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId)
         {
             var response = new APIGetResponseModel<List<QueueDisplayModel>>();
 
@@ -251,22 +285,12 @@ namespace DAL.Services
 
                 var param = new DynamicParameters();
                 param.Add("p_Action", "CURRENT");
-                param.Add("p_token_id", 0);
-                param.Add("p_counter_id", 0);
-                param.Add("p_user_id", 0);
-                param.Add("p_branch_service_id", 0);
-                param.Add("p_organization_id", 0);
-
-                //  IMPORTANT → replace with dynamic later
-                param.Add("p_branch_id", 1);
-
-                param.Add("p_status", 0);
-                param.Add("p_token_date", null);
-                param.Add("p_SearchKey", "");
-                param.Add("p_PageNo", 0);
+                param.Add("p_CounterId", 0);
+                param.Add("p_TokenId", 0);
+                param.Add("p_UserEmail", "");
 
                 var data = (await conn.QueryAsync<QueueDisplayModel>(
-                    "sp_manage_token",
+                    "sp_manage_queue",   
                     param,
                     commandType: CommandType.StoredProcedure
                 )).ToList();

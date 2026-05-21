@@ -35,9 +35,7 @@ namespace DAL.ContractIF
             string email,
             IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(
-            string email,
-            IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId);
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
             string email,

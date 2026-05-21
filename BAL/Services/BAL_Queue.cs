@@ -226,16 +226,13 @@ namespace BAL.Services
         // ========================
         // QUEUE DISPLAY (MONITOR)
         // ========================
-        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId)
         {
             var response = new APIGetResponseModel<List<QueueDisplayModel>>();
 
             try
             {
-                response = await _dal.GetQueueDisplay(email, transaction);
+                response = await _dal.GetQueueDisplay(branchId);
             }
             catch (Exception ex)
             {

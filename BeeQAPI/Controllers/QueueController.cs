@@ -1,6 +1,8 @@
 ﻿using BAL.ContractIF;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using BeeQAPI.Realtime;
 using Models;
 using System.Net;
 using System.Security.Claims;
@@ -12,12 +14,15 @@ namespace BeeQAPI.Controllers
     public class QueueController : ControllerBase
     {
         private readonly IBAL_Queue _bal;
+        private readonly IMonitorService _monitorService;
+        private readonly IHubContext<QueueHub> _hub;
 
-        public QueueController(IBAL_Queue bal)
+        public QueueController(IBAL_Queue bal, IMonitorService monitorService, IHubContext<QueueHub> hub)
         {
             _bal = bal;
+            _monitorService = monitorService;
+            _hub = hub;
         }
-
         // ========================
         // GET ALL
         // ========================
@@ -92,28 +97,36 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] QueueRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.ChangeStatus(request, roles, email, transaction: null);
+            //  Update DB
+            var response = await _bal.ChangeStatus(request, roles, email);
+
+            //  SEND REALTIME UPDATE
+            if (response.IsSuccess)
+            {
+                var displayData = await _bal.GetQueueDisplay(request.BranchId.ToString());
+
+                await _hub.Clients.Group(request.BranchId.ToString())
+                    .SendAsync("QueueUpdated", displayData.Result);
+            }
+
+            return response;
         }
+
+
 
         // ========================
         // QUEUE DISPLAY (MONITOR)
         // ========================
-
-        [Authorize(Policy = "VIEW_QUEUE")]
-        [HttpPost("QueueDisplay")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<QueueDisplayModel>>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay()
+        [AllowAnonymous]
+        [HttpGet("Monitor/{monitorKey}")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<QueueDisplayModel>>), 200)]
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string monitorKey)
         {
-            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
-            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return await _bal.GetQueueDisplay(roles, email, transaction: null);
+            var branchId = await _monitorService.GetBranchByKey(monitorKey);
+            return await _bal.GetQueueDisplay(branchId);
         }
-
         // ========================
         // DROPDOWN
         // ========================

@@ -23,7 +23,7 @@ namespace Models
         public int Status { get; set; }   // 1=Waiting, 2=Called, 3=Completed, 4=Cancelled, 5=Transferred
         public int Priority { get; set; }
 
-        public long? CounterId { get; set; }   // IMPORTANT for queue monitor
+        //public long? CounterId { get; set; }   // IMPORTANT for queue monitor
 
         public DateTime CreatedAt { get; set; }
     }
@@ -48,7 +48,6 @@ public class QueueRequestDto
         public int TokenNumber { get; set; }
         public string TokenDisplay { get; set; }
 
-        public string CounterName { get; set; }
 
         public int Status { get; set; }
     }

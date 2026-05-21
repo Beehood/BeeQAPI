@@ -4,8 +4,10 @@ using BAL.Implementation;
 using BAL.Services;
 using BeeQAPI.Authorization;
 using BeeQAPI.Middleware;
+using BeeQAPI.Realtime;
 using DAL.ContractIF;
 using DAL.ContractIF;
+using BeeQAPI.Realtime;
 using DAL.Dbcontext;
 using DAL.Implementation;
 using DAL.Services;
@@ -31,6 +33,7 @@ var builder = WebApplication.CreateBuilder(args);
 //    return new MySqlConnection(connectionString);
 //});
 
+builder.Services.AddSignalR();
 
 builder.Services.AddScoped<DBConnection>();
 
@@ -120,6 +123,11 @@ builder.Services.AddScoped<IBAL_Token, BAL_Token>();
 
 builder.Services.AddScoped<IDAL_Token, DAL_Token>();
 
+builder.Services.AddScoped<IBAL_Queue, BAL_Queue>();
+builder.Services.AddScoped<IDAL_Queue, DAL_Queue>();
+builder.Services.AddScoped<IMonitorService, MonitorService>();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -200,7 +208,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -214,7 +221,7 @@ app.UseMiddleware<GlobalExceptionMiddleware>();  //For Global Exception Handling
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHub<QueueHub>("/queueHub");
 app.MapControllers();
 
 app.Run();

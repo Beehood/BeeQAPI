@@ -40,10 +40,7 @@ namespace BAL.ContractIF
             string email,
             IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId);
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
             string email,
