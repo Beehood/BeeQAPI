@@ -82,9 +82,9 @@ namespace BAL.Services
         /// Token API - Generate Token
         /// Description:- Creates new token using sp_generate_token
         /// </summary>
-        public async Task<APIGetResponseModel<int>> GenerateToken(TokenRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<string>> GenerateToken(TokenRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<int>();
+            var response = new APIGetResponseModel<string>();
             IDbTransaction? localtran = null;
 
             try
@@ -109,8 +109,8 @@ namespace BAL.Services
                 if (string.IsNullOrWhiteSpace(request.CustomerName))
                     response.ErrorMsgs.Add("Customer Name required");
 
-                if (string.IsNullOrWhiteSpace(request.CustomerPhone))
-                    response.ErrorMsgs.Add("Customer Phone required");
+                //if (string.IsNullOrWhiteSpace(request.CustomerPhone))
+                    //response.ErrorMsgs.Add("Customer Phone required");
 
                 if (response.ErrorMsgs.Any())
                 {
@@ -237,6 +237,15 @@ namespace BAL.Services
             }
 
             return response;
+        }
+
+        public async Task<APIGetResponseModel<TokenModel>>NextTokenPreview(TokenRequestDto request,List<string> roles,string email, IDbTransaction? transaction = null)
+        {
+            return await _dal.NextTokenPreview(
+                request,
+                roles,
+                email,
+                transaction);
         }
     }
 

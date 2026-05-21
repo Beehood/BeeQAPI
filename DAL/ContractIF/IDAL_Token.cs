@@ -14,7 +14,7 @@ namespace DAL.ContractIF
 
         Task<APIGetResponseModel<TokenModel>> GetById(long id, string email,IDbTransaction? transaction = null);
 
-        Task<APIGetResponseModel<int>> GenerateToken( TokenRequestDto request, string email, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<string>> GenerateToken( TokenRequestDto request, string email, IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<int>> ChangeStatus( TokenRequestDto request,string email,IDbTransaction? transaction = null);
 
@@ -22,5 +22,7 @@ namespace DAL.ContractIF
         Task<APIGetResponseModel<List<TokenStatusModel>>>GetStatuses(string email,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown( string email, IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<TokenModel>> NextTokenPreview(TokenRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null);
     }
 }
+

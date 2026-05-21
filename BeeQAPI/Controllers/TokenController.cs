@@ -51,8 +51,8 @@ namespace BeeQAPI.Controllers
         // ========================
         [Authorize(Policy = "CREATE_TOKEN")]
         [HttpPost("GenerateToken")]
-        [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>> GenerateToken([FromBody] TokenRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<string>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<string>> GenerateToken([FromBody] TokenRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -113,6 +113,31 @@ namespace BeeQAPI.Controllers
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return await _bal.GetDropdown(email, transaction: null);
+
+
+        }
+
+
+
+        [Authorize(Policy = "CREATE_TOKEN")]
+        [HttpPost("NextTokenPreview")]
+        [ProducesResponseType(typeof(APIGetResponseModel<TokenModel>),(int)HttpStatusCode.OK)]
+
+        public async Task<APIGetResponseModel<TokenModel>>NextTokenPreview([FromBody] TokenRequestDto request)
+        {
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
+
+            var email =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return await _bal.NextTokenPreview(
+                request,
+                roles,
+                email,
+                transaction: null);
         }
     }
 

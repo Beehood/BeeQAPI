@@ -52,6 +52,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
+                param.Add("p_Email", email);
 
                 using var multi = await conn.QueryMultipleAsync("sp_manage_token", param, commandType: CommandType.StoredProcedure);
 
@@ -126,9 +127,9 @@ namespace DAL.Services
         /// Token DAL - Generate Token
         /// Description:- Calls sp_generate_token
         /// </summary>
-        public async Task<APIGetResponseModel<int>> GenerateToken(TokenRequestDto request, string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<string>> GenerateToken(TokenRequestDto request, string email, IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<int>();
+            var response = new APIGetResponseModel<string>();
 
             try
             {
@@ -141,12 +142,18 @@ namespace DAL.Services
                 param.Add("p_branch_service_id", request.BranchServiceId);
                 param.Add("p_customer_name", request.CustomerName);
                 param.Add("p_customer_phone", request.CustomerPhone);
+                param.Add("p_Email", email);
 
                 var result = await conn.QueryFirstAsync<dynamic>("sp_generate_token", param, commandType: CommandType.StoredProcedure);
+                Console.WriteLine(result);
 
-                response.Result = (int)result.token_id;
-                response.IsSuccess = response.Result > 0;
-                response.TotalRecords = response.Result > 0 ? 1 : 0;
+                response.Result =result.token;
+                response.IsSuccess =
+                    !string.IsNullOrWhiteSpace(
+                        response.Result);
+
+                response.TotalRecords =
+                    response.IsSuccess ? 1 : 0;
             }
             catch (Exception ex)
             {
@@ -244,15 +251,9 @@ namespace DAL.Services
 
             return response;
         }
-        public async Task
-<APIGetResponseModel<List<TokenStatusModel>>>
-GetStatuses(
-    string email,
-    IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<TokenStatusModel>>> GetStatuses(string email, IDbTransaction? transaction = null)
         {
-            var response =
-                new APIGetResponseModel
-                <List<TokenStatusModel>>();
+            var response =new APIGetResponseModel<List<TokenStatusModel>>();
 
             try
             {
@@ -262,13 +263,7 @@ GetStatuses(
                     );
 
                 var list =
-                    (await conn.QueryAsync<TokenStatusModel>(
-                        @"SELECT
-                    status_id AS StatusId,
-                    status_name AS StatusName
-                  FROM token_status_master
-                  ORDER BY status_name"
-                    )).ToList();
+                    (await conn.QueryAsync<TokenStatusModel>(@"SELECT status_id AS StatusId,status_name AS StatusName FROM token_status_master ORDER BY status_name")).ToList();
 
                 response.Result = list;
 
@@ -301,16 +296,37 @@ GetStatuses(
                 var param = new DynamicParameters();
 
                 param.Add("p_Action", "DROPDOWN");
+
                 param.Add("p_token_id", null);
+
                 param.Add("p_counter_id", null);
+
                 param.Add("p_user_id", null);
+
                 param.Add("p_branch_service_id", null);
+
+                param.Add("p_organization_id", null);
+
+                param.Add("p_branch_id", null);
+
                 param.Add("p_status", null);
 
+                param.Add("p_token_date", null);
+
                 param.Add("p_SearchKey", null);
+
                 param.Add("p_PageNo", null);
 
+                param.Add("p_Email", email);
+
                 var data = (await conn.QueryAsync<DropdownModel>("sp_manage_token", param, commandType: CommandType.StoredProcedure)).ToList();
+
+
+                foreach (var name in param.ParameterNames)
+                {
+                    Console.WriteLine(
+                        $"{name} = {param.Get<dynamic>(name)}");
+                }
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
@@ -319,8 +335,46 @@ GetStatuses(
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching token dropdown");
-                Console.WriteLine("DAL TOKEN DROPDOWN ERROR: " + ex.Message);
+
+                response.ErrorMsgs.Add(ex.ToString());
+
+                Console.WriteLine("============== ERROR ==============");
+
+                Console.WriteLine(ex.ToString());
+
+                Console.WriteLine("===================================");
+            }
+
+            return response;
+        }
+        public async Task<APIGetResponseModel<TokenModel>> NextTokenPreview(TokenRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
+
+        {
+            var response =new APIGetResponseModel<TokenModel>();
+
+            try
+            {
+                using var conn =new MySqlConnection(_config.DefaultConnection);
+
+                var param = new DynamicParameters();
+
+                param.Add("p_branch_service_id",request.BranchServiceId);
+
+                var data =await conn.QueryFirstOrDefaultAsync<TokenModel>("sp_preview_token",param,commandType:CommandType.StoredProcedure);
+
+                response.Result = data;
+
+                response.IsSuccess = true;
+
+                response.TotalRecords =data != null ? 1 : 0;
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+
+                response.ErrorMsgs.Add("Error while previewing token");
+
+                Console.WriteLine("TOKEN PREVIEW ERROR: "+ ex.Message);
             }
 
             return response;

@@ -77,6 +77,12 @@ namespace Models
 
         public string? StatusName { get; set; }
     }
+    public class TokenGenerateResponseDto
+    {
+        public int TokenId { get; set; }
+
+        public string Token { get; set; } = "";
+    }
 
 }
 
