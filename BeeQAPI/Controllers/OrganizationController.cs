@@ -80,10 +80,33 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] OrganizationRequestDto request)
         {
+            Console.WriteLine("=== CONTROLLER START ===");
+
+            // 🔥 ADD HERE (TOP — BEFORE ANYTHING)
+            var token = Request.Headers["Authorization"].ToString();
+            Console.WriteLine("Token: " + token);
+
+            Console.WriteLine("IsAuthenticated: " + User.Identity.IsAuthenticated);
+
+            // 🔥 PRINT ALL CLAIMS
+            foreach (var claim in User.Claims)
+            {
+                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
+            }
+
+            Console.WriteLine("=== CONTROLLER START ===");
+            Console.WriteLine($"OrgId: {request.OrganizationId}");
+
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+            Console.WriteLine("Roles: " + string.Join(",", roles));
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            Console.WriteLine("Email: " + email);
+            // ✅ ADD HERE  (THIS IS THE CORRECT PLACE)
+            var branchId = User.FindFirst("BranchId")?.Value;
+            Console.WriteLine("BranchId: " + branchId);
             return await _bal.ChangeStatus(request.OrganizationId, roles, email, transaction: null);
         }
         // ========================

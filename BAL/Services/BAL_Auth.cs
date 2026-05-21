@@ -74,7 +74,7 @@ namespace BAL.Services
                 //Console.WriteLine("IsSuccess: " + userResponse.IsSuccess);
 
 
-                // 🔥 SAFE COMPARISON
+                //  SAFE COMPARISON
                 //if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
                 //{
                 //    response.IsSuccess = false;
@@ -99,7 +99,7 @@ namespace BAL.Services
 
                 string token = await _tokenService.GenerateTokenAsync(tokenUser);
 
-                // 🔹 Step 5: Success response
+                // Step 5: Success response
                 response.IsSuccess = true;
                 response.Result.AuthToken = token;
                 response.TotalRecords = 1;

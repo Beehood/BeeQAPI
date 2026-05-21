@@ -240,6 +240,10 @@ namespace DAL.Services
 
             try
             {
+                // ✅ 1. START DEBUG (TOP)
+                Console.WriteLine("=== DAL START ===");
+                Console.WriteLine($"OrgId: {id}");
+                Console.WriteLine($"Email: {email}");
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -255,12 +259,19 @@ namespace DAL.Services
                 //param.Add("p_Status", status);
 
                 param.Add("p_SearchKey", null);
-                param.Add("p_PageNo", null);
+                param.Add("p_PageNo", 1);
                 //param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
-
+                // ✅ 2. BEFORE SP CALL
+                Console.WriteLine("Calling SP with params:");
+                Console.WriteLine("p_Action = STATUS");
+                Console.WriteLine("p_OrganizationId = " + id);
+                Console.WriteLine("p_UserEmail = " + email);
                 var result = await conn.ExecuteScalarAsync<int>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
+
+                // ✅ 3. AFTER SP CALL
+                Console.WriteLine("SP RESULT: " + result);
 
                 response.Result = result;
                 response.IsSuccess = result > 0;
@@ -268,6 +279,9 @@ namespace DAL.Services
             }
             catch (Exception ex)
             {
+                // ✅ ERROR DEBUG
+                Console.WriteLine("❌ DAL ERROR:");
+                Console.WriteLine(ex.Message);
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing status");
                 Console.WriteLine("DAL STATUS ERROR: " + ex.Message);

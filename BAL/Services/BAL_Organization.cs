@@ -246,33 +246,94 @@ namespace BAL.Services
 
             try
             {
-                if (!roles.Contains("Super Admin"))
+
+                // 🔍 DEBUG 1: START
+                Console.WriteLine("=== BAL START ===");
+                Console.WriteLine($"Incoming OrgId: {id}");
+                Console.WriteLine("Roles: " + string.Join(",", roles));
+                Console.WriteLine("Email: " + email);
+
+                //if (!roles.Contains("Super Admin"))
+                //{
+                //    response.IsSuccess = false;
+                //    response.ErrorMsgs.Add("Only Super Admin can change status.");
+                //    return response;
+                //}
+
+
+
+                //if (id <= 0)
+                //{
+                //    response.IsSuccess = false;
+                //    response.ErrorMsgs.Add("Invalid organization ID.");
+                //    return response;
+                //}
+
+                //response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                //if (transaction == null && localtran != null)
+                //    localtran.Commit();
+
+                // 🔍 DEBUG 2: ROLE CHECK
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
+                    Console.WriteLine("❌ ROLE CHECK FAILED");
+
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Super Admin can change status.");
                     return response;
                 }
+                else
+                {
+                    Console.WriteLine("✅ ROLE CHECK PASSED");
+                }
 
+                // 🔍 DEBUG 3: ID CHECK
                 if (id <= 0)
                 {
+                    Console.WriteLine("❌ INVALID ORG ID");
+
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid organization ID.");
                     return response;
                 }
 
+                Console.WriteLine("➡️ CALLING DAL...");
+
+                // 🔍 DEBUG 4: DAL CALL
                 response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
+                Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
+                Console.WriteLine("IsSuccess: " + response.IsSuccess);
+                Console.WriteLine("Result: " + response.Result);
+
+                // 🔍 DEBUG 5: TRANSACTION
                 if (transaction == null && localtran != null)
+                {
+                    Console.WriteLine("✅ COMMITTING TRANSACTION");
                     localtran.Commit();
+                }
             }
             catch (Exception ex)
             {
+                //if (transaction == null && localtran != null)
+                //    localtran.Rollback();
+
+                //response.IsSuccess = false;
+                //response.ErrorMsgs.Add(ex.Message
+
+                Console.WriteLine("❌ BAL ERROR:");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
                 if (transaction == null && localtran != null)
                     localtran.Rollback();
 
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
             }
+
+            Console.WriteLine("=== BAL END ===");
 
             return response;
         }
