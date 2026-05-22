@@ -21,5 +21,6 @@ namespace DAL.ContractIF
         Task<APIGetResponseModel<int>> ChangeStatus( long id,string email,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null);
+        Task<List<QueueDisplayModel>> GetDisplayData(string screenCode);
     }
 }

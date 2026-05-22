@@ -126,6 +126,8 @@ builder.Services.AddScoped<IDAL_Token, DAL_Token>();
 builder.Services.AddScoped<IBAL_Queue, BAL_Queue>();
 builder.Services.AddScoped<IDAL_Queue, DAL_Queue>();
 builder.Services.AddScoped<IMonitorService, MonitorService>();
+builder.Services.AddScoped<IBAL_DisplayBoard, BAL_DisplayBoard>();
+builder.Services.AddScoped<IDAL_DisplayBoard, DAL_DisplayBoard>();
 
 
 

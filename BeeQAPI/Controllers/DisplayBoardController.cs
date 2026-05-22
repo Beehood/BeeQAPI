@@ -17,11 +17,29 @@ namespace BeeQAPI.Controllers
         {
             _bal = bal;
         }
+        // ========================
+        // DISPLAY BOARD (PUBLIC TV)
+        // ========================
+        [AllowAnonymous]
+        [HttpGet("DisplayBoardView")]
+        public async Task<IActionResult> DisplayBoardView([FromQuery] string screenCode)
+        {
+            try
+            {
+                var data = await _bal.GetDisplayData(screenCode);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("DISPLAY ERROR: " + ex.Message);
+                return BadRequest("Error: " + ex.Message);
+            }
+        }
 
         // ========================
         // GET ALL
         // ========================
-        [Authorize(Policy = "VIEW_DISPLAY")]
+        [Authorize(Policy = "VIEW_DISPLAY_BOARD")]
         [HttpPost("DisplayBoardList")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DisplayBoardModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<DisplayBoardModel>>> GetAll([FromBody] PaginationRequestDto request)
@@ -36,7 +54,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET BY ID
         // ========================
-        [Authorize(Policy = "VIEW_DISPLAY")]
+        [Authorize(Policy = "VIEW_DISPLAY_BOARD")]
         [HttpPost("DisplayBoardById")]
         [ProducesResponseType(typeof(APIGetResponseModel<DisplayBoardModel>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<DisplayBoardModel>> GetById([FromBody] long id)
@@ -51,7 +69,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // CREATE
         // ========================
-        [Authorize(Policy = "CREATE_DISPLAY")]
+        [Authorize(Policy = "CREATE_DISPLAY_BOARD")]
         [HttpPost("NewDisplayBoard")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> Create([FromBody] DisplayBoardRequestDto request)
@@ -66,7 +84,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // UPDATE
         // ========================
-        [Authorize(Policy = "UPDATE_DISPLAY")]
+        [Authorize(Policy = "UPDATE_DISPLAY_BOARD")]
         [HttpPost("EditDisplayBoard")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> Update([FromBody] DisplayBoardRequestDto request)
@@ -81,7 +99,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // STATUS (DELETE / ACTIVATE)
         // ========================
-        [Authorize(Policy = "DELETE_DISPLAY")]
+        [Authorize(Policy = "DELETE_DISPLAY_BOARD")]
         [HttpPost("DisplayBoardStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] DisplayBoardRequestDto request)
@@ -102,7 +120,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // DROPDOWN
         // ========================
-        [Authorize(Policy = "VIEW_DISPLAY")]
+        [Authorize(Policy = "VIEW_DISPLAY_BOARD")]
         [HttpGet("DisplayBoardDropdown")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()

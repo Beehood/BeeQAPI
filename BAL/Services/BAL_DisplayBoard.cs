@@ -277,5 +277,9 @@ namespace BAL.Services
 
             return response;
         }
+        public async Task<List<QueueDisplayModel>> GetDisplayData(string screenCode)
+        {
+            return await _dal.GetDisplayData(screenCode);
+        }
     }
 }
