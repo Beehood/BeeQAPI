@@ -107,8 +107,7 @@ namespace BeeQAPI.Controllers
             {
                 var displayData = await _bal.GetQueueDisplay(request.BranchId.ToString());
 
-                await _hub.Clients.Group(request.BranchId.ToString())
-                    .SendAsync("QueueUpdated", displayData.Result);
+                await _hub.Clients.Group(request.BranchId.ToString()).SendAsync("QueueUpdated", displayData.Result);
             }
 
             return response;

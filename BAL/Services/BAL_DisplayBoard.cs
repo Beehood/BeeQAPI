@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace BAL.Services
 {
-    public class BAL_Queue : IBAL_Queue
+    public class BAL_DisplayBoard : IBAL_DisplayBoard
     {
-        private readonly IDAL_Queue _dal;
+        private readonly IDAL_DisplayBoard _dal;
 
-        public BAL_Queue(IDAL_Queue dal)
+        public BAL_DisplayBoard(IDAL_DisplayBoard dal)
         {
             _dal = dal;
         }
@@ -22,17 +22,20 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<QueueModel>>> GetAll(PaginationRequestDto request,List<string> roles, string? email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DisplayBoardModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
-                // Example Role Check
-                if (!roles.Contains("Admin") && !roles.Contains("Counter User"))
+                // 🔐 ROLE CHECK
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)||
+                    r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+     r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
-                    return new APIGetResponseModel<List<QueueModel>>
+                    return new APIGetResponseModel<List<DisplayBoardModel>>
                     {
                         IsSuccess = false,
-                        ErrorMsgs = new List<string> { "Access denied." }
+                        ErrorMsgs = new List<string> { "Access denied. Only Super Admin allowed." }
                     };
                 }
 
@@ -40,51 +43,63 @@ namespace BAL.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetAll", ex);
+                throw new Exception("BAL: Error in DisplayBoard GetAll", ex);
             }
         }
 
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<QueueModel>> GetById( long tokenId,List<string> roles,string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<DisplayBoardModel>> GetById(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
             try
             {
-                if (!roles.Contains("Admin") && !roles.Contains("Counter User"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+    r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
-                    return new APIGetResponseModel<QueueModel>
+                    return new APIGetResponseModel<DisplayBoardModel>
                     {
                         IsSuccess = false,
                         ErrorMsgs = new List<string> { "Access denied." }
                     };
                 }
 
-                return await _dal.GetById(tokenId, email, transaction);
+                return await _dal.GetById(id, email, transaction);
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetById", ex);
+                throw new Exception("BAL: Error in DisplayBoard GetById", ex);
             }
         }
 
         // ========================
-        // CREATE TOKEN
+        // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(QueueRequestDto request,List<string> roles,string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(
+            DisplayBoardRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                if (!roles.Contains("Admin"))
+                // 🔐 ROLE CHECK
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Admin can create token.");
+                    response.ErrorMsgs.Add("Only Super Admin can create display board.");
                     return response;
                 }
 
+                // ✅ VALIDATION
                 if (request == null)
                 {
                     response.IsSuccess = false;
@@ -92,11 +107,14 @@ namespace BAL.Services
                     return response;
                 }
 
+                if (string.IsNullOrWhiteSpace(request.DisplayName))
+                    response.ErrorMsgs.Add("Display Name is required");
+
+                if (string.IsNullOrWhiteSpace(request.ScreenCode))
+                    response.ErrorMsgs.Add("Screen Code is required");
+
                 if (request.BranchId <= 0)
                     response.ErrorMsgs.Add("Branch is required");
-
-                if (request.BranchServiceId <= 0)
-                    response.ErrorMsgs.Add("Service is required");
 
                 if (response.ErrorMsgs.Any())
                 {
@@ -104,6 +122,7 @@ namespace BAL.Services
                     return response;
                 }
 
+                // 📦 CALL DAL
                 response = await _dal.Insert(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
@@ -124,24 +143,40 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(QueueRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(
+            DisplayBoardRequestDto request,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                if (!roles.Contains("Admin"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Admin can update queue.");
+                    response.ErrorMsgs.Add("Only Super Admin can update display board.");
                     return response;
                 }
 
-                if (request == null || request.TokenId <= 0)
+                if (request == null || request.DisplayId <= 0)
                 {
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid token data.");
+                    response.ErrorMsgs.Add("Invalid display board data.");
+                    return response;
+                }
+
+                if (string.IsNullOrWhiteSpace(request.DisplayName))
+                    response.ErrorMsgs.Add("Display Name is required");
+
+                if (string.IsNullOrWhiteSpace(request.ScreenCode))
+                    response.ErrorMsgs.Add("Screen Code is required");
+
+                if (response.ErrorMsgs.Any())
+                {
+                    response.IsSuccess = false;
                     return response;
                 }
 
@@ -163,36 +198,52 @@ namespace BAL.Services
         }
 
         // ========================
-        // STATUS (CALL / COMPLETE / TRANSFER)
+        // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(QueueRequestDto request, List<string> roles,string email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(
+            long id,
+            List<string> roles,
+            string email,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                if (!roles.Contains("Counter User") && !roles.Contains("Admin"))
+                Console.WriteLine("=== DISPLAY BOARD STATUS START ===");
+
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
+                    Console.WriteLine("❌ ROLE CHECK FAILED");
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Unauthorized access.");
+                    response.ErrorMsgs.Add("Only Super Admin can change status.");
                     return response;
                 }
 
-                if (request.TokenId <= 0)
+                if (id <= 0)
                 {
+                    Console.WriteLine("❌ INVALID DISPLAY ID");
                     response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Invalid token ID.");
+                    response.ErrorMsgs.Add("Invalid display board ID.");
                     return response;
                 }
 
-                response = await _dal.ChangeStatus(request, email, transaction: localtran);
+                Console.WriteLine("➡️ CALLING DAL...");
+
+                response = await _dal.ChangeStatus(id, email, transaction: localtran);
+
+                Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
+                Console.WriteLine("Result: " + response.Result);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
             }
             catch (Exception ex)
             {
+                Console.WriteLine("❌ BAL DISPLAY ERROR:");
+                Console.WriteLine(ex.Message);
+
                 if (transaction == null && localtran != null)
                     localtran.Rollback();
 
@@ -200,25 +251,7 @@ namespace BAL.Services
                 response.ErrorMsgs.Add(ex.Message);
             }
 
-            return response;
-        }
-
-        // ========================
-        // QUEUE DISPLAY (MONITOR)
-        // ========================
-        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId)
-        {
-            var response = new APIGetResponseModel<List<QueueDisplayModel>>();
-
-            try
-            {
-                response = await _dal.GetQueueDisplay(branchId);
-            }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.ErrorMsgs.Add(ex.Message);
-            }
+            Console.WriteLine("=== DISPLAY BOARD STATUS END ===");
 
             return response;
         }
@@ -226,7 +259,9 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
+            string email,
+            IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
@@ -243,5 +278,4 @@ namespace BAL.Services
             return response;
         }
     }
-
 }

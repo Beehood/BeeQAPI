@@ -47,7 +47,7 @@ public class QueueRequestDto
     {
         public int TokenNumber { get; set; }
         public string TokenDisplay { get; set; }
-
+        //public long? CounterId { get; set; }
 
         public int Status { get; set; }
     }

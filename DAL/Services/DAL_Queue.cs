@@ -144,12 +144,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_queue",
-                    param,
-                    transaction: tran,
-                    commandType: CommandType.StoredProcedure
-                );
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_queue",param,transaction: tran,commandType: CommandType.StoredProcedure);
 
                 tran.Commit();
 
@@ -196,12 +191,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_queue",
-                    param,
-                    transaction: tran,
-                    commandType: CommandType.StoredProcedure
-                );
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_queue",param,transaction: tran,commandType: CommandType.StoredProcedure);
 
                 tran.Commit();
 
@@ -212,7 +202,6 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 tran.Rollback();
-
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating queue");
 
@@ -249,8 +238,7 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<int>("sp_manage_queue", param, transaction: tran, 
-            commandType: CommandType.StoredProcedure);
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_queue", param, transaction: tran, commandType: CommandType.StoredProcedure);
                 tran.Commit();
 
                 response.Result = result;
@@ -289,11 +277,7 @@ namespace DAL.Services
                 param.Add("p_TokenId", 0);
                 param.Add("p_UserEmail", "");
 
-                var data = (await conn.QueryAsync<QueueDisplayModel>(
-                    "sp_manage_queue",   
-                    param,
-                    commandType: CommandType.StoredProcedure
-                )).ToList();
+                var data = (await conn.QueryAsync<QueueDisplayModel>("sp_manage_queue",param,commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
@@ -333,10 +317,7 @@ namespace DAL.Services
 
                 param.Add("p_UserEmail", email);
 
-                var data = (await conn.QueryAsync<DropdownModel>(
-                    "sp_manage_queue",
-                    param,
-                    commandType: CommandType.StoredProcedure)).ToList();
+                var data = (await conn.QueryAsync<DropdownModel>("sp_manage_queue",param,commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
