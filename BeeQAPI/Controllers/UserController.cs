@@ -95,7 +95,7 @@ namespace BeeQAPI.Controllers
         [HttpPost("UserStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>),(int)HttpStatusCode.OK)]
 
-        public async Task<APIGetResponseModel<int>>ChangeStatus([FromBody] UserRequestDto request
+        public async Task<APIGetResponseModel<int>>ChangeStatus([FromBody] UserStatusRequestDto request
         )
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();

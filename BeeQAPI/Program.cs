@@ -119,13 +119,24 @@ builder.Services.AddScoped<IDAL_RolePermission, DAL_RolePermission>();
 builder.Services.AddScoped<IBAL_Customer, BAL_Customer>();
 builder.Services.AddScoped<IDAL_Customer, DAL_Customer>();
 
+// ========================
+// TOKEN
+// ========================
 builder.Services.AddScoped<IBAL_Token, BAL_Token>();
-
 builder.Services.AddScoped<IDAL_Token, DAL_Token>();
 
+// ========================
+// QUEUE
+// ========================
 builder.Services.AddScoped<IBAL_Queue, BAL_Queue>();
 builder.Services.AddScoped<IDAL_Queue, DAL_Queue>();
+// ========================
+// MONITORSERVICE
+// ========================
 builder.Services.AddScoped<IMonitorService, MonitorService>();
+// ========================
+// DISPLAYBOARD
+// ========================
 builder.Services.AddScoped<IBAL_DisplayBoard, BAL_DisplayBoard>();
 builder.Services.AddScoped<IDAL_DisplayBoard, DAL_DisplayBoard>();
 

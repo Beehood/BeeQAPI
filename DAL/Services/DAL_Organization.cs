@@ -274,8 +274,8 @@ namespace DAL.Services
                 Console.WriteLine("SP RESULT: " + result);
 
                 response.Result = result;
-                response.IsSuccess = result > 0;
-                response.TotalRecords = result > 0 ? 1 : 0;
+                response.IsSuccess = true;
+                response.TotalRecords = 1;
             }
             catch (Exception ex)
             {

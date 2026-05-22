@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Net;
 using System.Security.Claims;
 
@@ -80,12 +81,12 @@ namespace BeeQAPI.Controllers
         [Authorize(Policy = "DELETE_COUNTER_SERVICE")]
         [HttpPost("CounterServiceStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] CounterServiceStatusRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.ChangeStatus(id, roles, email, transaction: null);
+            return await _bal.ChangeStatus(request.CounterServiceId, roles, email, transaction: null);
         }
 
         // ========================

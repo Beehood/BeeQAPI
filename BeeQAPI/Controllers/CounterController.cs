@@ -85,13 +85,13 @@ namespace BeeQAPI.Controllers
         [Authorize(Policy = "DELETE_COUNTER")]
         [HttpPost("CounterStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] CounterStatusRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.ChangeStatus(id, roles, email, transaction: null);
+            return await _bal.ChangeStatus(request.CounterId, roles, email, transaction: null);
         }
 
         // ========================

@@ -84,7 +84,7 @@ namespace BeeQAPI.Controllers
         [Authorize(Policy = "DELETE_CUSTOMER")]
         [HttpPost("CustomerStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] CustomerRequestDto request)
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] CustomerStatusRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 

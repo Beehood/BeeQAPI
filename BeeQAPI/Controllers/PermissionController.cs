@@ -78,7 +78,7 @@ namespace BeeQAPI.Controllers
         [Authorize(Policy = "DELETE_PERMISSION")]
         [HttpPost("PermissionStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] PermissionRequestDto request)
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] PermissionStatusRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

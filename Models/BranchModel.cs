@@ -33,4 +33,9 @@ namespace Models
         public bool? Status { get; set; }
         public long? UserId { get; set; }
     }
+    public class BranchStatusRequestDto
+    {
+        public long BranchId { get; set; }
+    }
+
 }

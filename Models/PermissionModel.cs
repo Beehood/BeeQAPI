@@ -41,4 +41,8 @@ namespace Models
 
         public long? UserId { get; set; }
     }
+    public class PermissionStatusRequestDto
+    {
+        public long PermissionId { get; set; }
+    }
 }

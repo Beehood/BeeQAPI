@@ -40,4 +40,8 @@ namespace Models
     //    public int PageNo { get; set; } = 1;
     //    public int PageSize { get; set; } = 10;
     //}
+    public class ServiceStatusRequestDto
+    {
+        public long ServiceId { get; set; }
+    }
 }

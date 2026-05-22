@@ -40,4 +40,8 @@ namespace Models
 
         public long? UserId { get; set; }
     }
+    public class CounterServiceStatusRequestDto
+    {
+        public long CounterServiceId { get; set; }
+    }
 }

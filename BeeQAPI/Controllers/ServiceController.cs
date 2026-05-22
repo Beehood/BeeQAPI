@@ -82,13 +82,13 @@ public class ServiceController : ControllerBase
     [Authorize(Policy = "DELETE_SERVICE")]
     [HttpPost("ServiceStatus")]
     [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-    public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] long id)
+    public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] ServiceStatusRequestDto request)
     {
         var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
         var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        return await _bal.ChangeStatus(id, roles, email, transaction: null);
+        return await _bal.ChangeStatus(request.ServiceId, roles, email, transaction: null);
     }
 
     // ========================

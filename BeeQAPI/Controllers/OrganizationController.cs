@@ -78,7 +78,7 @@ namespace BeeQAPI.Controllers
         [Authorize(Policy = "DELETE_ORG")]
         [HttpPost("OrganizationStatus")]
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] OrganizationRequestDto request)
+        public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] OrganizationStatusRequestDto request)
         {
             Console.WriteLine("=== CONTROLLER START ===");
 

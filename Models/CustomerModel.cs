@@ -41,4 +41,8 @@ namespace Models
 
         public bool Status { get; set; }
     }
+    public class CustomerStatusRequestDto
+    {
+        public long CustomerId { get; set; }
+    }
 }

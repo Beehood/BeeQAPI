@@ -55,4 +55,8 @@ namespace Models
 
         //public long? UserId_Login { get; set; }
     }
+    public class UserStatusRequestDto
+    {
+        public long UserId { get; set; }
+    }
 }

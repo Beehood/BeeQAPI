@@ -44,4 +44,8 @@ namespace Models
         // Optional if using JWT, otherwise keep
         // public long UserId { get; set; }
     }
+    public class CounterStatusRequestDto
+    {
+        public long CounterId { get; set; }
+    }
 }

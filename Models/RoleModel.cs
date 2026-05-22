@@ -41,4 +41,10 @@ namespace Models
 
         //public long? UserId_Login { get; set; }
     }
+    public class RoleStatusRequestDto
+    {
+        public long RoleId { get; set; }
+    }
+
+
 }
