@@ -139,6 +139,11 @@ builder.Services.AddScoped<IMonitorService, MonitorService>();
 // ========================
 builder.Services.AddScoped<IBAL_DisplayBoard, BAL_DisplayBoard>();
 builder.Services.AddScoped<IDAL_DisplayBoard, DAL_DisplayBoard>();
+// ========================
+// DISPLAYBOARDSERVICE
+// ========================
+builder.Services.AddScoped<IBAL_DisplayBoardService, BAL_DisplayBoardService>();
+builder.Services.AddScoped<IDAL_DisplayBoardService, DAL_DisplayBoardService>();
 
 
 

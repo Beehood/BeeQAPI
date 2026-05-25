@@ -275,7 +275,7 @@ namespace DAL.Services
 
             var param = new DynamicParameters();
             param.Add("p_Action", "DISPLAY");
-            param.Add("p_DisplayId", null);   // REQUIRED
+            param.Add("p_DisplayId", null);
             param.Add("p_BranchId", null);
             param.Add("p_DisplayName", null);
             param.Add("p_ScreenCode", screenCode);

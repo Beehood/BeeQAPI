@@ -27,7 +27,9 @@ namespace BAL.Services
             try
             {
                 // Example Role Check
-                if (!roles.Contains("Admin") && !roles.Contains("Counter User"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) ||
+                    r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     return new APIGetResponseModel<List<QueueModel>>
                     {
@@ -51,7 +53,9 @@ namespace BAL.Services
         {
             try
             {
-                if (!roles.Contains("Admin") && !roles.Contains("Counter User"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+               || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) ||
+                  r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     return new APIGetResponseModel<QueueModel>
                     {
@@ -78,7 +82,9 @@ namespace BAL.Services
 
             try
             {
-                if (!roles.Contains("Admin"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) ||
+                   r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Admin can create token.");
@@ -131,7 +137,9 @@ namespace BAL.Services
 
             try
             {
-                if (!roles.Contains("Admin"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) ||
+                   r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Admin can update queue.");
@@ -172,7 +180,9 @@ namespace BAL.Services
 
             try
             {
-                if (!roles.Contains("Counter User") && !roles.Contains("Admin"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) ||
+                   r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Unauthorized access.");

@@ -30,7 +30,7 @@ namespace BAL.Services
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)||
                     r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
-     r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                    r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     return new APIGetResponseModel<List<DisplayBoardModel>>
                     {
@@ -59,8 +59,9 @@ namespace BAL.Services
             try
             {
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
-    r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase) 
+                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+                r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     return new APIGetResponseModel<DisplayBoardModel>
                     {
@@ -80,18 +81,14 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(
-            DisplayBoardRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(DisplayBoardRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
 
             try
             {
-                // 🔐 ROLE CHECK
+                // ROLE CHECK
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
@@ -99,7 +96,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                // ✅ VALIDATION
+                //  VALIDATION
                 if (request == null)
                 {
                     response.IsSuccess = false;
@@ -122,7 +119,7 @@ namespace BAL.Services
                     return response;
                 }
 
-                // 📦 CALL DAL
+                //  CALL DAL
                 response = await _dal.Insert(request, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
@@ -143,11 +140,7 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            DisplayBoardRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(DisplayBoardRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -200,11 +193,7 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus( long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
             IDbTransaction? localtran = null;
@@ -259,9 +248,7 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
