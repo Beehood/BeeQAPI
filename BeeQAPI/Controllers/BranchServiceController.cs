@@ -118,15 +118,9 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<List<DropdownModel>>>
         GetBranchDropdownByOrganization([FromBody] long orgId)
         {
-            var email =
-                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal
-                .GetBranchDropdownByOrganization(
-                    orgId,
-                    email,
-                    transaction: null
-                );
+            return await _bal.GetBranchDropdownByOrganization(orgId,email,transaction: null);
         }
     }
 }
