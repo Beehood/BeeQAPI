@@ -24,8 +24,7 @@ namespace DAL.Services
         // ========================
         // LIST (GET SERVICES BY DISPLAY)
         // ========================
-        public async Task<APIGetResponseModel<List<DisplayBoardServiceModel>>> GetAll(
-            long displayId,
+        public async Task<APIGetResponseModel<List<DisplayBoardServiceModel>>> GetAll(long displayId,
             string email,
             IDbTransaction? transaction = null)
         {

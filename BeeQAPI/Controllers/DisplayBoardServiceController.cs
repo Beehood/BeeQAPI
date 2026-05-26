@@ -32,6 +32,7 @@ namespace BeeQAPI.Controllers
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return await _bal.GetAll(displayId, roles, email, transaction: null);
+            
         }
 
         // ========================

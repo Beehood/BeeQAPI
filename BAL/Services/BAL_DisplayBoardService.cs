@@ -39,7 +39,7 @@ namespace BAL.Services
                     };
                 }
 
-                if (displayId <= 0)
+                if (displayId < 0)
                 {
                     return new APIGetResponseModel<List<DisplayBoardServiceModel>>
                     {
