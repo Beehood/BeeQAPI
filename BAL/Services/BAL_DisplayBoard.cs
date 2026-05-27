@@ -26,7 +26,7 @@ namespace BAL.Services
         {
             try
             {
-                // 🔐 ROLE CHECK
+                //  ROLE CHECK
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)||
                     r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||

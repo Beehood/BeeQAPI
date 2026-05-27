@@ -144,7 +144,16 @@ builder.Services.AddScoped<IDAL_DisplayBoard, DAL_DisplayBoard>();
 // ========================
 builder.Services.AddScoped<IBAL_DisplayBoardService, BAL_DisplayBoardService>();
 builder.Services.AddScoped<IDAL_DisplayBoardService, DAL_DisplayBoardService>();
-
+//========================
+//APPOINTMENT
+//=========================
+builder.Services.AddScoped<IBAL_Appointment, BAL_Appointment>();
+builder.Services.AddScoped<IDAL_Appointment, DAL_Appointment>();
+//========================
+//TIMESLOT
+//=========================
+builder.Services.AddScoped<IBAL_TimeSlot, BAL_TimeSlot>();
+builder.Services.AddScoped<IDAL_TimeSlot, DAL_TimeSlot>();
 
 
 builder.Services.AddControllers();

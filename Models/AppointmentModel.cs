@@ -12,6 +12,7 @@ namespace Models
         public long OrganizationId { get; set; }
         public long BranchId { get; set; }
         public long ServiceId { get; set; }
+        public string? ServiceName { get; set; }
         public long UserId { get; set; }
 
         public string CustomerName { get; set; }
