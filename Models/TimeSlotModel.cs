@@ -27,6 +27,8 @@ namespace Models
         public int Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public long? UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
     public class TimeSlotRequestDto
     {
@@ -51,6 +53,7 @@ namespace Models
         public string? SearchKey { get; set; }
 
         public int? PageNo { get; set; }
+
     }
     public class TimeSlotStatusRequestDto
     {
