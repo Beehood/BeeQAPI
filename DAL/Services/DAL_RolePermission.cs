@@ -115,19 +115,24 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
-
                 param.Add("p_Action", "GETBYROLE");
                 param.Add("p_RoleId", roleId);
                 param.Add("p_PermissionId", null);
                 param.Add("p_PermissionIds", null);
-
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
                 param.Add("p_PageSize", null);
-
                 param.Add("p_UserEmail", email);
 
-                var data = (await conn.QueryAsync<RolePermissionModel>("sp_manage_role_permission", param, commandType: CommandType.StoredProcedure)).ToList();
+                // --- FIXED HERE ---
+                // Change CommandType to Text and use explicit CALL syntax 
+                string sql = "CALL sp_manage_role_permission(@p_Action, @p_RoleId, @p_PermissionId, @p_PermissionIds, @p_SearchKey, @p_PageNo, @p_PageSize, @p_UserEmail);";
+
+                var data = (await conn.QueryAsync<RolePermissionModel>(
+                    sql,
+                    param,
+                    commandType: CommandType.Text
+                )).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
@@ -136,13 +141,14 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching role permissions by role");
-                Console.WriteLine("DAL ROLE PERMISSION GET BY ROLE ERROR: " + ex.Message);
+                response.ErrorMsgs.Add(ex.Message);
+                Console.WriteLine("DAL ROLE PERMISSION GET BY ROLE ERROR: " + ex.ToString());
             }
 
             return response;
         }
 
+        
         // ========================
         // INSERT (Single)
         // ========================
@@ -202,7 +208,7 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
 
                 var param = new DynamicParameters();
 
-                param.Add("p_Action", "BULKINSERT");
+                param.Add("p_Action", "BULKASSIGN");
                 param.Add("p_RoleId", request.RoleId);
                 param.Add("p_PermissionId", null);
                 param.Add("p_PermissionIds", request.PermissionIds);
@@ -245,9 +251,9 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
 
                 var param = new DynamicParameters();
 
-                param.Add("p_Action", "DELETE");
+                param.Add("p_Action", "REMOVE");
                 param.Add("p_RoleId", request.RoleId);
-                param.Add("p_PermissionId", request.PermissionId);
+                param.Add("p_PermissionId", request.PermissionId);  
                 param.Add("p_PermissionIds", null);
 
                 param.Add("p_SearchKey", null);
