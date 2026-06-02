@@ -29,7 +29,11 @@ namespace BeeQAPI.Controllers
             {
                 var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+                Console.WriteLine("USERNAME = " + username);
+
                 var data = await _bal.GetDisplayData(username);
+
+                Console.WriteLine("COUNT = " + data.Count);
 
                 return Ok(data);
             }

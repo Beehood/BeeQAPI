@@ -154,7 +154,11 @@ builder.Services.AddScoped<IDAL_Appointment, DAL_Appointment>();
 //=========================
 builder.Services.AddScoped<IBAL_TimeSlot, BAL_TimeSlot>();
 builder.Services.AddScoped<IDAL_TimeSlot, DAL_TimeSlot>();
-
+//========================
+//BRANCHDEVICE
+//=========================
+builder.Services.AddScoped<IBAL_BranchDevice, BAL_BranchDevice>();
+builder.Services.AddScoped<IDAL_BranchDevice, DAL_BranchDevice>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
