@@ -20,13 +20,17 @@ namespace BeeQAPI.Controllers
         // ========================
         // DISPLAY BOARD (PUBLIC TV)
         // ========================
-        [AllowAnonymous]
+        //[Authorize(Policy = "VIEW_DISPLAY_BOARD")]
+        [Authorize]
         [HttpGet("DisplayBoardView")]
-        public async Task<IActionResult> DisplayBoardView([FromQuery] string screenCode)
+        public async Task<IActionResult> DisplayBoardView()
         {
             try
             {
-                var data = await _bal.GetDisplayData(screenCode);
+                var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var data = await _bal.GetDisplayData(username);
+
                 return Ok(data);
             }
             catch (Exception ex)

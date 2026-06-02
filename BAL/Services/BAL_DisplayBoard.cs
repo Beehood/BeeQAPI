@@ -7,6 +7,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+
 
 namespace BAL.Services
 {
@@ -50,11 +52,7 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<DisplayBoardModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<DisplayBoardModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -264,9 +262,9 @@ namespace BAL.Services
 
             return response;
         }
-        public async Task<List<QueueDisplayModel>> GetDisplayData(string screenCode)
+        public async Task<List<QueueDisplayModel>> GetDisplayData(string username)
         {
-            return await _dal.GetDisplayData(screenCode);
+            return await _dal.GetDisplayData(username);
         }
     }
 }

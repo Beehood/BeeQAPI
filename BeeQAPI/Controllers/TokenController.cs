@@ -1,19 +1,11 @@
 ﻿using BAL.ContractIF;
-
 using BeeQAPI.Realtime;
-
 using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.AspNetCore.SignalR;
-
 using Microsoft.EntityFrameworkCore;
-
 using Models;
-
 using System.Net;
-
 using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
@@ -244,17 +236,9 @@ namespace BeeQAPI.Controllers
 
         {
 
-            var roles = User.Claims
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
-                .Where(c => c.Type == ClaimTypes.Role)
-
-                .Select(c => c.Value)
-
-                .ToList();
-
-            var email =
-
-                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return await _bal.NextTokenPreview(request, roles, email, transaction: null);
 

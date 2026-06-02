@@ -269,22 +269,25 @@ namespace DAL.Services
 
             return response;
         }
-        public async Task<List<QueueDisplayModel>> GetDisplayData(string screenCode)
+        public async Task<List<QueueDisplayModel>> GetDisplayData(string username)
         {
             using var conn = new MySqlConnection(_config.DefaultConnection);
 
             var param = new DynamicParameters();
+
             param.Add("p_Action", "DISPLAY");
+
             param.Add("p_DisplayId", null);
             param.Add("p_BranchId", null);
             param.Add("p_DisplayName", null);
-            param.Add("p_ScreenCode", screenCode);
+            param.Add("p_ScreenCode", null);
             param.Add("p_UpcomingLimit", null);
             param.Add("p_TemplateId", null);
             param.Add("p_Status", null);
             param.Add("p_SearchKey", null);
             param.Add("p_PageNo", null);
-            param.Add("p_UserEmail", null);
+
+            param.Add("p_UserEmail", username);
 
             var result = await conn.QueryAsync<QueueDisplayModel>("sp_manage_display_board",param,commandType: CommandType.StoredProcedure);
 
