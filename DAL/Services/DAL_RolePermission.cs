@@ -29,23 +29,15 @@ namespace DAL.Services
         /// Author: Swapnlisa
         /// Description:- Fetches paginated role-permission mapping list using stored procedure.
         /// </summary>
-public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
-      PaginationRequestDto request,
-      string email,
-      IDbTransaction? transaction = null)
+public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
-            var response =
-                new APIGetResponseModel<List<RolePermissionModel>>();
+            var response =new APIGetResponseModel<List<RolePermissionModel>>();
 
             try
             {
-                using var conn =
-                    new MySqlConnection(
-                        _config.DefaultConnection
-                    );
+                using var conn =new MySqlConnection(_config.DefaultConnection );
 
-                var param =
-                    new DynamicParameters();
+                var param =new DynamicParameters();
 
                 param.Add("p_Action", "GETALL");
 
@@ -55,31 +47,20 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
 
                 param.Add("p_PermissionIds", null);
 
-                param.Add("p_SearchKey",
-                    request.SearchKey);
+                param.Add("p_SearchKey",request.SearchKey);
 
                 param.Add("p_PageNo",request.PageNo);
                 param.Add("p_PageSize", request.PageSize);
 
                 param.Add("p_UserEmail",email);
 
-                using var multi =
-                    await conn.QueryMultipleAsync(
-                        "sp_manage_role_permission",
-                        param,
-                        commandType:
-                        CommandType.StoredProcedure
-                    );
+                using var multi =await conn.QueryMultipleAsync("sp_manage_role_permission",param,commandType:CommandType.StoredProcedure);
 
                 // FIRST RESULT SET
-                var list =
-                    (await multi.ReadAsync<RolePermissionModel>())
-                    .ToList();
+                var list =(await multi.ReadAsync<RolePermissionModel>()).ToList();
 
                 // SECOND RESULT SET
-                response.TotalRecords =
-                    (await multi.ReadAsync<int>())
-                    .FirstOrDefault();
+                response.TotalRecords =(await multi.ReadAsync<int>()).FirstOrDefault();
 
                 response.Result = list;
 
@@ -91,10 +72,7 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
 
                 response.ErrorMsgs.Add(ex.Message);
 
-                Console.WriteLine(
-                    "DAL ROLE PERMISSION ERROR: "
-                    + ex.Message
-                );
+                Console.WriteLine("DAL ROLE PERMISSION ERROR: "+ ex.Message);
             }
 
             return response;
@@ -128,11 +106,7 @@ public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(
                 // Change CommandType to Text and use explicit CALL syntax 
                 string sql = "CALL sp_manage_role_permission(@p_Action, @p_RoleId, @p_PermissionId, @p_PermissionIds, @p_SearchKey, @p_PageNo, @p_PageSize, @p_UserEmail);";
 
-                var data = (await conn.QueryAsync<RolePermissionModel>(
-                    sql,
-                    param,
-                    commandType: CommandType.Text
-                )).ToList();
+                var data = (await conn.QueryAsync<RolePermissionModel>(sql,param,commandType: CommandType.Text)).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;

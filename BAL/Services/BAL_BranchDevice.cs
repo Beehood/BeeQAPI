@@ -22,11 +22,7 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<DeviceModel>>> GetAll(
-            PaginationRequestDto request,
-            List<string> roles,
-            string? email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DeviceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -53,11 +49,7 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-        public async Task<APIGetResponseModel<DeviceModel>> GetById(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<DeviceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
             {
@@ -84,11 +76,7 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Create(
-            DeviceRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Create(DeviceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -135,11 +123,7 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-        public async Task<APIGetResponseModel<int>> Update(
-            DeviceRequestDto request,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Update(DeviceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -174,11 +158,7 @@ namespace BAL.Services
         // ========================
         // STATUS
         // ========================
-        public async Task<APIGetResponseModel<int>> ChangeStatus(
-            long id,
-            List<string> roles,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -213,9 +193,7 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             return await _dal.GetDropdown(email, transaction);
         }

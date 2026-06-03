@@ -78,29 +78,17 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<int>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<int>> ChangeStatus([FromBody] AppointmentStatusRequestDto request)
         {
-            Console.WriteLine("=== APPOINTMENT CONTROLLER START ===");
 
             var token = Request.Headers["Authorization"].ToString();
-            Console.WriteLine("Token: " + token);
-            Console.WriteLine("IsAuthenticated: " + User.Identity.IsAuthenticated);
-
+            
             foreach (var claim in User.Claims)
             {
                 Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
             }
-
-            Console.WriteLine($"AppointmentId: {request.AppointmentId}");
-            Console.WriteLine($"Status: {request.Status}");
-
-            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-            Console.WriteLine("Roles: " + string.Join(",", roles));
-
+             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+           
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine("Email: " + email);
-
             var branchId = User.FindFirst("BranchId")?.Value;
-            Console.WriteLine("BranchId: " + branchId);
-
             return await _bal.ChangeStatus(request.AppointmentId, request.Status, roles, email, transaction: null);
         }
     }

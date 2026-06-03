@@ -29,17 +29,13 @@ namespace BeeQAPI.Controllers
             {
                 var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                Console.WriteLine("USERNAME = " + username);
+               var data = await _bal.GetDisplayData(username);
 
-                var data = await _bal.GetDisplayData(username);
-
-                Console.WriteLine("COUNT = " + data.Count);
-
-                return Ok(data);
+               return Ok(data);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DISPLAY ERROR: " + ex.Message);
+               
                 return BadRequest("Error: " + ex.Message);
             }
         }

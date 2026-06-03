@@ -10,11 +10,7 @@ namespace BAL.ContractIF
 {
     public interface IBAL_TimeSlot
     {
-        Task<APIGetResponseModel<List<TimeSlotModel>>> GetAll(
-      PaginationRequestDto request,
-      List<string> roles,
-      string? email,
-      IDbTransaction? transaction = null);
+        Task<APIGetResponseModel<List<TimeSlotModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null);
 
         Task<APIGetResponseModel<TimeSlotModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null);
 

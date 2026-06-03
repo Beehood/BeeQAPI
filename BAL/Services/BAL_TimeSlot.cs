@@ -22,11 +22,7 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
-        public async Task<APIGetResponseModel<List<TimeSlotModel>>> GetAll(
-       PaginationRequestDto request,
-       List<string> roles,
-       string? email,
-       IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<TimeSlotModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
        
         {
             try

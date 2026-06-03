@@ -27,9 +27,7 @@ public class MenuController : ControllerBase
 
             string email = userClaim.Value;
 
-            Console.WriteLine("Email: " + email); // DEBUG
-
-            var result = await _bal.GetSidebar(email); // ✅ pass email
+           var result = await _bal.GetSidebar(email); //  pass email
 
             return Ok(result);
         }

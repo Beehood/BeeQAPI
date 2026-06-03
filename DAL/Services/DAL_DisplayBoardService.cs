@@ -24,9 +24,7 @@ namespace DAL.Services
         // ========================
         // LIST (GET SERVICES BY DISPLAY)
         // ========================
-        public async Task<APIGetResponseModel<List<DisplayBoardServiceModel>>> GetAll(long displayId,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DisplayBoardServiceModel>>> GetAll(long displayId,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DisplayBoardServiceModel>>();
 
@@ -41,10 +39,7 @@ namespace DAL.Services
                 param.Add("p_BranchServiceId", null);
                 param.Add("p_UserEmail", email);
 
-                var data = (await conn.QueryAsync<DisplayBoardServiceModel>(
-                    "sp_manage_display_board_service",
-                    param,
-                    commandType: CommandType.StoredProcedure)).ToList();
+                var data = (await conn.QueryAsync<DisplayBoardServiceModel>("sp_manage_display_board_service",param,commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = data;
                 response.TotalRecords = data.Count;
@@ -63,10 +58,7 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-        public async Task<APIGetResponseModel<int>> Insert(
-            DisplayBoardServiceRequestDto request,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert(DisplayBoardServiceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -81,10 +73,7 @@ namespace DAL.Services
                 param.Add("p_BranchServiceId", request.BranchServiceId);
                 param.Add("p_UserEmail", email);
 
-                var id = await conn.ExecuteScalarAsync<long>(
-                    "sp_manage_display_board_service",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var id = await conn.ExecuteScalarAsync<long>("sp_manage_display_board_service",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = (int)id;
                 response.IsSuccess = id > 0;
@@ -103,10 +92,7 @@ namespace DAL.Services
         // ========================
         // DELETE
         // ========================
-        public async Task<APIGetResponseModel<int>> Delete(
-            long id,
-            string email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Delete(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -121,10 +107,7 @@ namespace DAL.Services
                 param.Add("p_BranchServiceId", null);
                 param.Add("p_UserEmail", email);
 
-                var result = await conn.ExecuteScalarAsync<int>(
-                    "sp_manage_display_board_service",
-                    param,
-                    commandType: CommandType.StoredProcedure);
+                var result = await conn.ExecuteScalarAsync<int>("sp_manage_display_board_service",param,commandType: CommandType.StoredProcedure);
 
                 response.Result = result;
                 response.IsSuccess = result > 0;

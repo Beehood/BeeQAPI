@@ -247,7 +247,7 @@ namespace BAL.Services
             try
             {
 
-                // 🔍 DEBUG 1: START
+                //  DEBUG 1: START
                 Console.WriteLine("=== BAL START ===");
                 Console.WriteLine($"Incoming OrgId: {id}");
                 Console.WriteLine("Roles: " + string.Join(",", roles));
@@ -274,7 +274,7 @@ namespace BAL.Services
                 //if (transaction == null && localtran != null)
                 //    localtran.Commit();
 
-                // 🔍 DEBUG 2: ROLE CHECK
+                // DEBUG 2: ROLE CHECK
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.WriteLine("❌ ROLE CHECK FAILED");
@@ -288,7 +288,7 @@ namespace BAL.Services
                     Console.WriteLine("✅ ROLE CHECK PASSED");
                 }
 
-                // 🔍 DEBUG 3: ID CHECK
+                //  DEBUG 3: ID CHECK
                 if (id <= 0)
                 {
                     Console.WriteLine("❌ INVALID ORG ID");
@@ -300,17 +300,17 @@ namespace BAL.Services
 
                 Console.WriteLine("➡️ CALLING DAL...");
 
-                // 🔍 DEBUG 4: DAL CALL
+                //  DEBUG 4: DAL CALL
                 response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
-                Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
-                Console.WriteLine("IsSuccess: " + response.IsSuccess);
-                Console.WriteLine("Result: " + response.Result);
+                //Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
+                //Console.WriteLine("IsSuccess: " + response.IsSuccess);
+                //Console.WriteLine("Result: " + response.Result);
 
-                // 🔍 DEBUG 5: TRANSACTION
+                //  DEBUG 5: TRANSACTION
                 if (transaction == null && localtran != null)
                 {
-                    Console.WriteLine("✅ COMMITTING TRANSACTION");
+                 
                     localtran.Commit();
                 }
             }
