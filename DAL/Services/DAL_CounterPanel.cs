@@ -325,13 +325,23 @@ namespace DAL.Services
 
                 response.TotalRecords =result > 0? 1: 0;
             }
+            catch (MySqlException ex)
+            {
+                response.IsSuccess = false;
+
+                response.ErrorMsgs.Add(ex.Message);
+
+                _logger.LogError(ex,"DAL RECALL TOKEN ERROR");
+            }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
 
-                response.ErrorMsgs.Add("Error while recalling token");
+                response.ErrorMsgs.Add("Unexpected error");
 
-                _logger.LogError(ex,"DAL RECALL TOKEN ERROR");
+                _logger.LogError(
+                    ex,
+                    "DAL RECALL TOKEN ERROR");
             }
 
             return response;

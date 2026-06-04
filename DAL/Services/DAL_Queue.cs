@@ -118,10 +118,7 @@ namespace DAL.Services
         // ========================
         // INSERT (CREATE TOKEN)
         // ========================
-        public async Task<APIGetResponseModel<int>> Insert(
-      QueueRequestDto request,
-      string email,
-      IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<int>> Insert( QueueRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
 
@@ -257,7 +254,7 @@ namespace DAL.Services
 
             return response;
 
-            return response;
+        
         }
 
         // ========================
@@ -272,9 +269,21 @@ namespace DAL.Services
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
+
                 param.Add("p_Action", "CURRENT");
-                param.Add("p_CounterId", 0);
                 param.Add("p_TokenId", 0);
+                param.Add("p_CounterId", 0);
+
+                param.Add("p_BranchId", Convert.ToInt64(branchId));
+
+                param.Add("p_BranchServiceId", null);
+                param.Add("p_TokenNumber", null);
+                param.Add("p_CustomerName", null);
+                param.Add("p_Status", null);
+
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+
                 param.Add("p_UserEmail", "");
 
                 var data = (await conn.QueryAsync<QueueDisplayModel>("sp_manage_queue",param,commandType: CommandType.StoredProcedure)).ToList();

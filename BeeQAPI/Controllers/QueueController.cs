@@ -118,13 +118,11 @@ namespace BeeQAPI.Controllers
         // ========================
         // QUEUE DISPLAY (MONITOR)
         // ========================
-        [AllowAnonymous]
-        [HttpGet("Monitor/{monitorKey}")]
-        [ProducesResponseType(typeof(APIGetResponseModel<List<QueueDisplayModel>>), 200)]
-        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string monitorKey)
+        [Authorize(Policy = "VIEW_QUEUE")]
+        [HttpGet("Monitor/{branchId}")]
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(long branchId)
         {
-            var branchId = await _monitorService.GetBranchByKey(monitorKey);
-            return await _bal.GetQueueDisplay(branchId);
+            return await _bal.GetQueueDisplay(branchId.ToString());
         }
         // ========================
         // DROPDOWN
