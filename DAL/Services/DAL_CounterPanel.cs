@@ -45,8 +45,9 @@ namespace DAL.Services
                 param.Add("p_Action","DASHBOARD");
 
                 param.Add("p_counter_id",request.CounterId);
-
+           
                 param.Add("p_token_id",null);
+                param.Add("p_branch_service_id", request.BranchServiceId);
                 param.Add("p_user_id", null);
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
@@ -117,9 +118,8 @@ namespace DAL.Services
 
                 param.Add("p_counter", request.CounterId);
                 param.Add("p_user", userId);
-                _logger.LogInformation("EMAIL = {Email}", email);
-                _logger.LogInformation("USER ID = {UserId}", userId);
-                _logger.LogInformation("COUNTER ID = {CounterId}", request.CounterId);
+                param.Add("p_branch_service_id", request.BranchServiceId);
+
                 var data =await conn.QueryFirstOrDefaultAsync<CallNextTokenResponseDto>("sp_call_next_token",param,commandType: CommandType.StoredProcedure,commandTimeout: 30);
 
                 response.Result = data;
@@ -156,6 +156,7 @@ namespace DAL.Services
                 param.Add("p_Action", "STARTSERVICE");
                 param.Add("p_counter_id", request.CounterId);
                 param.Add("p_token_id", request.TokenId);
+                param.Add("p_branch_service_id", request.BranchServiceId);
 
                 param.Add("p_user_id", null);
                 param.Add("p_SearchKey", "");
@@ -206,6 +207,7 @@ namespace DAL.Services
                 param.Add("p_Action", "COMPLETESERVICE");
                 param.Add("p_counter_id", request.CounterId);
                 param.Add("p_token_id", request.TokenId);
+                param.Add("p_branch_service_id", request.BranchServiceId);
 
                 param.Add("p_user_id", null);
                 param.Add("p_SearchKey", "");
@@ -256,6 +258,7 @@ namespace DAL.Services
                 param.Add("p_Action", "SKIPTOKEN");
                 param.Add("p_counter_id", request.CounterId);
                 param.Add("p_token_id", request.TokenId);
+                param.Add("p_branch_service_id", request.BranchServiceId);
 
                 param.Add("p_user_id", null);
                 param.Add("p_SearchKey", "");
@@ -306,6 +309,7 @@ namespace DAL.Services
                 param.Add("p_Action", "RECALLTOKEN");
                 param.Add("p_counter_id", request.CounterId);
                 param.Add("p_token_id", request.TokenId);
+                param.Add("p_branch_service_id", request.BranchServiceId);
 
                 param.Add("p_user_id", null);
                 param.Add("p_SearchKey", "");

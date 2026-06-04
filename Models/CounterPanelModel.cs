@@ -104,6 +104,7 @@ namespace Models
         public int PageSize { get; set; } = 10;
 
         public string? Remarks { get; set; }
+        public long ? BranchServiceId { get; set; }
     }
 
     public class CallNextTokenResponseDto
