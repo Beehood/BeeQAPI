@@ -29,9 +29,7 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<List<OrganizationModel>>> GetAll([FromBody] PaginationRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             return await _bal.GetAll(request, roles, email, transaction: null);
         }
 

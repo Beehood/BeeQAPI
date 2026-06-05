@@ -1,7 +1,10 @@
 ﻿using BAL.ContractIF;
+using BeeQAPI.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Models;
+using MySqlX.XDevAPI.Common;
 using System.Net;
 using System.Security.Claims;
 
@@ -13,11 +16,13 @@ namespace BeeQAPI.Controllers
     public class CounterPanelController : ControllerBase
     {
         private readonly IBAL_CounterPanel _bal;
+        private readonly IHubContext<QueueHub> _hubContext;
 
         public CounterPanelController(
-            IBAL_CounterPanel bal)
+            IBAL_CounterPanel bal, IHubContext<QueueHub> hubContext)
         {
             _bal = bal;
+            _hubContext = hubContext;
         }
 
         // ========================
@@ -39,17 +44,31 @@ namespace BeeQAPI.Controllers
         // ========================
         // CALL NEXT TOKEN
         // ========================
-
         [Authorize(Policy = "UPDATE_TOKEN")]
         [HttpPost("CounterCallNextToken")]
-        [ProducesResponseType(typeof(APIGetResponseModel<CallNextTokenResponseDto>),(int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<CallNextTokenResponseDto>>CallNextToken([FromBody]CounterPanelActionRequestDto request)
+        [ProducesResponseType(typeof(APIGetResponseModel<CallNextTokenResponseDto>),
+        (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<CallNextTokenResponseDto>>
+        CallNextToken([FromBody] CounterPanelActionRequestDto request)
         {
-            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.CallNextToken(request,roles,email,transaction: null);
+            var result = await _bal.CallNextToken(request,roles,email,transaction: null);
+
+            if (result.IsSuccess)
+            {
+                if (result.IsSuccess)
+                {
+                    await _hubContext.Clients.Group("1").SendAsync("QueueUpdated");
+                }
+            }
+
+            return result;
         }
 
         // ========================
@@ -65,23 +84,47 @@ namespace BeeQAPI.Controllers
 
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.StartService(request,roles,email,transaction: null);
+            var result= await _bal.StartService(request,roles,email,transaction: null);
+            if (result.IsSuccess)
+            {
+                if (result.IsSuccess)
+                {
+                    await _hubContext.Clients
+                        .Group("1")
+                        .SendAsync("QueueUpdated");
+                }
+            }
+
+            return result;
         }
 
         // ========================
         // COMPLETE SERVICE
         // ========================
 
-        [Authorize(Policy = "UPDATE_TOKEN")]
         [HttpPost("CounterCompleteService")]
-        [ProducesResponseType(typeof(APIGetResponseModel<int>),(int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<int>>CompleteService([FromBody]CounterPanelActionRequestDto request)
+        public async Task<APIGetResponseModel<int>> CompleteService([FromBody] CounterPanelActionRequestDto request)
         {
-            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
 
-            var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.CompleteService(request,roles,email,transaction: null);
+            var result = await _bal.CompleteService(request,roles,email,transaction: null);
+
+            if (result.IsSuccess)
+            {
+                if (result.IsSuccess)
+                {
+                    await _hubContext.Clients
+                        .Group("1")
+                        .SendAsync("QueueUpdated");
+                }
+            }
+
+            return result;
         }
 
         // ========================
@@ -97,7 +140,18 @@ namespace BeeQAPI.Controllers
 
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.SkipToken(request,roles,email,transaction: null);
+            var result = await _bal.SkipToken(request,roles,email,transaction: null);
+            if (result.IsSuccess)
+            {
+                if (result.IsSuccess)
+                {
+                    await _hubContext.Clients
+                        .Group("1")
+                        .SendAsync("QueueUpdated");
+                }
+            }
+
+            return result;
         }
 
         // ========================
@@ -113,7 +167,18 @@ namespace BeeQAPI.Controllers
 
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.RecallToken(request,roles,email,transaction: null);
+            var result =await _bal.RecallToken(request,roles,email,transaction: null);
+          
+            
+                if (result.IsSuccess)
+                {
+                    await _hubContext.Clients
+                        .Group("1")
+                        .SendAsync("QueueUpdated");
+                }
+            
+
+            return result;
         }
     }
 }

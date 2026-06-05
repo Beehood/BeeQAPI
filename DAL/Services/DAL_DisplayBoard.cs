@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DAL.Services
 {
@@ -269,29 +270,42 @@ namespace DAL.Services
 
             return response;
         }
-        public async Task<List<QueueDisplayModel>> GetDisplayData(string username)
+    
+
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetDisplayData(string username)
         {
-            using var conn = new MySqlConnection(_config.DefaultConnection);
+            var response = new APIGetResponseModel<List<QueueDisplayModel>>();
 
-            var param = new DynamicParameters();
+            try
+            {
+                using var conn = new MySqlConnection(_config.DefaultConnection);
 
-            param.Add("p_Action", "DISPLAY");
+                var param = new DynamicParameters();
+                param.Add("p_Action", "DISPLAY");
+                param.Add("p_DisplayId", null);
+                param.Add("p_BranchId", null);
+                param.Add("p_DisplayName", null);
+                param.Add("p_ScreenCode", null);
+                param.Add("p_UpcomingLimit", null);
+                param.Add("p_TemplateId", null);
+                param.Add("p_Status", null);
+                param.Add("p_SearchKey", null);
+                param.Add("p_PageNo", null);
+                param.Add("p_UserEmail", username);
 
-            param.Add("p_DisplayId", null);
-            param.Add("p_BranchId", null);
-            param.Add("p_DisplayName", null);
-            param.Add("p_ScreenCode", null);
-            param.Add("p_UpcomingLimit", null);
-            param.Add("p_TemplateId", null);
-            param.Add("p_Status", null);
-            param.Add("p_SearchKey", null);
-            param.Add("p_PageNo", null);
+                var result = (await conn.QueryAsync<QueueDisplayModel>("sp_manage_display_board",param,commandType: CommandType.StoredProcedure)).ToList();
 
-            param.Add("p_UserEmail", username);
+                response.Result = result;
+                response.TotalRecords = result.Count;
+                response.IsSuccess = result.Any();
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.ErrorMsgs.Add($"Error while fetching display board data: {ex.Message}");
+            }
 
-            var result = await conn.QueryAsync<QueueDisplayModel>("sp_manage_display_board",param,commandType: CommandType.StoredProcedure);
-
-            return result.ToList();
+            return response;
         }
     }
     

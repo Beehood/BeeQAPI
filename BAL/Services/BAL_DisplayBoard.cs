@@ -262,9 +262,12 @@ namespace BAL.Services
 
             return response;
         }
-        public async Task<List<QueueDisplayModel>> GetDisplayData(string username)
+
+
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetDisplayData(string username)
         {
             return await _dal.GetDisplayData(username);
         }
+       
     }
 }

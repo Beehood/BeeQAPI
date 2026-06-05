@@ -22,23 +22,29 @@ namespace BeeQAPI.Controllers
         // ========================
         //[Authorize(Policy = "VIEW_DISPLAY_BOARD")]
         [Authorize]
-        [HttpGet("DisplayBoardView")]
-        public async Task<IActionResult> DisplayBoardView()
+        //[HttpGet("DisplayBoardView")]
+        //[ProducesResponseType(typeof(APIGetResponseModel<List<QueueDisplayModel>>), (int)HttpStatusCode.OK)]
+        //public async Task<APIGetResponseModel<List<QueueDisplayModel>>> DisplayBoardView()
+        //{
+            
+        //        var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //        return await _bal.GetDisplayData(username);
+           
+        //}
+
+        [HttpPost("DisplayBoardView")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<QueueDisplayModel>>),(int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<QueueDisplayModel>>> DisplayBoardView()
         {
-            try
-            {
-                var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-               var data = await _bal.GetDisplayData(username);
-
-               return Ok(data);
-            }
-            catch (Exception ex)
-            {
-               
-                return BadRequest("Error: " + ex.Message);
-            }
+            return await _bal.GetDisplayData(username);
         }
+
+
+      
+
+
 
         // ========================
         // GET ALL

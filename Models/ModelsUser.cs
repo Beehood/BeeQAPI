@@ -12,6 +12,7 @@ namespace Models
         public string? Name { get; set; }
         public string? ProfilPic { get; set; }
         public string? Branch { get; set; }
+        public long CounterId { get; set; }
         public string? Token { get; set; }
         //public List<string> Roles { get; set; } = new();
         //public List<string> Permissions { get; set; } = new();
