@@ -13,6 +13,8 @@ namespace Models
         public long OrganizationId { get; set; }
 
         public string? OrganizationName { get; set; }
+        public long? BranchId { get; set; }
+        public string? BranchName { get; set; }
 
         public string? RoleName { get; set; }
 
@@ -30,7 +32,9 @@ namespace Models
         public long RoleId { get; set; }
 
         public long OrganizationId { get; set; }
-
+        public long? BranchId { get; set; }
+        public string? OrganizationName { get; set; }
+        public string? BranchName { get; set; }
         public string? RoleName { get; set; }
 
         public string? RoleCode { get; set; }
