@@ -22,9 +22,14 @@ namespace BAL.Services
             var jwtSettings = _config.GetSection("JwtSettings");
 
             var claims = new List<Claim>
-            {
-               new Claim(ClaimTypes.NameIdentifier, user.Username),new Claim(ClaimTypes.Name, user.Name ?? "")
-            };
+{
+    new Claim(ClaimTypes.NameIdentifier, user.Username),
+    new Claim(ClaimTypes.Name, user.Name ?? ""),
+
+    new Claim("OrganizationId", user.OrganizationId.ToString()),
+    new Claim("BranchId", user.BranchId.ToString()),
+    new Claim("CounterId", user.CounterId.ToString())
+};
 
             // Add Roles
             if (user.Roles != null && user.Roles.Any())

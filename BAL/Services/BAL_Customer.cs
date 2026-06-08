@@ -38,7 +38,10 @@ namespace BAL.Services
             try
             {
                 //  Super Admin → Full access
-                if (roles.Contains("Super Admin"))
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+                r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     return await _dal.GetAll(request, email, transaction);
                 }
@@ -124,15 +127,13 @@ namespace BAL.Services
             try
             {
                 //  Only Super Admin OR Custom Permission
-                if (!roles.Contains("Super Admin"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can create customer.");
-                    return response;
-                }
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+               r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
 
-                // VALIDATION
-                if (request == null)
+                    // VALIDATION
+                    if (request == null)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid payload.");
@@ -190,14 +191,12 @@ namespace BAL.Services
 
             try
             {
-                if (!roles.Contains("Super Admin"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can update customer.");
-                    return response;
-                }
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+               r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
 
-                if (request == null || request.CustomerId <= 0)
+                    if (request == null || request.CustomerId <= 0)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid customer data.");
@@ -253,14 +252,12 @@ namespace BAL.Services
 
             try
             {
-                if (!roles.Contains("Super Admin"))
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMsgs.Add("Only Super Admin can change status.");
-                    return response;
-                }
+                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                 || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
+               r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
 
-                if (id <= 0)
+                    if (id <= 0)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid customer ID.");

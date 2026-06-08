@@ -12,7 +12,12 @@ namespace Models
         public string? Name { get; set; }
         public string? ProfilPic { get; set; }
         public string? Branch { get; set; }
+        public long OrganizationId { get; set; }
+
+        public long BranchId { get; set; }
+
         public long CounterId { get; set; }
+      
         public string? Token { get; set; }
         //public List<string> Roles { get; set; } = new();
         //public List<string> Permissions { get; set; } = new();
@@ -33,8 +38,12 @@ namespace Models
     {
         public string? Username { get; set; }   // email login identity
         public string? Name { get; set; }
-       
 
+        public long OrganizationId { get; set; }
+
+        public long BranchId { get; set; }
+
+        public long CounterId { get; set; }
         // Role based (legacy / UI use)
         public List<string> Roles { get; set; } = new();
 
@@ -50,8 +59,7 @@ namespace Models
 
         // Internal use (NOT in JWT)
         //public long UserId { get; set; }
-        public long OrganizationId { get; set; }
-        public long BranchId { get; set; }
+       
         public List<string> Roles { get; set; } = new();
         public List<string> Permissions { get; set; } = new();
     }
