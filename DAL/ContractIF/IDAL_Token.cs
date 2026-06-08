@@ -23,6 +23,8 @@ namespace DAL.ContractIF
 
         Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown( string email, IDbTransaction? transaction = null);
         Task<APIGetResponseModel<TokenModel>> NextTokenPreview(TokenRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null);
+
+        Task<long> GetBranchIdByEmail(string email);
     }
 }
 

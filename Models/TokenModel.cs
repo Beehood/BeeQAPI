@@ -82,6 +82,7 @@ namespace Models
         public int TokenId { get; set; }
 
         public string Token { get; set; } = "";
+        public long BranchId { get; set; }
     }
 
 }

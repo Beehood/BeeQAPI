@@ -1,12 +1,21 @@
 ﻿using BAL.ContractIF;
+
 using DAL.ContractIF;
+
 using Models;
+
 using System;
+
 using System.Collections.Generic;
+
 using System.Data;
+
 using System.Linq;
+
 using System.Text;
+
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
 
 namespace BAL.Services
@@ -28,6 +37,14 @@ namespace BAL.Services
             _dal = dal;
 
             _logger = logger;
+
+        }
+
+        public async Task<long> GetBranchIdByEmail(string email)
+
+        {
+
+            return await _dal.GetBranchIdByEmail(email);
 
         }
 
@@ -429,7 +446,6 @@ namespace BAL.Services
                 response.ErrorMsgs.Add("Error while calling next token");
 
             }
-
 
 
             return response;

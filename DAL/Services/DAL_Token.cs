@@ -33,6 +33,37 @@ namespace DAL.Services
 
         }
 
+
+        public async Task<long> GetBranchIdByEmail(string email)
+
+        {
+
+            using var conn =
+
+                new MySqlConnection(_config.DefaultConnection);
+
+            var sql = @"
+
+SELECT c.branch_id
+
+FROM counters c
+
+INNER JOIN users u
+
+    ON u.user_id = c.user_id
+
+WHERE u.email = @Email
+
+LIMIT 1";
+
+            return await conn.QueryFirstOrDefaultAsync<long>(
+
+                sql,
+
+                new { Email = email });
+
+        }
+
         // ========================
 
         // GET ALL (LIST)

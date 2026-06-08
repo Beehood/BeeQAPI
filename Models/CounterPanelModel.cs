@@ -120,6 +120,7 @@ namespace Models
         public string? ServiceName { get; set; }
 
         public long CounterId { get; set; }
+        public long BranchId { get; set; }
 
         public DateTime? CalledTime { get; set; }
     }
