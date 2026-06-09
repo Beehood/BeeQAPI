@@ -42,11 +42,11 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_OrganizationId", null);
-                param.Add("p_BranchId", null);
+                //param.Add("p_OrganizationId", null);
+                //param.Add("p_BranchId", null);
                 param.Add("p_Status", null);
-                param.Add("p_OrganizationName", null);
-                param.Add("p_BranchName", null);
+                //param.Add("p_OrganizationName", null);
+                //param.Add("p_BranchName", null);
                 param.Add("p_SearchKey", request.SearchKey);
                 param.Add("p_PageNo", request.PageNo);
 
@@ -94,11 +94,11 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_OrganizationId", null);
-                param.Add("p_BranchId",null);
+                //param.Add("p_OrganizationId", null);
+                //param.Add("p_BranchId", null);
                 param.Add("p_Status", null);
-                param.Add("p_OrganizationName", null);
-                param.Add("p_BranchName", null);
+                //param.Add("p_OrganizationName", null);
+                //param.Add("p_BranchName", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
 
@@ -156,11 +156,11 @@ namespace DAL.Services
                 param.Add("p_RoleName", request.RoleName);
                 param.Add("p_RoleCode", request.RoleCode);
                 param.Add("p_Description", request.Description);
-                param.Add("p_OrganizationId", request.OrganizationId);
-                param.Add("p_BranchId", request.BranchId);
+                //param.Add("p_OrganizationId", request.OrganizationId);
+                //param.Add("p_BranchId", request.BranchId);
                 param.Add("p_Status", 1);
-                param.Add("p_OrganizationName", request.OrganizationName);
-                param.Add("p_BranchName", request.BranchName);
+                //param.Add("p_OrganizationName", request.OrganizationName);
+                //param.Add("p_BranchName", request.BranchName);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
 
@@ -206,11 +206,11 @@ namespace DAL.Services
                 param.Add("p_RoleName", request.RoleName);
                 param.Add("p_RoleCode", request.RoleCode);
                 param.Add("p_Description", request.Description);
-                param.Add("p_OrganizationId", request.OrganizationId);
-                param.Add("p_BranchId", request.BranchId);
+                //param.Add("p_OrganizationId", request.OrganizationId);
+                //param.Add("p_BranchId", request.BranchId);
                 param.Add("p_Status", request.Status);
-                param.Add("p_OrganizationName", request.OrganizationName);
-                param.Add("p_BranchName", request.BranchName);
+                //param.Add("p_OrganizationName", request.OrganizationName);
+                //param.Add("p_BranchName", request.BranchName);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
 
@@ -256,9 +256,9 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_OrganizationId", null);
+                //param.Add("p_OrganizationId", null);
                 param.Add("p_Status", null);
-
+                //param.Add("p_BranchId", null);
                 param.Add("p_SearchKey", null);
                 param.Add("p_PageNo", null);
 
@@ -304,7 +304,7 @@ namespace DAL.Services
                 param.Add("p_RoleName", null);
                 param.Add("p_RoleCode", null);
                 param.Add("p_Description", null);
-                param.Add("p_OrganizationId", null);
+                //param.Add("p_OrganizationId", null);
                 param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
