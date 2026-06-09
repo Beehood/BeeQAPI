@@ -11,13 +11,11 @@ namespace BAL.Services
     {
         private readonly IDAL_Auth _dal;
         private readonly IJwtService _tokenService;
-
         public BAL_Auth(IDAL_Auth dal, IJwtService tokenService)
         {
             _dal = dal;
             _tokenService = tokenService;
         }
-
         public async Task<APIGetResponseModel<ModelLoginResponse>> Login(LoginRequestDto dto,string salt,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<ModelLoginResponse>
@@ -25,10 +23,8 @@ namespace BAL.Services
                 Result = new ModelLoginResponse()
             };
 
-
             try
             {
-
                 // Step 1: Validate input
                 if (dto == null || string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
                 {
@@ -59,35 +55,6 @@ namespace BAL.Services
                     return response;
                 }
 
-                //Console.WriteLine("----- DEBUG LOGIN -----");
-                //Console.WriteLine("Salt: " + salt);
-                //Console.WriteLine("DB Password: " + user.Password);
-                //Console.WriteLine("DTO Password (Frontend): " + dto.Password);
-
-                //string saltedInputDebug = salt + (user.Password ?? "").Trim();
-                //string backendHash = GetHashString(saltedInputDebug);
-
-                //Console.WriteLine("Backend Hash: " + backendHash);
-                //Console.WriteLine("-----------------------");
-                //Console.WriteLine("EMAIL RECEIVED: " + dto.Email);
-                //Console.WriteLine("USER FOUND: " + (user != null));
-                //Console.WriteLine("IsSuccess: " + userResponse.IsSuccess);
-
-
-                //  SAFE COMPARISON
-                //if (!string.Equals(inputHash, dto.Password, StringComparison.OrdinalIgnoreCase))
-                //{
-                //    response.IsSuccess = false;
-                //    response.ErrorMsgs.Add("Invalid password");
-                //    return response;
-                //}
-
-
-                //var profileResponse = await _dal.loginprofile(user.UserId.ToString());
-                //var profile = profileResponse.Result;
-
-                //Console.WriteLine("PERMISSIONS FROM DB: " + string.Join(",", profile.Permissions)); //Debug
-
                 // Step 4: Generate JWT (RBAC)
                 var tokenUser = new TokenUserInfo
                 {
@@ -113,12 +80,8 @@ namespace BAL.Services
                 response.ErrorMsgs.Add("Something went wrong");
                 Console.WriteLine("LOGIN ERROR: " + ex.Message);
             }
-
             return response;
-
-
         }
-
 
         public async Task<APIGetResponseModel<UserProfileDetails>> loginprofile(string UserId, IDbTransaction? transaction = null)
         {
@@ -133,8 +96,7 @@ namespace BAL.Services
         public static string GetHashString(string inputString)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (byte b in GetHash(inputString))
-                sb.Append(b.ToString("x2"));
+            foreach (byte b in GetHash(inputString))sb.Append(b.ToString("x2"));
             return sb.ToString();
         }
 
@@ -154,10 +116,7 @@ namespace BAL.Services
                     result[i] = chars[index];
                 }
             }
-
             return new string(result);
         }
     }
-
-
 }
