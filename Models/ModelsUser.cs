@@ -56,10 +56,15 @@ namespace Models
         public string? UserName { get; set; }
         public string? Name { get; set; }
         public string? Password { get; set; }
+        public long OrganizationId { get; set; }
+
+        public long BranchId { get; set; }
+
+        public long CounterId { get; set; }
 
         // Internal use (NOT in JWT)
         //public long UserId { get; set; }
-       
+
         public List<string> Roles { get; set; } = new();
         public List<string> Permissions { get; set; } = new();
     }

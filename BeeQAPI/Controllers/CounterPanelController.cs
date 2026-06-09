@@ -8,7 +8,6 @@ using MySqlX.XDevAPI.Common;
 using System.Net;
 using System.Security.Claims;
 
-
 namespace BeeQAPI.Controllers
 {
     [Route("BeeQAPI")]
@@ -17,12 +16,14 @@ namespace BeeQAPI.Controllers
     {
         private readonly IBAL_CounterPanel _bal;
         private readonly IHubContext<QueueHub> _hubContext;
-
-        public CounterPanelController(
-            IBAL_CounterPanel bal, IHubContext<QueueHub> hubContext)
+        public CounterPanelController(IBAL_CounterPanel bal, IHubContext<QueueHub> hubContext)
         {
             _bal = bal;
             _hubContext = hubContext;
+        }
+        private string GetBranchId()
+        {
+            return User.FindFirst("BranchId")?.Value ?? "0";
         }
 
         // ========================
@@ -35,9 +36,7 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<CounterPanelDashboardModel>>GetDashboard([FromBody]CounterPanelActionRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             return await _bal.GetDashboard(request,roles,email,transaction: null);
         }
 
@@ -51,23 +50,16 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<CallNextTokenResponseDto>>
         CallNextToken([FromBody] CounterPanelActionRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
-
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var result = await _bal.CallNextToken(request,roles,email,transaction: null);
-
             if (result.IsSuccess)
             {
                 if (result.IsSuccess)
                 {
-                    await _hubContext.Clients.Group("1").SendAsync("QueueUpdated");
+                    await _hubContext.Clients.Group(GetBranchId()).SendAsync("QueueUpdated");
                 }
             }
-
             return result;
         }
 
@@ -81,20 +73,15 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<int>>StartService([FromBody]CounterPanelActionRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var result= await _bal.StartService(request,roles,email,transaction: null);
             if (result.IsSuccess)
             {
                 if (result.IsSuccess)
                 {
-                    await _hubContext.Clients
-                        .Group("1")
-                        .SendAsync("QueueUpdated");
+                    await _hubContext.Clients.Group(GetBranchId()).SendAsync("QueueUpdated");
                 }
             }
-
             return result;
         }
 
@@ -105,25 +92,14 @@ namespace BeeQAPI.Controllers
         [HttpPost("CounterCompleteService")]
         public async Task<APIGetResponseModel<int>> CompleteService([FromBody] CounterPanelActionRequestDto request)
         {
-            var roles = User.Claims
-                .Where(c => c.Type == ClaimTypes.Role)
-                .Select(c => c.Value)
-                .ToList();
-
+            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var result = await _bal.CompleteService(request,roles,email,transaction: null);
 
             if (result.IsSuccess)
             {
-                if (result.IsSuccess)
-                {
-                    await _hubContext.Clients
-                        .Group("1")
-                        .SendAsync("QueueUpdated");
-                }
+                await _hubContext.Clients.Group(GetBranchId()).SendAsync("QueueUpdated");
             }
-
             return result;
         }
 
@@ -137,20 +113,12 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<int>>SkipToken([FromBody]CounterPanelActionRequestDto request)
         {
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var result = await _bal.SkipToken(request,roles,email,transaction: null);
             if (result.IsSuccess)
             {
-                if (result.IsSuccess)
-                {
-                    await _hubContext.Clients
-                        .Group("1")
-                        .SendAsync("QueueUpdated");
-                }
+               await _hubContext.Clients.Group(GetBranchId()).SendAsync("QueueUpdated");
             }
-
             return result;
         }
 
@@ -168,16 +136,11 @@ namespace BeeQAPI.Controllers
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var result =await _bal.RecallToken(request,roles,email,transaction: null);
-          
-            
-                if (result.IsSuccess)
-                {
-                    await _hubContext.Clients
-                        .Group("1")
-                        .SendAsync("QueueUpdated");
-                }
-            
 
+            if (result.IsSuccess)
+                {
+                    await _hubContext.Clients.Group(GetBranchId()).SendAsync("QueueUpdated");
+                }
             return result;
         }
     }

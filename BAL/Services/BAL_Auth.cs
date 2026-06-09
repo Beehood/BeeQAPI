@@ -93,6 +93,9 @@ namespace BAL.Services
                 {
                     Username = user.UserName,
                     Name = user.Name,
+                    OrganizationId = user.OrganizationId,
+                    BranchId = user.BranchId,
+                    CounterId = user.CounterId,
                     Roles = user.Roles ?? new List<string>(),
                     Permissions = user.Permissions ?? new List<string>()
                 };

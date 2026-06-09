@@ -98,7 +98,7 @@ namespace BeeQAPI.Controllers
         // DROPDOWN
         // ========================
         [Authorize(Policy = "VIEW_COUNTER")]
-        [HttpGet("CounterDropdown")]
+        [HttpPost("CounterDropdown")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
         {
