@@ -58,9 +58,6 @@ namespace BeeQAPI.Controllers
             if (response.IsSuccess)
             {
                 var branchId = await _bal.GetBranchIdByEmail(email);
-                Console.WriteLine($"QueueUpdated sent for Branch {request.BranchId}");
-                Console.WriteLine($"EMAIL = {email}");
-                Console.WriteLine($"BRANCH ID = {branchId}");
                 await _hubContext.Clients.Group(branchId.ToString()).SendAsync("QueueUpdated");
             }
             return response;

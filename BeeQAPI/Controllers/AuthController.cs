@@ -28,22 +28,12 @@ namespace BeeQAPI.Controllers
             return salt;
         }
 
-        //[AllowAnonymous]
-        //[HttpGet("GetSalt")]
-        //public async Task<string> GetSalt()
-        //{
-        //    return "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV"; //  static salt
-        //}
-
-
         [AllowAnonymous]
         [HttpPost("Login")]
         [ProducesResponseType(typeof(APIGetResponseModel<ModelLoginResponse>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<ModelLoginResponse>> Login([FromBody] LoginRequestDto dto)
         {
-            //string salt = "fHwPLKwfFihBbjQ9QhP85yAylaEbtqXV";
             return await _auth.Login(dto, salt, transaction: null);
-
         }
 
         [Authorize]
