@@ -27,11 +27,13 @@ namespace BeeQAPI.Controllers
         [ProducesResponseType(typeof(APIGetResponseModel<List<ReportModel>>),(int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<ReportModel>>> GetAll([FromBody] ReportRequestDto request)
         {
+            Console.WriteLine($"CONTROLLER ACTION = {request.Action}");
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return await _bal.GetAll(request,roles,email,transaction: null);
         }
+
     }
 }

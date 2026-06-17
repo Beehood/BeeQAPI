@@ -23,11 +23,13 @@ namespace DAL.Services
 
         public async Task<APIGetResponseModel<List<ReportModel>>> GetAll(ReportRequestDto request,string email,IDbTransaction? transaction = null)
         {
-            var response =new APIGetResponseModel<List<ReportModel>>();
+            var response = new APIGetResponseModel<List<ReportModel>>();
 
             try
             {
-                using var conn =new MySqlConnection(_config.DefaultConnection);
+                using var conn = new MySqlConnection(_config.DefaultConnection);
+
+                await conn.OpenAsync();
 
                 var param = new DynamicParameters();
 
@@ -37,7 +39,7 @@ namespace DAL.Services
                 param.Add("p_FromDate", request.FromDate);
                 param.Add("p_ToDate", request.ToDate);
 
-                var result =(await conn.QueryAsync<ReportModel>("SP_REPORTS",param,commandType: CommandType.StoredProcedure)).ToList();
+                var result = (await conn.QueryAsync<ReportModel>("SP_REPORTS",param,commandType: CommandType.StoredProcedure)).ToList();
 
                 response.Result = result;
                 response.TotalRecords = result.Count;
@@ -46,10 +48,9 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
 
-                response.ErrorMsgs.Add("Error while loading reports");
-
-                Console.WriteLine( $"REPORT ERROR : {ex.Message}");
+                Console.WriteLine($"REPORT ERROR : {ex.Message}");
             }
 
             return response;
