@@ -42,10 +42,21 @@ namespace DAL.Services
                 model.QueueStats =await multi.ReadFirstOrDefaultAsync<DashboardQueueModel>()?? new DashboardQueueModel();
 
                 // Result Set 3
-                model.QueueTrend =(await multi.ReadAsync<DashboardTrendModel>()).ToList();
+                model.QueueTrend = (await multi.ReadAsync<DashboardTrendModel>()).ToList();
+
+                Console.WriteLine("================================");
+                Console.WriteLine("QueueTrend Count = " + model.QueueTrend.Count);
+
+                foreach (var item in model.QueueTrend)
+                {
+                    Console.WriteLine(
+                        $"DAL => {item.TrendDate} | Generated={item.GeneratedTokens} | Completed={item.CompletedTokens}");
+                }
+
+                Console.WriteLine("================================");
 
                 // Result Set 4
-                model.TopBranches =(await multi.ReadAsync<DashboardBranchModel>()).ToList();
+                model.TopBranches = (await multi.ReadAsync<DashboardBranchModel>()).ToList();
 
                 // Result Set 5
                 model.TopServices =(await multi.ReadAsync<DashboardServiceModel>()).ToList();
