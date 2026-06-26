@@ -23,6 +23,11 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// User API - Get All Users
+        /// Author: Swapnalisa Baliarsingh
+        /// Description:- Fetches all users with pagination and search functionality.
+        /// </summary>
 
         public async Task<APIGetResponseModel<List<UserModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null )
         {
@@ -52,7 +57,11 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
-
+        /// <summary>
+        /// User API - Get User By Id
+        /// Author: Swapnalisa Baliarsingh
+        /// Description:- Retrieves user details based on the specified user Id.
+        /// </summary>
         public async Task<APIGetResponseModel<UserModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
@@ -74,7 +83,11 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
-
+        /// <summary>
+        /// User API - Create User
+        /// Author: Swapnalisa Baliarsingh
+        /// Description:- Validates the request and creates a new user with an encrypted password.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(UserRequestDto request,List<string> roles, string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -154,7 +167,11 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
-
+        /// <summary>
+        /// User API - Update User
+        /// Author: Swapnalisa Baliarsingh
+        /// Description:- Updates the existing user information and encrypts the password if provided.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(UserRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -232,7 +249,11 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-
+        /// <summary>
+        /// User API - Change User Status
+        /// Author: Swapnalisa Baliarsingh
+        /// Description:- Changes the active or inactive status of the specified user.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -284,7 +305,11 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-
+        /// <summary>
+        /// User API - Get User Dropdown
+        /// Author: Swapnalisa Baliarsingh
+        /// Description:- Retrieves the user dropdown list for selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>>GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<List<DropdownModel>>();

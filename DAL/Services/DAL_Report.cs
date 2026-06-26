@@ -20,7 +20,10 @@ namespace DAL.Services
         {
             _config = config;
         }
-
+        /// <summary>
+        /// Report DAL - Get All Reports
+        /// Description:- Retrieves report data from the database based on the selected report type and filter criteria.
+        /// </summary>
         public async Task<APIGetResponseModel<List<ReportModel>>> GetAll(ReportRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<ReportModel>>();

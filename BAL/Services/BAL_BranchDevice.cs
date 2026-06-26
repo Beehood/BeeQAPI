@@ -22,6 +22,15 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Branch Device BAL - Get All Branch Devices
+        /// Description:- Validates user role and retrieves the list of branch devices.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
         public async Task<APIGetResponseModel<List<DeviceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
@@ -49,6 +58,15 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Branch Device BAL - Get Branch Device By Id
+        /// Description:- Validates user role and retrieves branch device details.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
         public async Task<APIGetResponseModel<DeviceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
@@ -76,6 +94,14 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
+        /// <summary>
+        /// Branch Device BAL - Create Branch Device
+        /// Description:- Validates user role and request data before creating a new branch device.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(DeviceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -123,6 +149,14 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Branch Device BAL - Update Branch Device
+        /// Description:- Validates user role and request before updating an existing branch device.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(DeviceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -158,6 +192,14 @@ namespace BAL.Services
         // ========================
         // STATUS
         // ========================
+        /// <summary>
+        /// Branch Device BAL - Change Branch Device Status
+        /// Description:- Validates user role and changes the active/inactive status of a branch device.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -193,6 +235,12 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Branch Device BAL - Get Branch Device Dropdown
+        /// Description:- Retrieves branch device dropdown values for UI selection controls.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             return await _dal.GetDropdown(email, transaction);

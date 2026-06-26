@@ -10,6 +10,14 @@ using System.Threading.Tasks;
 
 namespace BAL.Services
 {
+    /// <summary>
+    /// Report BAL - Get All Reports
+    /// Description:- Validates user role and retrieves report data based on the specified search criteria and filters.
+    /// Access:
+    /// - Super Admin
+    /// - Organization Admin
+    /// - Branch Admin
+    /// </summary>
     public class BAL_Report : IBAL_Report
     {
         private readonly IDAL_Report _dal;

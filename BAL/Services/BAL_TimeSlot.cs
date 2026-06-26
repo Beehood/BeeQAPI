@@ -22,6 +22,14 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Time Slot BAL - Get All Time Slots
+        /// Description:- Retrieves the list of available time slots based on the specified search criteria.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<List<TimeSlotModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
        
         {
@@ -38,6 +46,14 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Time Slot BAL - Get Time Slot By Id
+        /// Description:- Retrieves the details of a specific time slot.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<TimeSlotModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             try
@@ -53,6 +69,14 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
+        /// <summary>
+        /// Time Slot BAL - Create Time Slot
+        /// Description:- Validates request data before creating a new time slot.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(TimeSlotRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -102,6 +126,14 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Time Slot BAL - Update Time Slot
+        /// Description:- Validates request data before updating an existing time slot.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(TimeSlotRequestDto request, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -136,6 +168,14 @@ namespace BAL.Services
         // ========================
         // STATUS
         // ========================
+        /// <summary>
+        /// Time Slot BAL - Change Time Slot Status
+        /// Description:- Changes the active or inactive status of the specified time slot.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id, List<string> roles, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -170,6 +210,12 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Time Slot BAL - Get Time Slot Dropdown
+        /// Description:- Retrieves available time slot dropdown values for the selected service.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(long serviceId, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

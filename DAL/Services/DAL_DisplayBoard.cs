@@ -25,6 +25,11 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
+
+        /// <summary>
+        /// Display Board DAL - Get All Display Boards
+        /// Description:- Retrieves all display board records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DisplayBoardModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DisplayBoardModel>>();
@@ -67,6 +72,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Display Board DAL - Get Display Board By Id
+        /// Description:- Retrieves the details of a specific display board from the database using the display board Id.
+        /// </summary>
         public async Task<APIGetResponseModel<DisplayBoardModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<DisplayBoardModel>();
@@ -114,6 +123,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
+        /// <summary>
+        /// Display Board DAL - Create Display Board
+        /// Description:- Inserts a new display board record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(DisplayBoardRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -154,6 +167,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Display Board DAL - Update Display Board
+        /// Description:- Updates the existing display board information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(DisplayBoardRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -194,6 +211,10 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
+        /// <summary>
+        /// Display Board DAL - Change Display Board Status
+        /// Description:- Updates the active or inactive status of the specified display board in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id, string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -234,6 +255,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Display Board DAL - Get Display Board Dropdown
+        /// Description:- Retrieves the display board dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
@@ -270,7 +295,14 @@ namespace DAL.Services
 
             return response;
         }
-    
+        // ========================
+        // GET DISPLAY DATA
+        // ========================
+
+        /// <summary>
+        /// Display Board DAL - Get Display Data
+        /// Description:- Retrieves the live queue display information associated with the specified display board user.
+        /// </summary>
 
         public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetDisplayData(string username)
         {

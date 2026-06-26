@@ -16,7 +16,10 @@ public class DAL_Menu : IDAL_Menu
         _config = config;
     }
 
-
+    /// <summary>
+    /// Menu DAL - Get Sidebar Menu
+    /// Description:- Retrieves the sidebar menu items from the database based on the authenticated user's roles and permissions.
+    /// </summary>
     public async Task<List<MenuModel>> GetSidebar(string email)
     {
         try

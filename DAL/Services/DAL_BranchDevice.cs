@@ -24,6 +24,10 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Branch Device DAL - Get All Branch Devices
+        /// Description:- Retrieves all branch device records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DeviceModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DeviceModel>>();
@@ -68,6 +72,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Branch Device DAL - Get Branch Device By Id
+        /// Description:- Retrieves the details of a specific branch device from the database using the device Id.
+        /// </summary>
         public async Task<APIGetResponseModel<DeviceModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<DeviceModel>();
@@ -112,6 +120,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
+        /// <summary>
+        /// Branch Device DAL - Create Branch Device
+        /// Description:- Inserts a new branch device record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(DeviceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -152,6 +164,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Branch Device DAL - Update Branch Device
+        /// Description:- Updates the existing branch device information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(DeviceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -192,6 +208,11 @@ namespace DAL.Services
         // ========================
         // STATUS
         // ========================
+
+        /// <summary>
+        /// Branch Device DAL - Change Branch Device Status
+        /// Description:- Updates the active or inactive status of the specified branch device in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -232,6 +253,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Branch Device DAL - Get Branch Device Dropdown
+        /// Description:- Retrieves the branch device dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

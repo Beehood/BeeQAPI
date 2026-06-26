@@ -22,11 +22,19 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Counter BAL - Get All Counters
+        /// Description:- Validates user role and retrieves the list of counters.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
             {
-                // ✅ ROLE CHECK
+                //  ROLE CHECK
                 if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
                 {
                     return new APIGetResponseModel<List<CounterModel>>
@@ -47,6 +55,14 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Counter BAL - Get Counter By Id
+        /// Description:- Validates user role and retrieves counter details.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<CounterModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
@@ -71,6 +87,14 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
+        /// <summary>
+        /// Counter BAL - Create Counter
+        /// Description:- Validates user role and request data before creating a new counter.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(CounterRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -125,6 +149,15 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Counter BAL - Update Counter
+        /// Description:- Validates user role and request data before updating an existing counter.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
+       
         public async Task<APIGetResponseModel<int>> Update(CounterRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -175,6 +208,14 @@ namespace BAL.Services
         // ========================
         // STATUS
         // ========================
+        /// <summary>
+        /// Counter BAL - Change Counter Status
+        /// Description:- Validates user role and changes the active/inactive status of a counter.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -216,6 +257,12 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Counter BAL - Get Counter Dropdown
+        /// Description:- Retrieves counter dropdown values for UI selection controls.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

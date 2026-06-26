@@ -16,7 +16,10 @@ namespace DAL.Services
         {
             _config = config;
         }
-
+        /// <summary>
+        /// Dashboard DAL - Get Dashboard
+        /// Description:- Retrieves dashboard summary, queue statistics, queue trends, top branches, top services, and recent activities from the database.
+        /// </summary>
         public async Task<APIGetResponseModel<DashboardModel>> GetDashboard(DashboardRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<DashboardModel>();

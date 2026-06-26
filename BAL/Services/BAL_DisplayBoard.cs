@@ -24,6 +24,16 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Display Board BAL - Get All Display Boards
+        /// Description:- Validates user role and retrieves the list of display boards.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Counter Admin
+        /// </summary>
+    
         public async Task<APIGetResponseModel<List<DisplayBoardModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
@@ -52,6 +62,15 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Display Board BAL - Get Display Board By Id
+        /// Description:- Validates user role and retrieves display board details.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Counter Admin
+        /// </summary>
         public async Task<APIGetResponseModel<DisplayBoardModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
@@ -79,6 +98,12 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
+        /// <summary>
+        /// Display Board BAL - Create Display Board
+        /// Description:- Validates user role and request data before creating a new display board.
+        /// Access:
+        /// - Super Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(DisplayBoardRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -138,6 +163,12 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Display Board BAL - Update Display Board
+        /// Description:- Validates user role and request data before updating an existing display board.
+        /// Access:
+        /// - Super Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(DisplayBoardRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -191,6 +222,12 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
+        /// <summary>
+        /// Display Board BAL - Change Display Board Status
+        /// Description:- Validates user role and changes the active/inactive status of a display board.
+        /// Access:
+        /// - Super Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus( long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -246,6 +283,12 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Display Board BAL - Get Display Board Dropdown
+        /// Description:- Retrieves display board dropdown values for UI selection controls.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
@@ -263,6 +306,16 @@ namespace BAL.Services
             return response;
         }
 
+        // ========================
+        // GET DISPLAY DATA
+        // ========================
+
+        /// <summary>
+        /// Display Board BAL - Get Display Data
+        /// Description:- Retrieves the live queue display information for the specified display board user.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
 
         public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetDisplayData(string username)
         {

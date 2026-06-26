@@ -24,6 +24,10 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Counter Service DAL - Get All Counter Services
+        /// Description:- Retrieves all counter service records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<CounterServiceModel>>();
@@ -66,6 +70,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Counter Service DAL - Get Counter Service By Id
+        /// Description:- Retrieves the details of a specific counter service from the database using the counter service Id.
+        /// </summary>
         public async Task<APIGetResponseModel<CounterServiceModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<CounterServiceModel>();
@@ -110,6 +118,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
+        /// <summary>
+        /// Counter Service DAL - Create Counter Service
+        /// Description:- Inserts a new counter service mapping into the database.
+        /// </summary>  
         public async Task<APIGetResponseModel<int>> Insert(CounterServiceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -147,6 +159,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Counter Service DAL - Update Counter Service
+        /// Description:- Updates the existing counter service mapping in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(CounterServiceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -187,6 +203,10 @@ namespace DAL.Services
         // ========================
         // STATUS
         // ========================
+        /// <summary>
+        /// Counter Service DAL - Change Counter Service Status
+        /// Description:- Updates the active or inactive status of the specified counter service mapping in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -223,6 +243,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Counter Service DAL - Get Counter Service Dropdown
+        /// Description:- Retrieves the counter service dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

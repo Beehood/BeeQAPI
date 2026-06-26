@@ -24,6 +24,10 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Counter DAL - Get All Counters
+        /// Description:- Retrieves all counter records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<CounterModel>>();
@@ -73,6 +77,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Counter DAL - Get Counter By Id
+        /// Description:- Retrieves the details of a specific counter from the database using the counter Id.
+        /// </summary>
         public async Task<APIGetResponseModel<CounterModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<CounterModel>();
@@ -118,6 +126,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
+        /// <summary>
+        /// Counter DAL - Create Counter
+        /// Description:- Inserts a new counter record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(CounterRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -156,6 +168,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Counter DAL - Update Counter
+        /// Description:- Updates the existing counter information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(CounterRequestDto request, string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -194,6 +210,10 @@ namespace DAL.Services
         // ========================
         // STATUS
         // ========================
+        /// <summary>
+        /// Counter DAL - Change Counter Status
+        /// Description:- Updates the active or inactive status of the specified counter in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -232,6 +252,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Counter DAL - Get Counter Dropdown
+        /// Description:- Retrieves the counter dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

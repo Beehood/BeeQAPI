@@ -24,6 +24,10 @@ namespace DAL.Services
         // ========================
         // GET ALL (QUEUE LIST)
         // ========================
+        /// <summary>
+        /// Queue DAL - Get All Queue Tokens
+        /// Description:- Retrieves all queue token records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<QueueModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<QueueModel>>();
@@ -68,6 +72,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Queue DAL - Get Queue Token By Id
+        /// Description:- Retrieves the details of a specific queue token from the database using the token Id.
+        /// </summary>
         public async Task<APIGetResponseModel<QueueModel>> GetById(long tokenId, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<QueueModel>();
@@ -118,6 +126,10 @@ namespace DAL.Services
         // ========================
         // INSERT (CREATE TOKEN)
         // ========================
+        /// <summary>
+        /// Queue DAL - Create Queue Token
+        /// Description:- Inserts a new queue token record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert( QueueRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -165,6 +177,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Queue DAL - Update Queue Token
+        /// Description:- Updates the existing queue token information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(QueueRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -207,9 +223,13 @@ namespace DAL.Services
 
             return response;
         }
-        // ========================
+        // =================================
         // CHANGE STATUS (CALL / COMPLETE)
-        // ========================
+        // =================================
+        /// <summary>
+        /// Queue DAL - Change Queue Token Status
+        /// Description:- Updates the status of the specified queue token, such as Call, Complete, Skip, or Transfer.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(QueueRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -260,6 +280,10 @@ namespace DAL.Services
         // ========================
         // QUEUE DISPLAY (MONITOR)
         // ========================
+        /// <summary>
+        /// Queue DAL - Get Queue Display
+        /// Description:- Retrieves the current queue display information for the specified branch.
+        /// </summary>
         public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId)
         {
             var response = new APIGetResponseModel<List<QueueDisplayModel>>();
@@ -304,6 +328,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Queue DAL - Get Queue Dropdown
+        /// Description:- Retrieves the queue dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

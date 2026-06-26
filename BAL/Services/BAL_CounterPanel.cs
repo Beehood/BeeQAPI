@@ -27,6 +27,15 @@ namespace BAL.Services
         // ========================
         // DASHBOARD
         // ========================
+        /// <summary>
+        /// Counter Panel BAL - Get Dashboard
+        /// Description:- Validates user role and retrieves the counter panel dashboard information.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
 
         public async Task<APIGetResponseModel<CounterPanelDashboardModel>>GetDashboard(CounterPanelActionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
@@ -60,6 +69,15 @@ namespace BAL.Services
         // ========================
         // CALL NEXT TOKEN
         // ========================
+        /// <summary>
+        /// Counter Panel BAL - Call Next Token
+        /// Description:- Validates user role and counter details before calling the next available token.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
 
         public async Task<APIGetResponseModel<CallNextTokenResponseDto>>CallNextToken(CounterPanelActionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
@@ -101,7 +119,15 @@ namespace BAL.Services
         // ========================
         // START SERVICE
         // ========================
-
+        /// <summary>
+        /// Counter Panel BAL - Start Service
+        /// Description:- Validates user role and starts service for the currently called token.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
         public async Task<APIGetResponseModel<int>>StartService(CounterPanelActionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -134,7 +160,15 @@ namespace BAL.Services
         // ========================
         // COMPLETE SERVICE
         // ========================
-
+        /// <summary>
+        /// Counter Panel BAL - Complete Service
+        /// Description:- Validates user role and marks the current token service as completed.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
         public async Task<APIGetResponseModel<int>>CompleteService(CounterPanelActionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -167,7 +201,15 @@ namespace BAL.Services
         // ========================
         // SKIP TOKEN
         // ========================
-
+        /// <summary>
+        /// Counter Panel BAL - Skip Token
+        /// Description:- Validates user role and skips the currently assigned token.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
         public async Task<APIGetResponseModel<int>>SkipToken(CounterPanelActionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -200,7 +242,15 @@ namespace BAL.Services
         // ========================
         // RECALL TOKEN
         // ========================
-
+        /// <summary>
+        /// Counter Panel BAL - Recall Token
+        /// Description:- Validates user role and recalls the previously called token for service.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// - Branch User
+        /// </summary>
         public async Task<APIGetResponseModel<int>>RecallToken(CounterPanelActionRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();

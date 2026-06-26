@@ -22,6 +22,14 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Queue BAL - Get All Queue Tokens
+        /// Description:- Validates user role and retrieves the list of queue tokens.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<List<QueueModel>>> GetAll(PaginationRequestDto request,List<string> roles, string? email,IDbTransaction? transaction = null)
         {
             try
@@ -49,6 +57,14 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Queue BAL - Get Queue Token By Id
+        /// Description:- Validates user role and retrieves queue token details.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<QueueModel>> GetById( long tokenId,List<string> roles,string email, IDbTransaction? transaction = null)
         {
             try
@@ -75,6 +91,14 @@ namespace BAL.Services
         // ========================
         // CREATE TOKEN
         // ========================
+        /// <summary>
+        /// Queue BAL - Create Queue Token
+        /// Description:- Validates user role and request data before creating a new queue token.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(QueueRequestDto request,List<string> roles,string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -130,6 +154,14 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Queue BAL - Update Queue Token
+        /// Description:- Validates user role and request data before updating an existing queue token.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(QueueRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -173,6 +205,14 @@ namespace BAL.Services
         // ========================
         // STATUS (CALL / COMPLETE / TRANSFER)
         // ========================
+        /// <summary>
+        /// Queue BAL - Change Queue Token Status
+        /// Description:- Validates user role and updates the queue token status such as Call, Complete, or Transfer.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(QueueRequestDto request, List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -216,6 +256,12 @@ namespace BAL.Services
         // ========================
         // QUEUE DISPLAY (MONITOR)
         // ========================
+        /// <summary>
+        /// Queue BAL - Get Queue Display
+        /// Description:- Retrieves the live queue display information for the specified branch.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<QueueDisplayModel>>> GetQueueDisplay(string branchId)
         {
             var response = new APIGetResponseModel<List<QueueDisplayModel>>();
@@ -236,6 +282,12 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Queue BAL - Get Queue Dropdown
+        /// Description:- Retrieves queue-related dropdown values for UI selection controls.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

@@ -24,7 +24,10 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
-
+        /// <summary>
+        /// User DAL - Get All Users
+        /// Description:- Retrieves all user records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<UserModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<UserModel>>();
@@ -86,7 +89,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-
+        /// <summary>
+        /// User DAL - Get User By Id
+        /// Description:- Retrieves the details of a specific user from the database using the user Id.
+        /// </summary>
         public async Task<APIGetResponseModel<UserModel>> GetById(long id, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<UserModel>();
@@ -148,7 +154,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-
+        /// <summary>
+        /// User DAL - Create User
+        /// Description:- Inserts a new user record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(UserRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -208,7 +217,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-
+        /// <summary>
+        /// User DAL - Update User
+        /// Description:- Updates the existing user information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(UserRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -267,7 +279,10 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-
+        /// <summary>
+        /// User DAL - Change User Status
+        /// Description:- Updates the active or inactive status of the specified user in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -326,7 +341,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
-
+        /// <summary>
+        /// User DAL - Get User Dropdown
+        /// Description:- Retrieves the user dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>>GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<List<DropdownModel>>();

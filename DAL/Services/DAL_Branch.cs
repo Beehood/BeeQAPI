@@ -24,6 +24,10 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Branch DAL - Get All Branches
+        /// Description:- Retrieves all branch records from the database with pagination and search functionality.
+        /// </summary>
         public async Task<APIGetResponseModel<List<BranchModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<BranchModel>>();
@@ -67,6 +71,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Branch DAL - Get Branch By Id
+        /// Description:- Retrieves the details of a specific branch from the database using the branch Id.
+        /// </summary>
         public async Task<APIGetResponseModel<BranchModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<BranchModel>();
@@ -115,6 +123,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
+        /// <summary>
+        /// Branch DAL - Create Branch
+        /// Description:- Inserts a new branch record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(BranchRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -156,6 +168,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Branch DAL - Update Branch
+        /// Description:- Updates the existing branch information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(BranchRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -197,6 +213,10 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
+        /// <summary>
+        /// Branch DAL - Change Branch Status
+        /// Description:- Updates the active or inactive status of the specified branch in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -238,6 +258,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Branch DAL - Get Branch Dropdown
+        /// Description:- Retrieves the branch dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

@@ -25,6 +25,10 @@ namespace DAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Role DAL - Get All Roles
+        /// Description:- Retrieves all role records from the database with pagination and search functionality.
+        /// </summary>
 
         public async Task<APIGetResponseModel<List<RoleModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
         {
@@ -77,7 +81,10 @@ namespace DAL.Services
         // ========================
         // GET BY ID
         // ========================
-
+        /// <summary>
+        /// Role DAL - Get Role By Id
+        /// Description:- Retrieves the details of a specific role from the database using the role Id.
+        /// </summary>
         public async Task<APIGetResponseModel<RoleModel>> GetById(long id, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<RoleModel>();
@@ -139,7 +146,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
-
+        /// <summary>
+        /// Role DAL - Create Role
+        /// Description:- Inserts a new role record into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(RoleRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -189,7 +199,10 @@ namespace DAL.Services
         // ========================
         // UPDATE
         // ========================
-
+        /// <summary>
+        /// Role DAL - Update Role
+        /// Description:- Updates the existing role information in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(RoleRequestDto request, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -239,7 +252,10 @@ namespace DAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
-
+        /// <summary>
+        /// Role DAL - Change Role Status
+        /// Description:- Updates the active or inactive status of the specified role in the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id, string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -287,7 +303,10 @@ namespace DAL.Services
         // ========================
         // DROPDOWN
         // ========================
-
+        /// <summary>
+        /// Role DAL - Get Role Dropdown
+        /// Description:- Retrieves the role dropdown list from the database for UI selection controls.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

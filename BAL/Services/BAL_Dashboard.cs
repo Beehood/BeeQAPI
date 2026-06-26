@@ -17,6 +17,14 @@ namespace BAL.Services
         // ========================
         // DASHBOARD
         // ========================
+        /// <summary>
+        /// Dashboard BAL - Get Dashboard
+        /// Description:- Validates user role and retrieves dashboard statistics and summary information.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<DashboardModel>> GetDashboard(DashboardRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<DashboardModel>();

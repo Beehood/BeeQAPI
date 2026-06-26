@@ -8,6 +8,10 @@ using System.Text;
 
 namespace BAL.Services
 {
+    /// <summary>
+    /// JWT API - Generate JWT Token
+    /// Description:- Generates a secure JWT token by adding user claims, roles, permissions, organization, branch, and counter information for authentication and authorization.
+    /// </summary>
     public class JwtService : IJwtService
     {
         private readonly IConfiguration _config;

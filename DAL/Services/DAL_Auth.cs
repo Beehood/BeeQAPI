@@ -22,6 +22,10 @@ namespace DAL.Services
         // =========================
         // VALIDATE USER (LOGIN)
         // =========================
+        /// <summary>
+        /// Auth DAL - Validate User
+        /// Description:- Validates the user credentials by retrieving user details, roles, and permissions during login.
+        /// </summary>
         public async Task<APIGetResponseModel<UserDetails>> ValidateUser(string username, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<UserDetails>();
@@ -75,6 +79,10 @@ namespace DAL.Services
         // =========================
         // LOGIN PROFILE
         // =========================
+        /// <summary>
+        /// Auth DAL - Get Login Profile
+        /// Description:- Retrieves the authenticated user's profile information after successful login.
+        /// </summary>
         public async Task<APIGetResponseModel<UserProfileDetails>> loginprofile(string username, IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<UserProfileDetails>();

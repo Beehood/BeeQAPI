@@ -24,6 +24,10 @@ namespace DAL.Services
         // ========================
         // LIST (GET SERVICES BY DISPLAY)
         // ========================
+        /// <summary>
+        /// Display Board Service DAL - Get All Display Board Services
+        /// Description:- Retrieves all service mappings associated with the specified display board from the database.
+        /// </summary>
         public async Task<APIGetResponseModel<List<DisplayBoardServiceModel>>> GetAll(long displayId,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DisplayBoardServiceModel>>();
@@ -58,6 +62,10 @@ namespace DAL.Services
         // ========================
         // INSERT
         // ========================
+        /// <summary>
+        /// Display Board Service DAL - Create Display Board Service
+        /// Description:- Inserts a new display board service mapping into the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Insert(DisplayBoardServiceRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -92,6 +100,10 @@ namespace DAL.Services
         // ========================
         // DELETE
         // ========================
+        /// <summary>
+        /// Display Board Service DAL - Delete Display Board Service
+        /// Description:- Removes the specified display board service mapping from the database.
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Delete(long id,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();

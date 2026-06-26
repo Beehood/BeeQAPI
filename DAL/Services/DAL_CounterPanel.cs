@@ -29,6 +29,10 @@ namespace DAL.Services
         // ========================
         // DASHBOARD
         // ========================
+        /// <summary>
+        /// Counter Panel DAL - Get Dashboard
+        /// Description:- Retrieves the counter dashboard information, including the current serving token, waiting queue, missed queue, and counter statistics.
+        /// </summary>
 
         public async Task<APIGetResponseModel<CounterPanelDashboardModel>>GetDashboard(CounterPanelActionRequestDto request,string email,IDbTransaction? transaction = null)
         {
@@ -99,7 +103,10 @@ namespace DAL.Services
         // ========================
         // CALL NEXT TOKEN
         // ========================
-
+        /// <summary>
+        /// Counter Panel DAL - Call Next Token
+        /// Description:- Retrieves and assigns the next available queue token to the selected counter for service.
+        /// </summary>
         public async Task<APIGetResponseModel<CallNextTokenResponseDto>> CallNextToken(CounterPanelActionRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<CallNextTokenResponseDto>();
@@ -140,7 +147,10 @@ namespace DAL.Services
         // ========================
         // START SERVICE
         // ========================
-
+        /// <summary>
+        /// Counter Panel DAL - Start Service
+        /// Description:- Updates the selected queue token status to indicate that the service has started.
+        /// </summary>
         public async Task<APIGetResponseModel<int>>StartService(CounterPanelActionRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -191,7 +201,10 @@ namespace DAL.Services
         // ========================
         // COMPLETE SERVICE
         // ========================
-
+        /// <summary>
+        /// Counter Panel DAL - Complete Service
+        /// Description:- Updates the selected queue token status to indicate that the service has been completed.
+        /// </summary>
         public async Task<APIGetResponseModel<int>>CompleteService(CounterPanelActionRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -242,7 +255,10 @@ namespace DAL.Services
         // ========================
         // SKIP TOKEN
         // ========================
-
+        /// <summary>
+        /// Counter Panel DAL - Skip Token
+        /// Description:- Updates the selected queue token status by marking it as skipped.
+        /// </summary>
         public async Task<APIGetResponseModel<int>>SkipToken(CounterPanelActionRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -293,7 +309,10 @@ namespace DAL.Services
         // ========================
         // RECALL TOKEN
         // ========================
-
+        /// <summary>
+        /// Counter Panel DAL - Recall Token
+        /// Description:- Recalls the previously called queue token for the selected counter.
+        /// </summary>
         public async Task<APIGetResponseModel<int>>RecallToken(CounterPanelActionRequestDto request,string email,IDbTransaction? transaction = null)
         {
             var response =new APIGetResponseModel<int>();
@@ -343,9 +362,7 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Unexpected error");
 
-                _logger.LogError(
-                    ex,
-                    "DAL RECALL TOKEN ERROR");
+                _logger.LogError( ex,"DAL RECALL TOKEN ERROR");
             }
 
             return response;

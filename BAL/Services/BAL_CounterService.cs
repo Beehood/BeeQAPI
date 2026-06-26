@@ -22,6 +22,14 @@ namespace BAL.Services
         // ========================
         // GET ALL
         // ========================
+        /// <summary>
+        /// Counter Service BAL - Get All Counter Services
+        /// Description:- Validates user role and retrieves the list of counter service mappings.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<List<CounterServiceModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
@@ -48,6 +56,14 @@ namespace BAL.Services
         // ========================
         // GET BY ID
         // ========================
+        /// <summary>
+        /// Counter Service BAL - Get Counter Service By Id
+        /// Description:- Validates user role and retrieves counter service mapping details.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<CounterServiceModel>> GetById(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             try
@@ -74,6 +90,14 @@ namespace BAL.Services
         // ========================
         // CREATE
         // ========================
+        /// <summary>
+        /// Counter Service BAL - Create Counter Service
+        /// Description:- Validates user role and request data before creating a new counter service mapping.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create(CounterServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -131,6 +155,14 @@ namespace BAL.Services
         // ========================
         // UPDATE
         // ========================
+        /// <summary>
+        /// Counter Service BAL - Update Counter Service
+        /// Description:- Validates user role and request data before updating an existing counter service mapping.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Update(CounterServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -175,6 +207,14 @@ namespace BAL.Services
         // ========================
         // CHANGE STATUS
         // ========================
+        /// <summary>
+        /// Counter Service BAL - Change Counter Service Status
+        /// Description:- Validates user role and changes the active/inactive status of a counter service mapping.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -219,6 +259,12 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
+        /// <summary>
+        /// Counter Service BAL - Get Counter Service Dropdown
+        /// Description:- Retrieves counter service dropdown values for UI selection controls.
+        /// Access:
+        /// - Authenticated Users
+        /// </summary>
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();

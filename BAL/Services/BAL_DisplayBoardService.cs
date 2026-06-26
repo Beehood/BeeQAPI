@@ -22,6 +22,15 @@ namespace BAL.Services
         // ========================
         // GET ALL (SERVICES BY DISPLAY)
         // ========================
+        /// <summary>
+        /// Display Board Service BAL - Get All Display Board Services
+        /// Description:- Validates user role and retrieves all service mappings for the specified display board.
+        /// Access:
+        /// - Super Admin
+        /// - Org Admin
+        /// - Branch Admin
+        /// </summary>
+    
         public async Task<APIGetResponseModel<List<DisplayBoardServiceModel>>> GetAll(long displayId,List<string> roles,string? email,IDbTransaction? transaction = null)
         {
             try
@@ -59,6 +68,12 @@ namespace BAL.Services
         // ========================
         // CREATE (MAP SERVICE)
         // ========================
+        /// <summary>
+        /// Display Board Service BAL - Create Display Board Service Mapping
+        /// Description:- Validates user role and request data before mapping a branch service to a display board.
+        /// Access:
+        /// - Super Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Create( DisplayBoardServiceRequestDto request,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();
@@ -115,6 +130,12 @@ namespace BAL.Services
         // ========================
         // DELETE (REMOVE MAPPING)
         // ========================
+        /// <summary>
+        /// Display Board Service BAL - Delete Display Board Service Mapping
+        /// Description:- Validates user role and removes the selected service mapping from the display board.
+        /// Access:
+        /// - Super Admin
+        /// </summary>
         public async Task<APIGetResponseModel<int>> Delete(long id,List<string> roles,string email,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<int>();

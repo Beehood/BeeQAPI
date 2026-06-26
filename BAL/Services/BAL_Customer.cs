@@ -38,12 +38,13 @@ namespace BAL.Services
             try
             {
                 //  Super Admin → Full access
-                if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
-                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
-                r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                if (!roles.Any())
                 {
-                    return await _dal.GetAll(request, email, transaction);
+                    return new APIGetResponseModel<List<CustomerModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string> { "Access denied." }
+                    };
                 }
 
                 //  Org Admin / Branch Admin → SP will filter
@@ -128,12 +129,16 @@ namespace BAL.Services
             {
                 //  Only Super Admin OR Custom Permission
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
-                 || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
-               r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Access denied.");
+                    return response;
+                }
 
-                    // VALIDATION
-                    if (request == null)
+                if (request == null)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid payload.");
@@ -192,11 +197,16 @@ namespace BAL.Services
             try
             {
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
-                 || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
-               r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+ || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+ || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+ || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Access denied.");
+                    return response;
+                }
 
-                    if (request == null || request.CustomerId <= 0)
+                if (request == null || request.CustomerId <= 0)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid customer data.");
@@ -253,11 +263,16 @@ namespace BAL.Services
             try
             {
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-                 || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
-                 || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase) ||
-               r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMsgs.Add("Access denied.");
+                    return response;
+                }
 
-                    if (id <= 0)
+                if (id <= 0)
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid customer ID.");
