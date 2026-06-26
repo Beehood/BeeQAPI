@@ -5,7 +5,7 @@ using Moq;
 using System.Data;
 using Xunit;
 
-namespace BeeQAPI.Tests
+namespace BeeQAPI.Tests.BALTests
 {
     public class AppointmentBALTests
     {

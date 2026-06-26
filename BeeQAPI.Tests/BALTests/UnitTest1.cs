@@ -1,4 +1,4 @@
-﻿namespace BeeQAPI.Tests
+﻿namespace BeeQAPI.Tests.BALTests
 {
     public class UnitTest1
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeeQAPI.Tests
+namespace BeeQAPI.Tests.BALTests
 {
     public class SampleTest
     {
