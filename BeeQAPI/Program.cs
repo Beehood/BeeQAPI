@@ -180,7 +180,11 @@ builder.Services.AddScoped<IBAL_Report, BAL_Report>();
 // ========================
 builder.Services.AddScoped<IBAL_ActiveLog, BAL_ActiveLog>();
 builder.Services.AddScoped<IDAL_ActiveLog, DAL_ActiveLog>();
-
+// ========================
+// NOTIFICATIONLOG
+// ========================
+builder.Services.AddScoped<IBAL_NotificationLog, BAL_NotificationLog>();
+builder.Services.AddScoped<IDAL_NotificationLog, DAL_NotificationLog>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
