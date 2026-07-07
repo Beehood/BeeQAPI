@@ -62,7 +62,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching branches");
-                Console.WriteLine("DAL BRANCH GET ALL ERROR: " + ex.Message);
+             
             }
 
             return response;
@@ -114,7 +114,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching branch");
-                Console.WriteLine("DAL BRANCH GETBYID ERROR: " + ex.Message);
+
             }
 
             return response;
@@ -159,7 +159,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting branch");
-                Console.WriteLine("DAL BRANCH INSERT ERROR: " + ex.Message);
+
             }
 
             return response;
@@ -204,7 +204,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating branch");
-                Console.WriteLine("DAL BRANCH UPDATE ERROR: " + ex.Message);
+
             }
 
             return response;
@@ -249,7 +249,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing branch status");
-                Console.WriteLine("DAL BRANCH STATUS ERROR: " + ex.Message);
+
             }
 
             return response;
@@ -294,7 +294,6 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching branch dropdown");
-                Console.WriteLine("DAL BRANCH DROPDOWN ERROR: " + ex.Message);
             }
 
             return response;

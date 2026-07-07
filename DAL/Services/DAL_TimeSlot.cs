@@ -64,7 +64,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching timeslots");
-                Console.WriteLine("DAL TIMESLOT GET ALL ERROR: " + ex.Message);
+            
             }
             return response;
         }
@@ -109,7 +109,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching timeslot");
-                Console.WriteLine("DAL TIMESLOT GET BY ID ERROR: " + ex.Message);
+
             }
             return response;
         }
@@ -152,7 +152,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting timeslot");
-                Console.WriteLine("DAL TIMESLOT INSERT ERROR: " + ex.Message);
+              
             }
             return response;
         }
@@ -194,7 +194,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating timeslot");
-                Console.WriteLine("DAL TIMESLOT UPDATE ERROR: " + ex.Message);
+             
             }
             return response;
         }
@@ -237,7 +237,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing timeslot status");
-                Console.WriteLine("DAL TIMESLOT STATUS ERROR: " + ex.Message);
+               
             }
             return response;
         }
@@ -281,7 +281,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching timeslot dropdown");
-                Console.WriteLine("DAL TIMESLOT DROPDOWN ERROR: " + ex.Message);
+              
             }
             return response;
         }

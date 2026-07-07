@@ -53,7 +53,6 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching display board services");
-                Console.WriteLine("DAL DISPLAY SERVICE LIST ERROR: " + ex.Message);
             }
 
             return response;
@@ -91,7 +90,6 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting display board service");
-                Console.WriteLine("DAL DISPLAY SERVICE INSERT ERROR: " + ex.Message);
             }
 
             return response;
@@ -129,7 +127,6 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while deleting display board service");
-                Console.WriteLine("DAL DISPLAY SERVICE DELETE ERROR: " + ex.Message);
             }
 
             return response;

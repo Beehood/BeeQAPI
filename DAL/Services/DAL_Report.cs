@@ -53,7 +53,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
 
-                Console.WriteLine($"REPORT ERROR : {ex.Message}");
             }
 
             return response;

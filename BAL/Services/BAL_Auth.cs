@@ -78,7 +78,7 @@ namespace BAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Something went wrong");
-                Console.WriteLine("LOGIN ERROR: " + ex.Message);
+               
             }
             return response;
         }

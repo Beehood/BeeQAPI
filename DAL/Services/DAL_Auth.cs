@@ -95,15 +95,13 @@ namespace DAL.Services
                 param.Add("p_Action", "LOGINPROFILE");
                 param.Add("p_UserId", username);
 
-                // ✅ Only ONE result set now
+                //  Only ONE result set now
                 var profile = await conn.QueryFirstOrDefaultAsync<UserProfileDetails>("sp_User",param,commandType: CommandType.StoredProcedure);
 
                 if (profile != null)
                 {
                     // Optional safety fallback (in case DB returns null)
-                    profile.ProfilPic = string.IsNullOrEmpty(profile.ProfilPic)
-                        ? "default.png"
-                        : profile.ProfilPic;
+                    profile.ProfilPic = string.IsNullOrEmpty(profile.ProfilPic)? "default.png": profile.ProfilPic;
 
                     response.Result = profile;
                     response.TotalRecords = 1;

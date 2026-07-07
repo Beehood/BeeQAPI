@@ -14,10 +14,12 @@ namespace BAL.Services
     {
         private readonly IDAL_Token _dal;
         private readonly ILogger<BAL_Token> _logger;
-        public BAL_Token(IDAL_Token dal, ILogger<BAL_Token> logger)
+        private readonly IBAL_NotificationLog _notificationLog;
+        public BAL_Token(IDAL_Token dal, ILogger<BAL_Token> logger, IBAL_NotificationLog notificationLog)
         {
            _dal = dal;
            _logger = logger;
+            _notificationLog = notificationLog;
         }
         public async Task<long> GetBranchIdByEmail(string email)
         {
@@ -130,11 +132,44 @@ namespace BAL.Services
                     return response;
                 }
                 response = await _dal.GenerateToken(request, email, transaction: localtran);
+
+                Console.WriteLine("STEP 1 : Token Generated");
+                Console.WriteLine("Response Success = " + response.IsSuccess);
+
                 if (response.IsSuccess)
                 {
-                    _logger.LogInformation("Token generated successfully for {Email}", email);
+                    Console.WriteLine("STEP 2 : Before NotificationLog");
 
+                    var logResponse = await _notificationLog.Create(
+                        new NotificationLogRequestDto
+                        {
+                            OrganizationId = request.OrganizationId,
+                            BranchId = request.BranchId,
+                            TokenId = null,
+                            CustomerId = null,
+                            Recipient = request.CustomerPhone,
+                            NotificationType = "SMS",
+                            TemplateCode = "TOKEN_GENERATED",
+                            Subject = "Token Generated",
+                            MessageBody = $"Your token {response.Result} has been generated.",
+                            ProviderName = "BeeQ",
+                            ProviderResponse = "Success",
+                            Status = "SENT",
+                            SentAt = DateTime.Now
+                        },
+                        roles,
+                        email);
+
+                    Console.WriteLine("STEP 3 : After NotificationLog");
+                    Console.WriteLine("Notification Success = " + logResponse.IsSuccess);
+
+                    if (!logResponse.IsSuccess)
+                    {
+                        Console.WriteLine("Notification Errors:");
+                        Console.WriteLine(string.Join(",", logResponse.ErrorMsgs));
+                    }
                 }
+
                 if (transaction == null && localtran != null)
                     localtran.Commit();
             }

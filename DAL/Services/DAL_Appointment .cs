@@ -60,7 +60,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching appointments");
-                Console.WriteLine("DAL GET ALL ERROR: " + ex.Message);
+             
             }
             return response;
         }
@@ -106,7 +106,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching appointment");
-                Console.WriteLine("DAL GET BY ID ERROR: " + ex.Message);
+         
             }
             return response;
         }
@@ -150,7 +150,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting appointment");
-                Console.WriteLine("DAL INSERT ERROR: " + ex.Message);
+           
             }
             return response;
         }
@@ -193,7 +193,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating appointment");
-                Console.WriteLine("DAL UPDATE ERROR: " + ex.Message);
+  
             }
             return response;
         }
@@ -236,7 +236,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing status");
-                Console.WriteLine("DAL STATUS ERROR: " + ex.Message);
+
             }
             return response;
         }

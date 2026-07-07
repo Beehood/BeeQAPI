@@ -76,7 +76,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching activity logs");
 
-                Console.WriteLine("DAL ACTIVITY LOG GET ALL ERROR: "+ ex.Message);
             }
 
             return response;
@@ -134,7 +133,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching activity log");
 
-                Console.WriteLine("DAL ACTIVITY LOG GETBYID ERROR: "+ ex.Message);
             }
 
             return response;
@@ -193,7 +191,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting activity log");
 
-                Console.WriteLine("DAL ACTIVITY LOG INSERT ERROR: "+ ex.Message);
             }
 
             return response;

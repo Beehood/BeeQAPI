@@ -72,7 +72,6 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Error while fetching roles");
 
-                Console.WriteLine("DAL ROLE GET ALL ERROR: "+ ex.Message);
             }
 
             return response;
@@ -137,7 +136,7 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Error while fetching role");
 
-                Console.WriteLine("DAL ROLE GET BY ID ERROR: "+ ex.Message);
+           
             }
 
             return response;
@@ -190,7 +189,6 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Error while inserting role");
 
-                Console.WriteLine("DAL ROLE INSERT ERROR: "+ ex.Message);
             }
 
             return response;
@@ -243,7 +241,7 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Error while updating role");
 
-                Console.WriteLine("DAL ROLE UPDATE ERROR: "+ ex.Message);
+              
             }
 
             return response;
@@ -294,7 +292,7 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Error while changing role status");
 
-                Console.WriteLine("DAL ROLE STATUS ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -345,7 +343,7 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add("Error while fetching role dropdown");
 
-                Console.WriteLine("DAL ROLE DROPDOWN ERROR: "+ ex.Message);
+                
             }
 
             return response;

@@ -53,9 +53,7 @@ namespace BAL.Services
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    "BAL: Error in GetAll (Activity Log)",
-                    ex);
+                throw new Exception("BAL: Error in GetAll (Activity Log)",ex);
             }
         }
 
@@ -92,9 +90,7 @@ namespace BAL.Services
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    "BAL: Error in GetById (Activity Log)",
-                    ex);
+                throw new Exception( "BAL: Error in GetById (Activity Log)",ex);
             }
         }
 

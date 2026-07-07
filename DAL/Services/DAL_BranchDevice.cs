@@ -63,7 +63,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching devices");
-                Console.WriteLine(ex.Message);
+            
             }
 
             return response;
@@ -111,7 +111,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching device");
-                Console.WriteLine(ex.Message);
+      
             }
 
             return response;

@@ -68,7 +68,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching organizations");
-                Console.WriteLine("DAL GET ALL ERROR: " + ex.Message);
+           
             }
 
             return response;
@@ -124,7 +124,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching organization");
-                Console.WriteLine("DAL GET BY ID ERROR: " + ex.Message);
+        
             }
 
             return response;
@@ -170,7 +170,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting organization");
-                Console.WriteLine("DAL INSERT ERROR: " + ex.Message);
+          
             }
 
             return response;
@@ -216,7 +216,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating organization");
-                Console.WriteLine("DAL UPDATE ERROR: " + ex.Message);
+         
             }
 
             return response;
@@ -240,7 +240,7 @@ namespace DAL.Services
 
             try
             {
-                // ✅ 1. START DEBUG (TOP)
+                //  1. START DEBUG (TOP)
                 Console.WriteLine("=== DAL START ===");
                 Console.WriteLine($"OrgId: {id}");
                 Console.WriteLine($"Email: {email}");
@@ -263,14 +263,14 @@ namespace DAL.Services
                 //param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
-                // ✅ 2. BEFORE SP CALL
+                //  2. BEFORE SP CALL
                 Console.WriteLine("Calling SP with params:");
                 Console.WriteLine("p_Action = STATUS");
                 Console.WriteLine("p_OrganizationId = " + id);
                 Console.WriteLine("p_UserEmail = " + email);
                 var result = await conn.ExecuteScalarAsync<int>("sp_manage_organization",param,commandType: CommandType.StoredProcedure);
 
-                // ✅ 3. AFTER SP CALL
+                //  3. AFTER SP CALL
                 Console.WriteLine("SP RESULT: " + result);
 
                 response.Result = result;
@@ -279,7 +279,7 @@ namespace DAL.Services
             }
             catch (Exception ex)
             {
-                // ✅ ERROR DEBUG
+                //  ERROR DEBUG
                 Console.WriteLine("❌ DAL ERROR:");
                 Console.WriteLine(ex.Message);
                 response.IsSuccess = false;
@@ -336,7 +336,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching organization dropdown");
-                Console.WriteLine("DAL ORGANIZATION DROPDOWN ERROR: " + ex.Message);
+              
             }
 
             return response;

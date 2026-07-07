@@ -129,9 +129,9 @@ namespace BAL.Services
             {
                 //  Only Super Admin OR Custom Permission
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
-  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
-  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -197,9 +197,9 @@ namespace BAL.Services
             try
             {
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
- || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
- || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
- || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                     || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                     || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+                     || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");
@@ -263,9 +263,9 @@ namespace BAL.Services
             try
             {
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
-  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
-  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
-  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Access denied.");

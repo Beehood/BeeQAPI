@@ -248,11 +248,7 @@ namespace BAL.Services
             {
 
                 //  DEBUG 1: START
-                Console.WriteLine("=== BAL START ===");
-                Console.WriteLine($"Incoming OrgId: {id}");
-                Console.WriteLine("Roles: " + string.Join(",", roles));
-                Console.WriteLine("Email: " + email);
-
+              
                 //if (!roles.Contains("Super Admin"))
                 //{
                 //    response.IsSuccess = false;
@@ -277,28 +273,27 @@ namespace BAL.Services
                 // DEBUG 2: ROLE CHECK
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
                 {
-                    Console.WriteLine("❌ ROLE CHECK FAILED");
+                   
 
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Super Admin can change status.");
                     return response;
                 }
                 else
-                {
-                    Console.WriteLine("✅ ROLE CHECK PASSED");
-                }
+               
+                   
 
                 //  DEBUG 3: ID CHECK
                 if (id <= 0)
                 {
-                    Console.WriteLine("❌ INVALID ORG ID");
+                   
 
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Invalid organization ID.");
                     return response;
                 }
 
-                Console.WriteLine("➡️ CALLING DAL...");
+              
 
                 //  DEBUG 4: DAL CALL
                 response = await _dal.ChangeStatus(id, email, transaction: localtran);
@@ -322,9 +317,7 @@ namespace BAL.Services
                 //response.IsSuccess = false;
                 //response.ErrorMsgs.Add(ex.Message
 
-                Console.WriteLine("❌ BAL ERROR:");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+              
 
                 if (transaction == null && localtran != null)
                     localtran.Rollback();
@@ -333,8 +326,7 @@ namespace BAL.Services
                 response.ErrorMsgs.Add(ex.Message);
             }
 
-            Console.WriteLine("=== BAL END ===");
-                
+          
             return response;
         }
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)

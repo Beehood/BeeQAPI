@@ -253,21 +253,14 @@ namespace BAL.Services
                     return response;
                 }
 
-                Console.WriteLine("➡️ CALLING DAL...");
-
-                response = await _dal.ChangeStatus(id, email, transaction: localtran);
-
-                Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
-                Console.WriteLine("Result: " + response.Result);
+            response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
                 if (transaction == null && localtran != null)
                     localtran.Commit();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ BAL DISPLAY ERROR:");
-                Console.WriteLine(ex.Message);
-
+               
                 if (transaction == null && localtran != null)
                     localtran.Rollback();
 

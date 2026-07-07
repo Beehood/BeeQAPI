@@ -47,17 +47,6 @@ namespace DAL.Services
                 // Result Set 3
                 model.QueueTrend = (await multi.ReadAsync<DashboardTrendModel>()).ToList();
 
-                Console.WriteLine("================================");
-                Console.WriteLine("QueueTrend Count = " + model.QueueTrend.Count);
-
-                foreach (var item in model.QueueTrend)
-                {
-                    Console.WriteLine(
-                        $"DAL => {item.TrendDate} | Generated={item.GeneratedTokens} | Completed={item.CompletedTokens}");
-                }
-
-                Console.WriteLine("================================");
-
                 // Result Set 4
                 model.TopBranches = (await multi.ReadAsync<DashboardBranchModel>()).ToList();
 
@@ -76,7 +65,7 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while loading dashboard");
 
-                Console.WriteLine("DAL DASHBOARD ERROR: " + ex.Message);
+              
             }
 
             return response;

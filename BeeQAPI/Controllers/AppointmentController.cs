@@ -80,11 +80,7 @@ namespace BeeQAPI.Controllers
         {
 
             var token = Request.Headers["Authorization"].ToString();
-            
-            foreach (var claim in User.Claims)
-            {
-                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
-            }
+           
              var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
            
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

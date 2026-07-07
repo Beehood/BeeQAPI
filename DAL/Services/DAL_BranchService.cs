@@ -54,7 +54,7 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching branch services");
-                Console.WriteLine("DAL GET ALL ERROR: " + ex.Message);
+
             }
 
             return response;
@@ -99,7 +99,7 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching branch service");
-                Console.WriteLine("DAL GET BY ID ERROR: " + ex.Message);
+
             }
 
             return response;
@@ -141,7 +141,7 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting branch service");
-                Console.WriteLine("DAL INSERT ERROR: " + ex.Message);
+            
             }
 
             return response;
@@ -183,7 +183,7 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating branch service");
-                Console.WriteLine("DAL UPDATE ERROR: " + ex.Message);
+       
             }
 
             return response;
@@ -225,7 +225,7 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing status");
-                Console.WriteLine("DAL STATUS ERROR: " + ex.Message);
+        
             }
 
             return response;
@@ -267,7 +267,7 @@ namespace DAL.Implementation
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching dropdown");
-                Console.WriteLine("DAL DROPDOWN ERROR: " + ex.Message);
+             
             }
 
             return response;
@@ -322,7 +322,6 @@ namespace DAL.Implementation
 
                 response.ErrorMsgs.Add("Error while fetching branch dropdown");
 
-                Console.WriteLine("DAL DROPDOWN_BY_ORG ERROR: "+ ex.Message);
             }
 
             return response;

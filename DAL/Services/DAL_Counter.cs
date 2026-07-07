@@ -68,7 +68,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching counters");
-                Console.WriteLine("DAL COUNTER GET ALL ERROR: " + ex.Message);
+   
             }
 
             return response;
@@ -117,7 +117,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching counter");
-                Console.WriteLine("DAL COUNTER GETBYID ERROR: " + ex.Message);
+         
             }
 
             return response;
@@ -159,7 +159,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting counter");
-                Console.WriteLine("DAL COUNTER INSERT ERROR: " + ex.Message);
+             
             }
 
             return response;
@@ -201,7 +201,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating counter");
-                Console.WriteLine("DAL COUNTER UPDATE ERROR: " + ex.Message);
+            
             }
 
             return response;
@@ -243,7 +243,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing counter status");
-                Console.WriteLine("DAL COUNTER STATUS ERROR: " + ex.Message);
+             
             }
 
             return response;
@@ -284,7 +284,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching counter dropdown");
-                Console.WriteLine("DAL COUNTER DROPDOWN ERROR: " + ex.Message);
+               
             }
 
             return response;

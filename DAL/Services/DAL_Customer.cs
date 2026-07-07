@@ -62,7 +62,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching customers");
-                Console.WriteLine("DAL CUSTOMER GET ALL ERROR: " + ex.Message);
+                
             }
 
             return response;
@@ -102,7 +102,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching customer");
-                Console.WriteLine("DAL CUSTOMER GETBYID ERROR: " + ex.Message);
+    
             }
 
             return response;
@@ -142,7 +142,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting customer");
-                Console.WriteLine("DAL CUSTOMER INSERT ERROR: " + ex.Message);
+       
             }
 
             return response;
@@ -182,7 +182,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating customer");
-                Console.WriteLine("DAL CUSTOMER UPDATE ERROR: " + ex.Message);
+            
             }
 
             return response;
@@ -222,7 +222,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing customer status");
-                Console.WriteLine("DAL CUSTOMER STATUS ERROR: " + ex.Message);
+          
             }
 
             return response;
@@ -262,7 +262,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching customer dropdown");
-                Console.WriteLine("DAL CUSTOMER DROPDOWN ERROR: " + ex.Message);
+            
             }
 
             return response;

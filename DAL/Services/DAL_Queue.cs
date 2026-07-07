@@ -63,7 +63,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching queue");
-                Console.WriteLine("DAL QUEUE GET ALL ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -117,7 +117,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching queue");
-                Console.WriteLine("DAL QUEUE GET BY ID ERROR: " + ex.Message);
+            
             }
 
             return response;
@@ -168,7 +168,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while creating token");
 
-                Console.WriteLine("DAL QUEUE INSERT ERROR: " + ex.Message);
             }
 
             return response;
@@ -218,7 +217,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating queue");
 
-                Console.WriteLine("DAL QUEUE UPDATE ERROR: " + ex.Message);
             }
 
             return response;
@@ -269,7 +267,7 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating queue status");
 
-                Console.WriteLine("DAL QUEUE STATUS ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -320,7 +318,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching queue display");
-                Console.WriteLine("DAL QUEUE DISPLAY ERROR: " + ex.Message);
+             
             }
 
             return response;
@@ -364,7 +362,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching dropdown");
-                Console.WriteLine("DAL QUEUE DROPDOWN ERROR: " + ex.Message);
+            
             }
 
             return response;

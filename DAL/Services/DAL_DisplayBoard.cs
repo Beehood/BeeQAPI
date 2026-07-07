@@ -63,7 +63,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching display boards");
-                Console.WriteLine("DAL DISPLAY GET ALL ERROR: " + ex.Message);
+          
             }
 
             return response;
@@ -114,7 +114,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching display board");
-                Console.WriteLine("DAL DISPLAY GET BY ID ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -158,7 +158,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting display board");
-                Console.WriteLine("DAL DISPLAY INSERT ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -202,7 +202,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while updating display board");
-                Console.WriteLine("DAL DISPLAY UPDATE ERROR: " + ex.Message);
+               
             }
 
             return response;
@@ -246,7 +246,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing display board status");
-                Console.WriteLine("DAL DISPLAY STATUS ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -290,7 +290,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching display board dropdown");
-                Console.WriteLine("DAL DISPLAY DROPDOWN ERROR: " + ex.Message);
+            
             }
 
             return response;

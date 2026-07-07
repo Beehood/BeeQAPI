@@ -74,7 +74,6 @@ namespace DAL.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                //response.ErrorMsgs.Add("Error while fetching permissions");
                 response.ErrorMsgs.Add(ex.Message);
 
             }
@@ -127,7 +126,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching permission");
-                Console.WriteLine("DAL PERMISSION GET BY ID ERROR: " + ex.Message);
+                
             }
 
             return response;
@@ -176,7 +175,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while inserting permission");
-                Console.WriteLine("DAL PERMISSION INSERT ERROR: " + ex.Message);
+             
             }
 
             return response;
@@ -222,7 +221,6 @@ namespace DAL.Services
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add(ex.Message);
 
-                Console.WriteLine("DAL PERMISSION UPDATE ERROR: " + ex.Message);
             }
 
             return response;
@@ -266,7 +264,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while changing permission status");
-                Console.WriteLine("DAL PERMISSION STATUS ERROR: " + ex.Message);
+              
             }
 
             return response;
@@ -311,7 +309,7 @@ namespace DAL.Services
             {
                 response.IsSuccess = false;
                 response.ErrorMsgs.Add("Error while fetching permission dropdown");
-                Console.WriteLine("DAL PERMISSION DROPDOWN ERROR: " + ex.Message);
+              
             }
 
             return response;

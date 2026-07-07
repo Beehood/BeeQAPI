@@ -34,7 +34,6 @@ var builder = WebApplication.CreateBuilder(args);
 //});
 
 builder.Services.AddSignalR();
-
 builder.Services.AddScoped<DBConnection>();
 
 // ========================
@@ -163,7 +162,6 @@ builder.Services.AddScoped<IDAL_BranchDevice, DAL_BranchDevice>();
 //COUNTERPANEL
 //=========================
 builder.Services.AddScoped<IDAL_CounterPanel, DAL_CounterPanel>();
-
 builder.Services.AddScoped<IBAL_CounterPanel, BAL_CounterPanel>();
 //========================
 //DASHBOARD
