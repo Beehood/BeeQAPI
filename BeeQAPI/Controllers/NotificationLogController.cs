@@ -21,7 +21,7 @@ namespace BeeQAPI.Controllers
         // ========================
         // GET ALL
         // ========================
-        [Authorize(Policy = "VIEW_NOTIFICATION_LOG")]
+        //[Authorize(Policy = "VIEW_NOTIFICATION_LOG")]
         [HttpPost("NotificationLogList")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<NotificationLogModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<NotificationLogModel>>> GetAll([FromBody] PaginationRequestDto request)

@@ -92,9 +92,7 @@ namespace DAL.Services
 
                 response.ErrorMsgs.Add(ex.Message);
 
-                _logger.LogError(
-                    ex,
-                    "DAL COUNTER DASHBOARD ERROR");
+                _logger.LogError(ex,"DAL COUNTER DASHBOARD ERROR");
             }
 
             return response;

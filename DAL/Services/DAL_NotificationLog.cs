@@ -98,13 +98,15 @@ namespace DAL.Services
         /// </summary>
         public async Task<APIGetResponseModel<NotificationLogModel>> GetById(long id,string email,IDbTransaction? transaction = null)
         {
-            var response = new APIGetResponseModel<NotificationLogModel>();
+            var response =new APIGetResponseModel<NotificationLogModel>();
 
             try
             {
-                using var conn = new MySqlConnection(_config.DefaultConnection);
+                using var conn =new MySqlConnection(_config.DefaultConnection);
 
-                var param = new DynamicParameters();
+
+                var param =new DynamicParameters();
+
 
                 param.Add("p_Action", "GETBYID");
 
@@ -138,22 +140,39 @@ namespace DAL.Services
 
                 param.Add("p_SentAt", null);
 
-                var data = await conn.QueryFirstOrDefaultAsync<NotificationLogModel>("sp_notification_logs",param,commandType: CommandType.StoredProcedure);
+
+
+                using var multi =await conn.QueryMultipleAsync("sp_notification_logs",param,commandType: CommandType.StoredProcedure);
+
+
+                var data =(await multi.ReadAsync<NotificationLogModel>()).FirstOrDefault();
 
                 if (data != null)
                 {
                     response.Result = data;
+
                     response.TotalRecords = 1;
+
                     response.IsSuccess = true;
                 }
+                else
+                {
+                    response.IsSuccess = false;
+
+                    response.ErrorMsgs.Add("Notification not found");
+                }
+
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.ErrorMsgs.Add("Error while fetching notification log");
 
-                Console.WriteLine("DAL GET BY ID ERROR : " + ex.Message);
+                response.ErrorMsgs.Add(ex.Message);
+
+
+                Console.WriteLine("DAL GET BY ID ERROR : "+ ex.Message);
             }
+
 
             return response;
         }
