@@ -1,14 +1,25 @@
 ﻿using DAL.ContractIF;
+
 using DAL.Dbcontext;
+
 using Dapper;
+
 using Models;
+
 using MySql.Data.MySqlClient;
+
 using System;
+
 using System.Collections.Generic;
+
 using System.Data;
+
 using System.Linq;
+
 using System.Text;
+
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
 
 namespace DAL.Services
@@ -42,9 +53,25 @@ namespace DAL.Services
 
                 new MySqlConnection(_config.DefaultConnection);
 
-            var sql = @"SELECT c.branch_id FROM counters c INNER JOIN users u  ON u.user_id = c.user_idWHERE   u.email = @EmailLIMIT 1";
+            var sql = @"
+ 
+SELECT c.branch_id
+ 
+FROM counters c
+ 
+INNER JOIN users u
+ 
+    ON u.user_id = c.user_id
+ 
+WHERE u.email = @Email
+ 
+LIMIT 1";
 
-            return await conn.QueryFirstOrDefaultAsync<long>(sql,new { Email = email });
+            return await conn.QueryFirstOrDefaultAsync<long>(
+
+                sql,
+
+                new { Email = email });
 
         }
 
@@ -100,7 +127,7 @@ namespace DAL.Services
 
                 param.Add("p_SearchKey", request.SearchKey);
 
-                param.Add("p_PageNo", request.PageNo); 
+                param.Add("p_PageNo", request.PageNo);
 
                 param.Add("p_Email", email);
 
@@ -440,7 +467,9 @@ namespace DAL.Services
 
                 await conn.OpenAsync();
 
-                var list =(await conn.QueryAsync<TokenStatusModel>(@"SELECT status_id AS StatusId,status_name AS StatusName FROM token_status_master ORDER BY status_name", commandTimeout: 30)).ToList();
+                var list =
+
+                    (await conn.QueryAsync<TokenStatusModel>(@"SELECT status_id AS StatusId,status_name AS StatusName FROM token_status_master ORDER BY status_name", commandTimeout: 30)).ToList();
 
                 response.Result = list;
 
@@ -537,7 +566,6 @@ namespace DAL.Services
                 _logger.LogError(ex, "DAL GetDropdown Error");
 
                 response.ErrorMsgs.Add("Error while fetching dropdown");
-
 
 
             }
