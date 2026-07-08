@@ -375,6 +375,7 @@ namespace DAL.Services
                 param.Add("p_CounterId", null);
 
                 param.Add("p_BranchServiceId", null);
+                param.Add("p_Status", 1);
 
                 param.Add("p_SearchKey", null);
 
@@ -443,6 +444,7 @@ namespace DAL.Services
                 param.Add("p_CounterId", null);
 
                 param.Add("p_BranchServiceId", null);
+                param.Add("p_Status", 1);
 
                 param.Add("p_SearchKey", null);
 
