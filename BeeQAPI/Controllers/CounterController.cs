@@ -98,13 +98,13 @@ namespace BeeQAPI.Controllers
         // DROPDOWN
         // ========================
         [Authorize(Policy = "VIEW_COUNTER")]
-        [HttpPost("CounterDropdown")]
+        [HttpGet("CounterDropdown")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
         {
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return await _bal.GetDropdown(email, transaction: null);
-        }
+        }   
     }
 }

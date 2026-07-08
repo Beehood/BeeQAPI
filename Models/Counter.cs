@@ -9,6 +9,9 @@ namespace Models
     public class CounterModel
     {
         public long CounterId { get; set; }
+        public long OrganizationId { get; set; }
+
+        public string? OrganizationName { get; set; }
 
         // Reference to Branch
         public long BranchId { get; set; }
