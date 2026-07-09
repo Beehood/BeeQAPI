@@ -52,74 +52,46 @@ namespace DAL.Services
 
         /// </summary>
 
-        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
-
+        public async Task<APIGetResponseModel<List<CounterModel>>> GetAll(PaginationRequestDto request,string email,IDbTransaction? transaction = null)
         {
-
             var response = new APIGetResponseModel<List<CounterModel>>();
 
             try
-
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
 
                 param.Add("p_Action", "LIST");
-
                 param.Add("p_CounterId", null);
-
                 param.Add("p_BranchId", null);
-
                 param.Add("p_CounterName", null);
-
                 param.Add("p_CounterNumber", null);
-
                 param.Add("p_Status", null);
-
                 param.Add("p_SearchKey", request.SearchKey);
-
                 param.Add("p_PageNo", request.PageNo);
-
                 param.Add("p_UserEmail", email);
 
-                using var multi = await conn.QueryMultipleAsync("sp_manage_counter", param, commandType: CommandType.StoredProcedure);
+                using var multi = await conn.QueryMultipleAsync("sp_manage_counter",param,commandType: CommandType.StoredProcedure);
 
-                // FIRST RESULT = DATA
+                // First Result = Count
+                response.TotalRecords = (await multi.ReadAsync<int>()).FirstOrDefault();
 
-                //var list = (await multi.ReadAsync<CounterModel>()).ToList();
-
-                // SECOND RESULT = TOTAL
-
-                //response.TotalRecords = await multi.ReadFirstAsync<int>();
-
-                response.TotalRecords = await multi.ReadFirstAsync<int>();
-
-                var list = (await multi.ReadAsync<CounterModel>()).ToList();
-
-                response.Result = list;
-
-                response.Result = list;
+                // Second Result = Data
+                response.Result = (await multi.ReadAsync<CounterModel>()).ToList();
 
                 response.IsSuccess = true;
-
             }
-
             catch (Exception ex)
-
             {
-
                 response.IsSuccess = false;
+                response.ErrorMsgs.Add(ex.Message);
 
-                response.ErrorMsgs.Add("Error while fetching counters");
-
-                Console.WriteLine("DAL COUNTER GET ALL ERROR: " + ex.Message);
-
+                Console.WriteLine("DAL COUNTER GET ALL ERROR:");
+                Console.WriteLine(ex.ToString());
             }
 
             return response;
-
         }
 
         // ========================
