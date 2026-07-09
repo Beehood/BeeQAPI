@@ -79,6 +79,7 @@ namespace DAL.Services
                 param.Add("p_CustomerId", null);
 
                 param.Add("p_OrganizationId", null);
+                param.Add("p_BranchId", null);
 
                 param.Add("p_Name", null);
 
@@ -155,6 +156,7 @@ namespace DAL.Services
                 param.Add("p_CustomerId", id);
 
                 param.Add("p_OrganizationId", null);
+                param.Add("p_BranchId", null);
 
                 param.Add("p_Name", null);
 
@@ -229,6 +231,7 @@ namespace DAL.Services
                 param.Add("p_CustomerId", null);
 
                 param.Add("p_OrganizationId", request.OrganizationId);
+                param.Add("p_BranchId", request.BranchId);
 
                 param.Add("p_Name", request.Name);
 
@@ -303,6 +306,7 @@ namespace DAL.Services
                 param.Add("p_CustomerId", request.CustomerId);
 
                 param.Add("p_OrganizationId", request.OrganizationId);
+                param.Add("p_BranchId", request.BranchId);
 
                 param.Add("p_Name", request.Name);
 
@@ -377,6 +381,7 @@ namespace DAL.Services
                 param.Add("p_CustomerId", id);
 
                 param.Add("p_OrganizationId", null);
+                param.Add("p_BranchId", null);
 
                 param.Add("p_Name", null);
 
@@ -451,6 +456,7 @@ namespace DAL.Services
                 param.Add("p_CustomerId", null);
 
                 param.Add("p_OrganizationId", null);
+                param.Add("p_BranchId", null);
 
                 param.Add("p_Name", null);
 

@@ -11,6 +11,10 @@ namespace Models
         public long CustomerId { get; set; }
 
         public long OrganizationId { get; set; }
+        public string? OrganizationName { get; set; }
+
+        public long BranchId { get; set; }
+        public string? BranchName { get; set; }
 
         public string Name { get; set; }
 
@@ -30,6 +34,7 @@ namespace Models
         public long CustomerId { get; set; }
 
         public long OrganizationId { get; set; }
+        public  long BranchId { get; set; }
 
         public string Name { get; set; }
 
