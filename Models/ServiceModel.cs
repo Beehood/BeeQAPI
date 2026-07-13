@@ -10,6 +10,9 @@ namespace Models
     {
         public long ServiceId { get; set; }
         public long OrganizationId { get; set; }
+        public string? OrganizationName { get; set; }
+        public long BranchId { get; set; }
+        public string? BranchName { get; set; }
         public string ServiceName { get; set; } = string.Empty;
         public string? ServiceCode { get; set; }
         public int? EstimatedTime { get; set; }
@@ -22,6 +25,7 @@ namespace Models
     {
         public long ServiceId { get; set; }
         public long OrganizationId { get; set; }
+        public long BranchId { get; set; }
         public long BranchServiceId { get; set; }
         public string ServiceName { get; set; } = string.Empty;
         public string? ServiceCode { get; set; }

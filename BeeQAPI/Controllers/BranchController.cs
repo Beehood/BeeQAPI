@@ -98,7 +98,7 @@ namespace BeeQAPI.Controllers
         // DROPDOWN
         // ========================
         [Authorize(Policy = "VIEW_BRANCH")]
-        [HttpGet("BranchDropdown")]
+        [HttpPost("BranchDropdown")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
         {
