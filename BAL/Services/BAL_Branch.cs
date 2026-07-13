@@ -252,13 +252,13 @@ namespace BAL.Services
         // ========================
         // DROPDOWN
         // ========================
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,long? organizationId,IDbTransaction? transaction = null)
         {
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
             {
-                response = await _dal.GetDropdown(email, transaction);
+                response = await _dal.GetDropdown(email,organizationId,transaction);
             }
             catch (Exception ex)
             {

@@ -100,11 +100,11 @@ namespace BeeQAPI.Controllers
         [Authorize(Policy = "VIEW_BRANCH")]
         [HttpPost("BranchDropdown")]
         [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown()
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown([FromBody] BranchRequestDto request)
         {
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return await _bal.GetDropdown(email, transaction: null);
+            return await _bal.GetDropdown(email,request.OrganizationId,null);
         }
     }
 }

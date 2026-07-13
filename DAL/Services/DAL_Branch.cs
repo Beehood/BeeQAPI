@@ -458,10 +458,9 @@ namespace DAL.Services
 
         /// </summary>
 
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email, IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(string email,long? organizationId,IDbTransaction? transaction = null)
 
         {
-
             var response = new APIGetResponseModel<List<DropdownModel>>();
 
             try
@@ -488,7 +487,7 @@ namespace DAL.Services
 
                 param.Add("p_Timezone", null);
 
-                param.Add("p_OrganizationId", null);
+                param.Add("p_OrganizationId", organizationId);
 
                 param.Add("p_SearchKey", null);
 
