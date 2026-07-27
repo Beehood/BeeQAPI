@@ -10,13 +10,20 @@ namespace Models
     {
         public long SlotId { get; set; }
 
+        // Organization
+        public long OrganizationId { get; set; }
+        public string? OrganizationName { get; set; }
+
+        // Branch
         public long BranchId { get; set; }
+        public string? BranchName { get; set; }
 
+        // Service
         public long ServiceId { get; set; }
+        public string? ServiceName { get; set; }
 
-        public string? ServiceName { get; set; }   // from JOIN
-
-        public int DayOfWeek { get; set; }         // 1 = Monday
+        // Time Slot
+        public int DayOfWeek { get; set; }
 
         public TimeSpan StartTime { get; set; }
 
@@ -25,14 +32,12 @@ namespace Models
         public int MaxCapacity { get; set; }
 
         public int Status { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-        public long? UpdatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
+
+
     public class TimeSlotRequestDto
     {
-        public string? Action { get; set; }   // LIST / INSERT / UPDATE / STATUS / DROPDOWN
+        public string? Action { get; set; }
 
         public long SlotId { get; set; }
 
@@ -53,11 +58,11 @@ namespace Models
         public string? SearchKey { get; set; }
 
         public int? PageNo { get; set; }
-
     }
+
+
     public class TimeSlotStatusRequestDto
     {
         public long SlotId { get; set; }
     }
-
 }
