@@ -31,11 +31,11 @@ namespace BAL.Services
         /// - Org Admin
         /// - Branch Admin
         /// </summary>
-        public async Task<APIGetResponseModel<List<NotificationLogModel>>> GetAll(PaginationRequestDto request,List<string> roles,string? email,
-            IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<NotificationLogModel>>> GetAll(PaginationRequestDto request,List<string> roles, string? email,IDbTransaction? transaction = null)
         {
             try
             {
+                // ROLE CHECK
                 if (!(roles.Contains("Super Admin") ||
                       roles.Contains("Org Admin") ||
                       roles.Contains("Branch Admin")))
@@ -44,9 +44,22 @@ namespace BAL.Services
                     {
                         IsSuccess = false,
                         ErrorMsgs = new List<string>
-                        {
-                            "Access denied."
-                        }
+                {
+                    "Access denied."
+                }
+                    };
+                }
+
+                // USER CHECK
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    return new APIGetResponseModel<List<NotificationLogModel>>
+                    {
+                        IsSuccess = false,
+                        ErrorMsgs = new List<string>
+                {
+                    "Unable to identify logged-in user."
+                }
                     };
                 }
 
@@ -54,7 +67,9 @@ namespace BAL.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("BAL: Error in GetAll (NotificationLog)", ex);
+                throw new Exception(
+                    "BAL: Error in GetAll (NotificationLog)",
+                    ex);
             }
         }
 

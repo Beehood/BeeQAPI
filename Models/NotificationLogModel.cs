@@ -11,8 +11,10 @@ namespace Models
         public long NotificationId { get; set; }
 
         public long? OrganizationId { get; set; }
+        public string? OrganizationName { get; set; }
 
         public long? BranchId { get; set; }
+        public string? BranchName { get; set; }
 
         public long? TokenId { get; set; }
 

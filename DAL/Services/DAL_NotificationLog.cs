@@ -1,23 +1,13 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
@@ -97,6 +87,8 @@ namespace DAL.Services
                 param.Add("p_ErrorMessage", null);
 
                 param.Add("p_SentAt", null);
+                param.Add("p_Email", email);
+               
 
                 using var multi = await conn.QueryMultipleAsync("sp_notification_logs", param, commandType: CommandType.StoredProcedure);
 
@@ -106,7 +98,7 @@ namespace DAL.Services
 
                 response.TotalRecords = list.Count;
 
-                response.IsSuccess = list.Any();
+                response.IsSuccess = true;
 
             }
 
@@ -187,6 +179,7 @@ namespace DAL.Services
                 param.Add("p_ErrorMessage", null);
 
                 param.Add("p_SentAt", null);
+                param.Add("p_Email", email);
 
 
                 using var multi = await conn.QueryMultipleAsync("sp_notification_logs", param, commandType: CommandType.StoredProcedure);
@@ -295,6 +288,7 @@ namespace DAL.Services
                 param.Add("p_ErrorMessage", request.ErrorMessage);
 
                 param.Add("p_SentAt", request.SentAt);
+                param.Add("p_Email", email);
 
                 var id = await conn.ExecuteScalarAsync<long>("sp_notification_logs", param, commandType: CommandType.StoredProcedure);
 
