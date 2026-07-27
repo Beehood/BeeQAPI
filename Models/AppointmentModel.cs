@@ -10,7 +10,10 @@ namespace Models
     {
         public long AppointmentId { get; set; }
         public long OrganizationId { get; set; }
+        public string? OrganizationName { get; set; }
+
         public long BranchId { get; set; }
+        public string? BranchName { get; set; }
         public long ServiceId { get; set; }
         public string? ServiceName { get; set; }
         public long UserId { get; set; }

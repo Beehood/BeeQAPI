@@ -73,8 +73,10 @@ namespace DAL.Services
                 param.Add("p_AppointmentId", null);
 
                 param.Add("p_OrganizationId", null);
+                param.Add("p_OrganizationName", null);
 
                 param.Add("p_BranchId", null);
+                param.Add("p_BranchName", null);
 
                 param.Add("p_ServiceId", null);
 
@@ -158,7 +160,10 @@ namespace DAL.Services
 
                 param.Add("p_OrganizationId", null);
 
+                param.Add("p_OrganizationName", null);
+
                 param.Add("p_BranchId", null);
+                param.Add("p_BranchName", null);
 
                 param.Add("p_ServiceId", null);
 
