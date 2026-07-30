@@ -85,26 +85,26 @@ namespace BAL.Services
                 // Cannot view Super Admin
                 // =========================================
 
-                else if (roles.Contains("Org Admin"))
-                {
-                    response.Result = response.Result
-                        .Where(x =>!string.Equals(x.RoleName,"Super Admin",StringComparison.OrdinalIgnoreCase)).ToList();
-                }
+                //else if (roles.Contains("Org Admin"))
+                //{
+                //    response.Result = response.Result
+                //        .Where(x =>!string.Equals(x.RoleName,"Super Admin",StringComparison.OrdinalIgnoreCase)).ToList();
+                //}
 
 
-                // =========================================
-                // BRANCH ADMIN
-                // Cannot view Super Admin or Org Admin
-                // =========================================
+                //// =========================================
+                //// BRANCH ADMIN
+                //// Cannot view Super Admin or Org Admin
+                //// =========================================
 
-                else if (roles.Contains("Branch Admin"))
-                {
-                    response.Result = response.Result
-                        .Where(x =>!string.Equals(x.RoleName,"Super Admin",StringComparison.OrdinalIgnoreCase)&&!string.Equals(x.RoleName,"Org Admin",StringComparison.OrdinalIgnoreCase)).ToList();
-                }
+                //else if (roles.Contains("Branch Admin"))
+                //{
+                //    response.Result = response.Result
+                //        .Where(x =>!string.Equals(x.RoleName,"Super Admin",StringComparison.OrdinalIgnoreCase)&&!string.Equals(x.RoleName,"Org Admin",StringComparison.OrdinalIgnoreCase)).ToList();
+                //}
 
 
-                response.TotalRecords = response.Result.Count;
+                //response.TotalRecords = response.Result.Count;
 
                 return response;
             }

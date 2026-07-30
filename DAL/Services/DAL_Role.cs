@@ -1,25 +1,14 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using Org.BouncyCastle.Asn1.Ocsp;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
@@ -27,17 +16,12 @@ namespace DAL.Services
 {
 
     public class DAL_Role : IDAL_Role
-
     {
-
         private readonly DBConnection _config;
-
         public DAL_Role(DBConnection config)
 
         {
-
             _config = config;
-
         }
 
         // ========================
@@ -59,11 +43,9 @@ namespace DAL.Services
         {
 
             var response = new APIGetResponseModel<List<RoleModel>>();
-
             try
 
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -78,19 +60,13 @@ namespace DAL.Services
 
                 param.Add("p_Description", null);
 
-                //param.Add("p_OrganizationId", null);
-
-                //param.Add("p_BranchId", null);
-
                 param.Add("p_Status", null);
-
-                //param.Add("p_OrganizationName", null);
-
-                //param.Add("p_BranchName", null);
 
                 param.Add("p_SearchKey", request.SearchKey);
 
                 param.Add("p_PageNo", request.PageNo);
+
+                param.Add("p_OrganizationId", null);
 
                 param.Add("p_UserEmail", email);
 
@@ -103,13 +79,11 @@ namespace DAL.Services
                 response.Result = list;
 
                 response.IsSuccess = list.Any();
-
             }
 
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while fetching roles");
@@ -117,9 +91,7 @@ namespace DAL.Services
                 Console.WriteLine("DAL ROLE GET ALL ERROR: " + ex.Message);
 
             }
-
             return response;
-
         }
 
         // ========================
@@ -145,7 +117,6 @@ namespace DAL.Services
             try
 
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -160,66 +131,42 @@ namespace DAL.Services
 
                 param.Add("p_Description", null);
 
-                //param.Add("p_OrganizationId", null);
-
-                //param.Add("p_BranchId", null);
-
                 param.Add("p_Status", null);
-
-                //param.Add("p_OrganizationName", null);
-
-                //param.Add("p_BranchName", null);
 
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
+                param.Add("p_OrganizationId", null);
 
                 param.Add("p_UserEmail", email);
 
-                var data =
-
-                    await conn.QueryFirstOrDefaultAsync<RoleModel>("sp_manage_role", param, commandType: CommandType.StoredProcedure);
+                var data =await conn.QueryFirstOrDefaultAsync<RoleModel>("sp_manage_role", param, commandType: CommandType.StoredProcedure);
 
                 if (data != null)
-
                 {
-
                     response.Result = data;
 
                     response.TotalRecords = 1;
 
                     response.IsSuccess = true;
-
                 }
-
                 else
-
                 {
-
                     response.Result = null;
-
                     response.TotalRecords = 0;
-
                     response.IsSuccess = false;
-
                 }
-
             }
 
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
-
                 response.ErrorMsgs.Add("Error while fetching role");
-
                 Console.WriteLine("DAL ROLE GET BY ID ERROR: " + ex.Message);
-
             }
 
             return response;
-
         }
 
         // ========================
@@ -245,7 +192,6 @@ namespace DAL.Services
             try
 
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -260,19 +206,13 @@ namespace DAL.Services
 
                 param.Add("p_Description", request.Description);
 
-                //param.Add("p_OrganizationId", request.OrganizationId);
-
-                //param.Add("p_BranchId", request.BranchId);
-
                 param.Add("p_Status", 1);
-
-                //param.Add("p_OrganizationName", request.OrganizationName);
-
-                //param.Add("p_BranchName", request.BranchName);
 
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
+
+                param.Add("p_OrganizationId", request.OrganizationId);
 
                 param.Add("p_UserEmail", email);
 
@@ -285,17 +225,14 @@ namespace DAL.Services
                 response.TotalRecords = id > 0 ? 1 : 0;
 
             }
-
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while inserting role");
 
                 Console.WriteLine("DAL ROLE INSERT ERROR: " + ex.Message);
-
             }
 
             return response;
@@ -319,7 +256,6 @@ namespace DAL.Services
         public async Task<APIGetResponseModel<int>> Update(RoleRequestDto request, string email, IDbTransaction? transaction = null)
 
         {
-
             var response = new APIGetResponseModel<int>();
 
             try
@@ -340,19 +276,13 @@ namespace DAL.Services
 
                 param.Add("p_Description", request.Description);
 
-                //param.Add("p_OrganizationId", request.OrganizationId);
-
-                //param.Add("p_BranchId", request.BranchId);
-
                 param.Add("p_Status", request.Status);
-
-                //param.Add("p_OrganizationName", request.OrganizationName);
-
-                //param.Add("p_BranchName", request.BranchName);
 
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
+
+                param.Add("p_OrganizationId", request.OrganizationId, DbType.Int64);
 
                 param.Add("p_UserEmail", email);
 
@@ -367,19 +297,11 @@ namespace DAL.Services
             }
 
             catch (Exception ex)
-
             {
-
                 response.IsSuccess = false;
-
-                response.ErrorMsgs.Add("Error while updating role");
-
-                Console.WriteLine("DAL ROLE UPDATE ERROR: " + ex.Message);
-
+                response.ErrorMsgs.Add(ex.Message);
             }
-
             return response;
-
         }
 
         // ========================
@@ -405,7 +327,6 @@ namespace DAL.Services
             try
 
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -420,15 +341,13 @@ namespace DAL.Services
 
                 param.Add("p_Description", null);
 
-                //param.Add("p_OrganizationId", null);
-
                 param.Add("p_Status", null);
-
-                //param.Add("p_BranchId", null);
 
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
+
+                param.Add("p_OrganizationId", null);
 
                 param.Add("p_UserEmail", email);
 
@@ -445,7 +364,6 @@ namespace DAL.Services
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while changing role status");
@@ -496,13 +414,12 @@ namespace DAL.Services
 
                 param.Add("p_Description", null);
 
-                //param.Add("p_OrganizationId", null); 
-
                 param.Add("p_Status", null);
 
                 param.Add("p_SearchKey", null);
 
                 param.Add("p_PageNo", null);
+                param.Add("p_OrganizationId", null);
 
                 param.Add("p_UserEmail", email);
 
@@ -515,7 +432,6 @@ namespace DAL.Services
                 response.IsSuccess = data.Any();
 
             }
-
             catch (Exception ex)
 
             {
@@ -525,7 +441,6 @@ namespace DAL.Services
                 response.ErrorMsgs.Add("Error while fetching role dropdown");
 
                 Console.WriteLine("DAL ROLE DROPDOWN ERROR: " + ex.Message);
-
             }
 
             return response;
