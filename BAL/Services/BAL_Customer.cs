@@ -240,11 +240,11 @@ namespace BAL.Services
 
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
 
-  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
 
-  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
 
-  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
 
                 {
 
@@ -354,11 +354,11 @@ namespace BAL.Services
 
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
 
-|| r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
 
-|| r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+                || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
 
-|| r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
 
                 {
 
@@ -466,11 +466,11 @@ namespace BAL.Services
 
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)
 
-  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Org Admin", StringComparison.OrdinalIgnoreCase)
 
-  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
+                  || r.Equals("Branch Admin", StringComparison.OrdinalIgnoreCase)
 
-  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
+                  || r.Equals("Counter Admin", StringComparison.OrdinalIgnoreCase)))
 
                 {
 

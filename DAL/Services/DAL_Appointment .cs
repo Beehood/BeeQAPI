@@ -329,32 +329,24 @@ namespace DAL.Services
 
                 var param = new DynamicParameters();
 
+                // Required
                 param.Add("p_Action", "UPDATE");
-
                 param.Add("p_AppointmentId", request.AppointmentId);
 
-                param.Add("p_OrganizationId", null);
-
+                // Appointment Data
+                param.Add("p_OrganizationId", request.OrganizationId);
                 param.Add("p_BranchId", request.BranchId);
-
                 param.Add("p_ServiceId", request.ServiceId);
-
                 param.Add("p_UserId", request.UserId);
-
                 param.Add("p_CustomerName", request.CustomerName);
-
                 param.Add("p_CustomerPhone", request.CustomerPhone);
-
                 param.Add("p_AppointmentDate", request.AppointmentDate);
-
                 param.Add("p_TimeSlotId", request.TimeSlotId);
 
-                param.Add("p_Status", null);
-
+                // Optional
+                param.Add("p_Status", request.Status);
                 param.Add("p_SearchKey", null);
-
                 param.Add("p_PageNo", null);
-
                 param.Add("p_UserEmail", email);
 
                 var id = await conn.ExecuteScalarAsync<long>("sp_manage_appointment", param, commandType: CommandType.StoredProcedure);
