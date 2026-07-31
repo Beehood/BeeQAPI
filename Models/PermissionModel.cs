@@ -19,6 +19,7 @@ namespace Models
         public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public string PermissionScope { get; set; } = string.Empty;
     }
 
     public class PermissionRequestDto
@@ -40,6 +41,7 @@ namespace Models
         public int? PageSize { get; set; }
 
         public long? UserId { get; set; }
+        public string PermissionScope { get; set; } = string.Empty;
     }
     public class PermissionStatusRequestDto
     {

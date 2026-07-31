@@ -97,6 +97,7 @@ namespace DAL.Services
                 param.Add("p_Code", null);
 
                 param.Add("p_Module", null);
+                param.Add("p_PermissionScope", null);
 
                 param.Add("p_Status", null);
 
@@ -177,6 +178,7 @@ namespace DAL.Services
                 param.Add("p_Code", null);
 
                 param.Add("p_Module", null);
+                param.Add("p_PermissionScope",null);
 
                 param.Add("p_Status", null);
 
@@ -263,6 +265,7 @@ namespace DAL.Services
                 param.Add("p_Code", request.PermissionCode);
 
                 param.Add("p_Module", null);
+                param.Add("p_PermissionScope", request.PermissionScope);
 
                 param.Add("p_Status", null);
 
@@ -335,6 +338,7 @@ namespace DAL.Services
                 param.Add("p_Code", request.PermissionCode);
 
                 param.Add("p_Module", request.Module);
+                param.Add("p_PermissionScope", request.PermissionScope);
 
                 param.Add("p_Status", null);
 
@@ -405,6 +409,7 @@ namespace DAL.Services
                 param.Add("p_Code", null);
 
                 param.Add("p_Module", null);
+                param.Add("p_PermissionScope", null);
 
                 param.Add("p_Status", null);
 
@@ -477,6 +482,7 @@ namespace DAL.Services
                 param.Add("p_Code", null);
 
                 param.Add("p_Module", null);
+                param.Add("p_PermissionScope", null);
 
                 param.Add("p_Status", null);
 
