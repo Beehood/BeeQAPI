@@ -438,5 +438,15 @@ namespace BAL.Services
 
             return response;
         }
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdownByOrganization(
+    long organizationId,
+    string email,
+    IDbTransaction? transaction = null)
+        {
+            return await _dal.GetDropdownByOrganization(
+                organizationId,
+                email,
+                transaction);
+        }
     }
 }

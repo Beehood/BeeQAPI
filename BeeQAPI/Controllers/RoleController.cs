@@ -120,5 +120,17 @@ namespace BeeQAPI.Controllers
 
             return await _bal.GetDropdown(roles,email,transaction: null);
         }
+        [Authorize(Policy = "VIEW_ROLE")]
+        [HttpPost("RoleDropdownByOrganization")]
+        [ProducesResponseType(typeof(APIGetResponseModel<List<DropdownModel>>), (int)HttpStatusCode.OK)]
+        public async Task<APIGetResponseModel<List<DropdownModel>>> RoleDropdownByOrganization([FromBody] long organizationId)
+        {
+            var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+
+            return await _bal.GetDropdownByOrganization(
+                organizationId,
+                email,
+                transaction: null);
+        }
     }
 }

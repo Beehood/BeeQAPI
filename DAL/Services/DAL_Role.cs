@@ -446,7 +446,40 @@ namespace DAL.Services
             return response;
 
         }
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdownByOrganization(
+    long organizationId,
+    string email,
+    IDbTransaction? transaction = null)
+        {
+            var response = new APIGetResponseModel<List<DropdownModel>>();
 
+            using var conn = new MySqlConnection(_config.DefaultConnection);
+
+            var param = new DynamicParameters();
+
+            param.Add("p_Action", "DROPDOWN_BY_ORGANIZATION");
+
+            param.Add("p_RoleId", 0);
+            param.Add("p_RoleName", "");
+            param.Add("p_RoleCode", "");
+            param.Add("p_Description", "");
+            param.Add("p_Status", true);
+            param.Add("p_SearchKey", "");
+            param.Add("p_PageNo", 1);
+
+            param.Add("p_OrganizationId", organizationId);
+            param.Add("p_UserEmail", email);
+
+            var data = await conn.QueryAsync<DropdownModel>(
+                "sp_manage_role",
+                param,
+                commandType: CommandType.StoredProcedure);
+
+            response.IsSuccess = true;
+            response.Result = data.ToList();
+
+            return response;
+        }
     }
 
 }

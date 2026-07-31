@@ -26,6 +26,7 @@ namespace Models
     {
         public long RoleId { get; set; }
 
+        public long OrganizationId { get; set; }
         public long PermissionId { get; set; }  // for single insert/delete
 
         public string? PermissionIds { get; set; } //  for bulk insert (comma-separated)
