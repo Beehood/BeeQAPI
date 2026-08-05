@@ -33,6 +33,8 @@ namespace Models
         public int ServiceCount { get; set; }
 
         public int AppointmentCount { get; set; }
+        public int TodayTokenCount { get; set; }
+        public string? BranchName { get; set; }
     }
     public class DashboardQueueModel
     {
