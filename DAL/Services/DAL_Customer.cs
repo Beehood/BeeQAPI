@@ -1,47 +1,27 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
-
 {
-
     public class DAL_Customer : IDAL_Customer
-
     {
-
         private readonly DBConnection _config;
-
         public DAL_Customer(DBConnection config)
-
         {
-
             _config = config;
-
         }
 
         // ========================
-
         // GET ALL
-
         // ========================
 
         /// <summary>
@@ -61,15 +41,11 @@ namespace DAL.Services
         /// <returns>Returns list of CustomerModel with total count</returns>
 
         public async Task<APIGetResponseModel<List<CustomerModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
-
         {
-
             var response = new APIGetResponseModel<List<CustomerModel>>();
-
             try
 
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -93,7 +69,7 @@ namespace DAL.Services
 
                 param.Add("p_PageNo", request.PageNo);
 
-                param.Add("p_UserEmail", email); //  IMPORTANT (RBAC handled in SP)
+                param.Add("p_UserEmail", email); 
 
                 using var multi = await conn.QueryMultipleAsync("sp_manage_customer", param, commandType: CommandType.StoredProcedure);
 
@@ -110,23 +86,16 @@ namespace DAL.Services
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
-
                 response.ErrorMsgs.Add("Error while fetching customers");
-
                 Console.WriteLine("DAL CUSTOMER GET ALL ERROR: " + ex.Message);
-
             }
 
             return response;
-
         }
 
         // ========================
-
         // GET BY ID
-
         // ========================
 
         /// <summary>
@@ -140,11 +109,8 @@ namespace DAL.Services
         public async Task<APIGetResponseModel<CustomerModel>> GetById(long id, string email, IDbTransaction? transaction = null)
 
         {
-
             var response = new APIGetResponseModel<CustomerModel>();
-
             try
-
             {
 
                 using var conn = new MySqlConnection(_config.DefaultConnection);
@@ -179,23 +145,18 @@ namespace DAL.Services
                 response.IsSuccess = data != null;
 
                 response.TotalRecords = data != null ? 1 : 0;
-
             }
-
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while fetching customer");
 
                 Console.WriteLine("DAL CUSTOMER GETBYID ERROR: " + ex.Message);
-
             }
 
             return response;
-
         }
 
         // ========================
@@ -260,13 +221,11 @@ namespace DAL.Services
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while inserting customer");
 
                 Console.WriteLine("DAL CUSTOMER INSERT ERROR: " + ex.Message);
-
             }
 
             return response;
@@ -274,9 +233,7 @@ namespace DAL.Services
         }
 
         // ========================
-
         // UPDATE
-
         // ========================
 
         /// <summary>
@@ -335,13 +292,9 @@ namespace DAL.Services
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
-
                 response.ErrorMsgs.Add("Error while updating customer");
-
                 Console.WriteLine("DAL CUSTOMER UPDATE ERROR: " + ex.Message);
-
             }
 
             return response;
@@ -349,9 +302,7 @@ namespace DAL.Services
         }
 
         // ========================
-
         // STATUS
-
         // ========================
 
         /// <summary>
@@ -365,9 +316,7 @@ namespace DAL.Services
         public async Task<APIGetResponseModel<int>> ChangeStatus(long id, string email, IDbTransaction? transaction = null)
 
         {
-
             var response = new APIGetResponseModel<int>();
-
             try
 
             {

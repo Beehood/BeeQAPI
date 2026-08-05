@@ -24,6 +24,7 @@ namespace Models
         public bool Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public bool IsSystemRole { get; set; }
     }
 
     public class RoleRequestDto
@@ -41,6 +42,7 @@ namespace Models
         public string? Description { get; set; }
 
         public bool? Status { get; set; }
+        public bool IsSystemRole { get; set; }
 
         //public long? UserId_Login { get; set; }
     }

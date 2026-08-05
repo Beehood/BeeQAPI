@@ -10,19 +10,13 @@ namespace Models
     {
         public long SlotId { get; set; }
 
-        // Organization
         public long OrganizationId { get; set; }
         public string? OrganizationName { get; set; }
-
-        // Branch
         public long BranchId { get; set; }
         public string? BranchName { get; set; }
-
-        // Service
         public long ServiceId { get; set; }
         public string? ServiceName { get; set; }
 
-        // Time Slot
         public int DayOfWeek { get; set; }
 
         public TimeSpan StartTime { get; set; }

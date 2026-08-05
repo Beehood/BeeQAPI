@@ -1,13 +1,8 @@
 ﻿using BAL.ContractIF;
-
 using DAL.ContractIF;
-
 using Models;
-
 using System.Data;
-
 using System.Security.Cryptography;
-
 using System.Text;
 
 namespace BAL.Services
@@ -139,8 +134,6 @@ namespace BAL.Services
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Something went wrong");
-
-                Console.WriteLine("LOGIN ERROR: " + ex.Message);
 
             }
 

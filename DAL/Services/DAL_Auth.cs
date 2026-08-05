@@ -1,23 +1,13 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
@@ -112,7 +102,7 @@ namespace DAL.Services
 
             }
 
-            catch (Exception ex)
+            catch (Exception)
 
             {
 
@@ -172,11 +162,7 @@ namespace DAL.Services
 
                     // Optional safety fallback (in case DB returns null)
 
-                    profile.ProfilPic = string.IsNullOrEmpty(profile.ProfilPic)
-
-                        ? "default.png"
-
-                        : profile.ProfilPic;
+                    profile.ProfilPic = string.IsNullOrEmpty(profile.ProfilPic)? "default.png": profile.ProfilPic;
 
                     response.Result = profile;
 

@@ -1,13 +1,8 @@
 ﻿using BAL.ContractIF;
-
 using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.Mvc;
-
 using Models;
-
 using System.Net;
-
 using System.Security.Claims;
 
 namespace BeeQAPI.Controllers
@@ -47,9 +42,6 @@ namespace BeeQAPI.Controllers
         public async Task<APIGetResponseModel<List<ReportModel>>> GetAll([FromBody] ReportRequestDto request)
 
         {
-
-            Console.WriteLine($"CONTROLLER ACTION = {request.Action}");
-
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

@@ -127,10 +127,7 @@ namespace BeeQAPI.Controllers
         {
             var email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
 
-            return await _bal.GetDropdownByOrganization(
-                organizationId,
-                email,
-                transaction: null);
+            return await _bal.GetDropdownByOrganization(organizationId,email,transaction: null);
         }
     }
 }

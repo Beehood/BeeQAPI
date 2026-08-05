@@ -67,9 +67,7 @@ namespace BAL.Services
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    "BAL: Error in GetAll (NotificationLog)",
-                    ex);
+                throw new Exception("BAL: Error in GetAll (NotificationLog)",ex);
             }
         }
 

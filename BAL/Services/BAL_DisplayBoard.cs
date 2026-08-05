@@ -1,21 +1,12 @@
 ﻿using BAL.ContractIF;
-
 using DAL.ContractIF;
-
 using Models;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.SignalR;
 
 
@@ -32,9 +23,7 @@ namespace BAL.Services
         public BAL_DisplayBoard(IDAL_DisplayBoard dal)
 
         {
-
             _dal = dal;
-
         }
 
         // ========================
@@ -410,14 +399,9 @@ namespace BAL.Services
             try
 
             {
-
-                Console.WriteLine("=== DISPLAY BOARD STATUS START ===");
-
                 if (!roles.Any(r => r.Equals("Super Admin", StringComparison.OrdinalIgnoreCase)))
 
                 {
-
-                    Console.WriteLine("❌ ROLE CHECK FAILED");
 
                     response.IsSuccess = false;
 
@@ -430,9 +414,6 @@ namespace BAL.Services
                 if (id <= 0)
 
                 {
-
-                    Console.WriteLine("❌ INVALID DISPLAY ID");
-
                     response.IsSuccess = false;
 
                     response.ErrorMsgs.Add("Invalid display board ID.");
@@ -441,13 +422,8 @@ namespace BAL.Services
 
                 }
 
-                Console.WriteLine("➡️ CALLING DAL...");
 
                 response = await _dal.ChangeStatus(id, email, transaction: localtran);
-
-                Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
-
-                Console.WriteLine("Result: " + response.Result);
 
                 if (transaction == null && localtran != null)
 
@@ -458,9 +434,6 @@ namespace BAL.Services
             catch (Exception ex)
 
             {
-
-                Console.WriteLine("❌ BAL DISPLAY ERROR:");
-
                 Console.WriteLine(ex.Message);
 
                 if (transaction == null && localtran != null)
@@ -472,9 +445,6 @@ namespace BAL.Services
                 response.ErrorMsgs.Add(ex.Message);
 
             }
-
-            Console.WriteLine("=== DISPLAY BOARD STATUS END ===");
-
             return response;
 
         }

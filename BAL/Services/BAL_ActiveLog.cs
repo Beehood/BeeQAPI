@@ -1,19 +1,11 @@
 ﻿using BAL.ContractIF;
-
 using DAL.ContractIF;
-
 using Models;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace BAL.Services
@@ -100,11 +92,7 @@ namespace BAL.Services
 
             {
 
-                throw new Exception(
-
-                    "BAL: Error in GetAll (Activity Log)",
-
-                    ex);
+                throw new Exception("BAL: Error in GetAll (Activity Log)",ex);
 
             }
 
@@ -174,11 +162,7 @@ namespace BAL.Services
 
             {
 
-                throw new Exception(
-
-                    "BAL: Error in GetById (Activity Log)",
-
-                    ex);
+                throw new Exception("BAL: Error in GetById (Activity Log)",ex);
 
             }
 
@@ -226,9 +210,7 @@ namespace BAL.Services
 
                     response.IsSuccess = false;
 
-                    response.ErrorMsgs.Add(
-
-                        "Invalid payload.");
+                    response.ErrorMsgs.Add("Invalid payload.");
 
                     return response;
 

@@ -1,15 +1,9 @@
 ﻿using BAL.ContractIF;
-
 using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.Mvc;
-
 using Models;
-
 using Org.BouncyCastle.Asn1.Ocsp;
-
 using System.Net;
-
 using System.Security.Claims;
 
 namespace BeeQAPI.Controllers

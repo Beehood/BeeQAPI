@@ -1,13 +1,8 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System.Data;
 
 namespace DAL.Implementation
@@ -17,15 +12,10 @@ namespace DAL.Implementation
     public class DAL_BranchService : IDAL_BranchService
 
     {
-
         private readonly DBConnection _config;
-
         public DAL_BranchService(DBConnection config)
-
         {
-
             _config = config;
-
         }
 
         // ========================

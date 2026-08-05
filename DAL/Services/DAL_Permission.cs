@@ -1,23 +1,13 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
@@ -39,23 +29,15 @@ namespace DAL.Services
     /// </summary>
 
     public class DAL_Permission : IDAL_Permission
-
     {
-
         private readonly DBConnection _config;
-
         public DAL_Permission(DBConnection config)
-
         {
-
             _config = config;
-
         }
 
         // ========================
-
         // GET ALL
-
         // ========================
 
         /// <summary>
@@ -75,15 +57,10 @@ namespace DAL.Services
         /// <returns>List of PermissionModel with total count</returns>
 
         public async Task<APIGetResponseModel<List<PermissionModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
-
         {
-
             var response = new APIGetResponseModel<List<PermissionModel>>();
-
             try
-
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -116,19 +93,12 @@ namespace DAL.Services
                 response.Result = list;
 
                 response.IsSuccess = list.Any();
-
             }
-
             catch (Exception ex)
-
             {
-
                 response.IsSuccess = false;
-
                 //response.ErrorMsgs.Add("Error while fetching permissions");
-
                 response.ErrorMsgs.Add(ex.Message);
-
             }
 
             return response;

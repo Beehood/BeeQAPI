@@ -1,23 +1,13 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
@@ -27,21 +17,14 @@ namespace DAL.Services
     public class DAL_RolePermission : IDAL_RolePermission
 
     {
-
         private readonly DBConnection _config;
-
         public DAL_RolePermission(DBConnection config)
 
         {
-
             _config = config;
-
         }
-
         // ========================
-
         // GET ALL
-
         // ========================
 
         /// <summary>
@@ -57,13 +40,9 @@ namespace DAL.Services
         public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetAll(PaginationRequestDto request, string email, IDbTransaction? transaction = null)
 
         {
-
             var response = new APIGetResponseModel<List<RolePermissionModel>>();
-
             try
-
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 var param = new DynamicParameters();
@@ -97,13 +76,9 @@ namespace DAL.Services
                 response.Result = list;
 
                 response.IsSuccess = true;
-
             }
-
             catch (Exception ex)
-
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add(ex.Message);
@@ -117,9 +92,7 @@ namespace DAL.Services
         }
 
         // ========================
-
         // GET BY ROLE
-
         // ========================
 
         /// <summary>
@@ -131,9 +104,7 @@ namespace DAL.Services
         public async Task<APIGetResponseModel<List<RolePermissionModel>>> GetByRoleId(long roleId, string email, IDbTransaction? transaction = null)
 
         {
-
             var response = new APIGetResponseModel<List<RolePermissionModel>>();
-
             try
 
             {
@@ -157,10 +128,6 @@ namespace DAL.Services
                 param.Add("p_PageSize", null);
 
                 param.Add("p_UserEmail", email);
-
-                // --- FIXED HERE ---
-
-                // Change CommandType to Text and use explicit CALL syntax 
 
                 string sql = "CALL sp_manage_role_permission(@p_Action, @p_RoleId, @p_PermissionId, @p_PermissionIds, @p_SearchKey, @p_PageNo, @p_PageSize, @p_UserEmail);";
 

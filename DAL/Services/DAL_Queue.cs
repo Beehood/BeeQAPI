@@ -1,23 +1,13 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
@@ -167,39 +157,25 @@ namespace DAL.Services
                 if (data != null)
 
                 {
-
                     response.Result = data;
-
                     response.TotalRecords = 1;
-
                     response.IsSuccess = true;
-
                 }
 
                 else
-
                 {
-
                     response.Result = null;
-
                     response.TotalRecords = 0;
-
                     response.IsSuccess = false;
-
                 }
-
             }
 
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
-
                 response.ErrorMsgs.Add("Error while fetching queue");
-
                 Console.WriteLine("DAL QUEUE GET BY ID ERROR: " + ex.Message);
-
             }
 
             return response;

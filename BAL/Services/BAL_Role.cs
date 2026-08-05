@@ -171,13 +171,17 @@ namespace BAL.Services
             {
                 // ROLE CHECK
 
-                if (!(roles.Contains("Super Admin")))
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-
                     response.ErrorMsgs.Add("Access denied.");
-
                     return response;
+                }
+
+                // Org Admin cannot create System Roles
+                if (roles.Contains("Org Admin"))
+                {
+                    request.IsSystemRole = false;
                 }
 
                 // VALIDATION
@@ -245,13 +249,16 @@ namespace BAL.Services
 
             try
             {
-                if (!(roles.Contains("Super Admin")))
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-
                     response.ErrorMsgs.Add("Access denied.");
-
                     return response;
+                }
+
+                if (roles.Contains("Org Admin"))
+                {
+                    request.IsSystemRole = false;
                 }
 
                 if (request == null || request.RoleId <= 0)
@@ -314,12 +321,10 @@ namespace BAL.Services
 
             try
             {
-                if (!(roles.Contains("Super Admin")))
+                if (!(roles.Contains("Super Admin") || roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
-
                     response.ErrorMsgs.Add("Access denied.");
-
                     return response;
                 }
 
@@ -362,14 +367,6 @@ namespace BAL.Services
         /// Access:
         /// All authorized users
         /// </summary>
-
-        // ========================
-        // DROPDOWN
-        // ========================
-
-        // ========================
-        // DROPDOWN
-        // ========================
 
         public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdown(List<string> roles,string email,IDbTransaction? transaction = null)
         {
@@ -438,15 +435,9 @@ namespace BAL.Services
 
             return response;
         }
-        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdownByOrganization(
-    long organizationId,
-    string email,
-    IDbTransaction? transaction = null)
+        public async Task<APIGetResponseModel<List<DropdownModel>>> GetDropdownByOrganization(long organizationId,string email,IDbTransaction? transaction = null)
         {
-            return await _dal.GetDropdownByOrganization(
-                organizationId,
-                email,
-                transaction);
+            return await _dal.GetDropdownByOrganization(organizationId,email,transaction);
         }
     }
 }

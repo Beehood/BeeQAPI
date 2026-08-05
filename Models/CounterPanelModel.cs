@@ -10,14 +10,11 @@ namespace Models
     {
         public CurrentServingModel? CurrentServing { get; set; }
 
-        public List<WaitingQueueModel> WaitingQueue { get; set; }
-            = new();
+        public List<WaitingQueueModel> WaitingQueue { get; set; }= new();
 
-        public List<MissedQueueModel> MissedQueue { get; set; }
-            = new();
+        public List<MissedQueueModel> MissedQueue { get; set; }= new();
 
-        public CounterPanelStatsModel Stats { get; set; }
-            = new();
+        public CounterPanelStatsModel Stats { get; set; }= new();
     }
 
     public class CurrentServingModel

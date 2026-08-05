@@ -1,15 +1,9 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System.Data;
-
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 public class DAL_Menu : IDAL_Menu

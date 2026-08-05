@@ -1,47 +1,28 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
-
 {
-
     public class DAL_Branch : IDAL_Branch
 
     {
-
         private readonly DBConnection _config;
-
         public DAL_Branch(DBConnection config)
-
         {
-
             _config = config;
-
         }
 
         // ========================
-
         // GET ALL
-
         // ========================
 
         /// <summary>
@@ -183,27 +164,17 @@ namespace DAL.Services
                     response.IsSuccess = true;
 
                 }
-
-                else
-
-                {
-
+                else{
                     response.IsSuccess = false;
-
                 }
-
             }
-
             catch (Exception ex)
-
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while fetching branch");
 
                 Console.WriteLine("DAL BRANCH GETBYID ERROR: " + ex.Message);
-
             }
 
             return response;
@@ -275,13 +246,11 @@ namespace DAL.Services
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while inserting branch");
 
                 Console.WriteLine("DAL BRANCH INSERT ERROR: " + ex.Message);
-
             }
 
             return response;
@@ -303,11 +272,8 @@ namespace DAL.Services
         /// </summary>
 
         public async Task<APIGetResponseModel<int>> Update(BranchRequestDto request, string email, IDbTransaction? transaction = null)
-
         {
-
             var response = new APIGetResponseModel<int>();
-
             try
 
             {
@@ -514,13 +480,8 @@ namespace DAL.Services
                 response.ErrorMsgs.Add("Error while fetching branch dropdown");
 
                 Console.WriteLine("DAL BRANCH DROPDOWN ERROR: " + ex.Message);
-
             }
-
             return response;
-
         }
-
     }
-
 }

@@ -1,31 +1,18 @@
 ﻿using BAL.ContractIF;
-
 using DAL.ContractIF;
-
 using Models;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
-
 using Microsoft.Extensions.Logging;
 
 namespace BAL.Services
-
 {
-
     public class BAL_Token : IBAL_Token
-
     {
-
         private readonly IDAL_Token _dal;
 
         private readonly ILogger<BAL_Token> _logger;
@@ -33,19 +20,13 @@ namespace BAL.Services
         public BAL_Token(IDAL_Token dal, ILogger<BAL_Token> logger)
 
         {
-
             _dal = dal;
-
             _logger = logger;
-
         }
 
         public async Task<long> GetBranchIdByEmail(string email)
-
         {
-
             return await _dal.GetBranchIdByEmail(email);
-
         }
 
         // ========================
@@ -65,37 +46,24 @@ namespace BAL.Services
         /// </summary>
 
         public async Task<APIGetResponseModel<List<TokenModel>>> GetAll(PaginationRequestDto request, List<string> roles, string? email, IDbTransaction? transaction = null)
-
         {
-
             try
-
             {
-
                 if (!roles.Any())
-
                 {
-
                     return new APIGetResponseModel<List<TokenModel>>
-
                     {
-
                         IsSuccess = false,
-
                         ErrorMsgs = new List<string> { "Access denied." }
-
                     };
-
                 }
 
                 return await _dal.GetAll(request, email, transaction);
 
             }
-
             catch (Exception ex)
 
             {
-
                 _logger.LogError(ex, "BAL GetAll Error");
 
                 return new APIGetResponseModel<List<TokenModel>>
@@ -131,57 +99,36 @@ namespace BAL.Services
         /// </summary>
 
         public async Task<APIGetResponseModel<TokenModel>> GetById(long id, List<string> roles, string email, IDbTransaction? transaction = null)
-
         {
-
             try
-
             {
-
                 if (!roles.Any())
-
                 {
-
                     return new APIGetResponseModel<TokenModel>
-
                     {
-
                         IsSuccess = false,
-
                         ErrorMsgs = new List<string> { "Access denied." }
-
                     };
-
                 }
 
                 return await _dal.GetById(id, email, transaction);
-
             }
 
             catch (Exception ex)
-
             {
-
                 _logger.LogError(ex, "BAL GetById Error");
 
                 return new APIGetResponseModel<TokenModel>
 
                 {
-
                     IsSuccess = false,
-
                     ErrorMsgs = new List<string>
-
         {
-
             "Error while fetching token"
-
         }
-
                 };
 
             }
-
         }
 
         // ========================

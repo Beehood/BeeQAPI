@@ -1,53 +1,30 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Microsoft.Extensions.Logging;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace DAL.Services
-
 {
-
     public class DAL_CounterPanel : IDAL_CounterPanel
-
     {
-
         private readonly DBConnection _config;
-
         private readonly ILogger<DAL_CounterPanel> _logger;
-
         public DAL_CounterPanel(DBConnection config, ILogger<DAL_CounterPanel> logger)
-
         {
-
             _config = config;
-
             _logger = logger;
-
         }
 
         // ========================
-
         // DASHBOARD
-
         // ========================
 
         /// <summary>
@@ -59,15 +36,10 @@ namespace DAL.Services
         /// </summary>
 
         public async Task<APIGetResponseModel<CounterPanelDashboardModel>> GetDashboard(CounterPanelActionRequestDto request, string email, IDbTransaction? transaction = null)
-
         {
-
             var response = new APIGetResponseModel<CounterPanelDashboardModel>();
-
             try
-
             {
-
                 using var conn = new MySqlConnection(_config.DefaultConnection);
 
                 await conn.OpenAsync();
@@ -105,12 +77,10 @@ namespace DAL.Services
                 response.Result = new CounterPanelDashboardModel
 
                 {
-
                     CurrentServing = currentServing,
                     WaitingQueue = waitingQueue,
                     MissedQueue = missedQueue,
                     Stats = stats ?? new CounterPanelStatsModel()
-
                 };
 
                 response.IsSuccess = true;
@@ -118,29 +88,14 @@ namespace DAL.Services
                 response.TotalRecords = waitingQueue.Count;
 
             }
-
-            //catch (Exception ex)
-
-            //{
-
-            //    response.IsSuccess = false;
-
-            //    response.ErrorMsgs.Add("Error while loading dashboard");
-
-            //    _logger.LogError(ex,"DAL COUNTER DASHBOARD ERROR");
-
-            //}
-
             catch (Exception ex)
 
             {
-
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add(ex.Message);
 
                 _logger.LogError(ex, "DAL COUNTER DASHBOARD ERROR");
-
             }
 
             return response;

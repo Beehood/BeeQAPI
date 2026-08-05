@@ -213,6 +213,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
 
                 param.Add("p_OrganizationId", request.OrganizationId);
+                param.Add("p_IsSystemRole", request.IsSystemRole);
 
                 param.Add("p_UserEmail", email);
 
@@ -283,6 +284,7 @@ namespace DAL.Services
                 param.Add("p_PageNo", null);
 
                 param.Add("p_OrganizationId", request.OrganizationId, DbType.Int64);
+                param.Add("p_IsSystemRole", request.IsSystemRole);
 
                 param.Add("p_UserEmail", email);
 

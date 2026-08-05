@@ -31,7 +31,7 @@ namespace BAL.Services
             try
             {
                 // All roles can view (SP handles filtering)
-                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ||roles.Contains("Branch Admin")))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin") ))
                 {
                     return new APIGetResponseModel<List<RolePermissionModel>>
                     {
@@ -89,7 +89,7 @@ namespace BAL.Services
             try
             {
                 //  Only Super Admin
-                if (!roles.Contains("Super Admin"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Super Admin can assign permissions.");
@@ -134,7 +134,7 @@ namespace BAL.Services
             try
             {
                 //  Only Super Admin
-                if (!roles.Contains("Super Admin"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Super Admin can assign permissions.");
@@ -179,7 +179,7 @@ namespace BAL.Services
             try
             {
                 //  Only Super Admin
-                if (!roles.Contains("Super Admin"))
+                if (!(roles.Contains("Super Admin") ||roles.Contains("Org Admin")))
                 {
                     response.IsSuccess = false;
                     response.ErrorMsgs.Add("Only Super Admin can remove permissions.");

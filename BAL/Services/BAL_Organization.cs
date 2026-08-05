@@ -1,19 +1,11 @@
 ﻿using BAL.ContractIF;
-
 using DAL.ContractIF;
-
 using Models;
-
 using System;
-
 using System.Collections.Generic;
-
 using System.Data;
-
 using System.Linq;
-
 using System.Text;
-
 using System.Threading.Tasks;
 
 namespace BAL.Services
@@ -435,17 +427,6 @@ namespace BAL.Services
             try
 
             {
-
-                //  DEBUG 1: START
-
-                Console.WriteLine("=== BAL START ===");
-
-                Console.WriteLine($"Incoming OrgId: {id}");
-
-                Console.WriteLine("Roles: " + string.Join(",", roles));
-
-                Console.WriteLine("Email: " + email);
-
                 //if (!roles.Contains("Super Admin"))
 
                 //{
@@ -483,8 +464,6 @@ namespace BAL.Services
 
                 {
 
-                    Console.WriteLine("❌ ROLE CHECK FAILED");
-
                     response.IsSuccess = false;
 
                     response.ErrorMsgs.Add("Only Super Admin can change status.");
@@ -507,8 +486,6 @@ namespace BAL.Services
 
                 {
 
-                    Console.WriteLine("❌ INVALID ORG ID");
-
                     response.IsSuccess = false;
 
                     response.ErrorMsgs.Add("Invalid organization ID.");
@@ -517,19 +494,10 @@ namespace BAL.Services
 
                 }
 
-                Console.WriteLine("➡️ CALLING DAL...");
-
                 //  DEBUG 4: DAL CALL
 
                 response = await _dal.ChangeStatus(id, email, transaction: localtran);
 
-                //Console.WriteLine("⬅️ DAL RESPONSE RECEIVED");
-
-                //Console.WriteLine("IsSuccess: " + response.IsSuccess);
-
-                //Console.WriteLine("Result: " + response.Result);
-
-                //  DEBUG 5: TRANSACTION
 
                 if (transaction == null && localtran != null)
 
@@ -553,12 +521,6 @@ namespace BAL.Services
 
                 //response.ErrorMsgs.Add(ex.Message
 
-                Console.WriteLine("❌ BAL ERROR:");
-
-                Console.WriteLine(ex.Message);
-
-                Console.WriteLine(ex.StackTrace);
-
                 if (transaction == null && localtran != null)
 
                     localtran.Rollback();
@@ -568,8 +530,6 @@ namespace BAL.Services
                 response.ErrorMsgs.Add(ex.Message);
 
             }
-
-            Console.WriteLine("=== BAL END ===");
 
             return response;
 
