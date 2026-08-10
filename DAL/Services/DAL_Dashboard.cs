@@ -1,15 +1,9 @@
 ﻿using DAL.ContractIF;
-
 using DAL.Dbcontext;
-
 using Dapper;
-
 using Models;
-
 using MySql.Data.MySqlClient;
-
 using Org.BouncyCastle.Asn1.Ocsp;
-
 using System.Data;
 
 namespace DAL.Services
@@ -74,10 +68,6 @@ namespace DAL.Services
 
                 model.QueueTrend = (await multi.ReadAsync<DashboardTrendModel>()).ToList();
 
-                Console.WriteLine("================================");
-
-                Console.WriteLine("QueueTrend Count = " + model.QueueTrend.Count);
-
                 foreach (var item in model.QueueTrend)
 
                 {
@@ -87,8 +77,6 @@ namespace DAL.Services
                         $"DAL => {item.TrendDate} | Generated={item.GeneratedTokens} | Completed={item.CompletedTokens}");
 
                 }
-
-                Console.WriteLine("================================");
 
                 // Result Set 4
 

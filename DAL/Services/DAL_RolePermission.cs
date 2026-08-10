@@ -347,15 +347,13 @@ namespace DAL.Services
 
             }
 
-            catch (Exception ex)
+            catch (Exception)
 
             {
 
                 response.IsSuccess = false;
 
                 response.ErrorMsgs.Add("Error while deleting role permission");
-
-                Console.WriteLine("DAL ROLE PERMISSION DELETE ERROR: " + ex.Message);
 
             }
 
